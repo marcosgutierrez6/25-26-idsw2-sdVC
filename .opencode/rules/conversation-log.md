@@ -1,6 +1,6 @@
 # Regla: conversation-log.md
 
-Al final de cada intercambio relevante con el usuario, debes **escribir un resumen** en `conversation-log.md` con este formato:
+Al final de cada intercambio relevante con el usuario, debes **escribir un resumen** en `conversation-log.md` con este formato **estricto**: el orden debe ser exactamente Prompt → Resultado → Decisión, sin alterarlo ni añadir secciones intermedias.
 
 ```
 ## [HH:MM] Título breve de lo que se pidió
@@ -18,3 +18,4 @@ Normas:
 - La hora debe ser la real del intercambio.
 - Si el usuario rechaza algo, debe quedar registrado.
 - El log debe poder leerlo alguien que no estuvo en la sesión.
+- Las entradas se añaden al final, en orden cronológico ascendente (la más antigua primero).

@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Dificultad {
+  BAJA
+  MEDIA
+  ALTA
+}
+
+enum Evaluacion {
+  PARCIAL_1
+  PARCIAL_2
+  PARCIAL_3
+  EXAMEN_FINAL
+  EXAMEN_EXTRAORDINARIO
+}
+
+enum EstadoExamen {
+  GENERADO
+  ASIGNADO
+  RESUELTO
+  CORREGIDO
+}
+
+enum EstadoPregunta {
+  EN_CONSTRUCCION
+  HABILITADA
+  INHABILITADA
+}
+
+enum Rol {
+  DOCENTE
+  ADMIN
+}
+
+model Grado {
+  id        Int          @id @default(autoincrement())
+  titulo    String
+  codigo    String       @unique
+  asignaturas Asignatura[]
+  alumnos   Alumno[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Asignatura {
+  id            Int          @id @default(autoincrement())
+  titulo        String
+  codigo        String
+  cursoAcademico String
+  gradoId       Int
+  grado         Grado        @relation(fields: [gradoId], references: [id])
+  profesorId    Int?
+  profesor      Profesor?    @relation(fields: [profesorId], references: [id])
+  examenes      Examen[]
+  bateria       BateriaDePreguntas?
+  alumnos       AlumnoAsignatura[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([codigo, cursoAcademico])
+}
+
+model Profesor {
+  id         Int          @id @default(autoincrement())
+  nombre     String
+  apellidos  String
+  dni        String       @unique
+  email      String       @unique
+  password   String
+  rol        Rol          @default(DOCENTE)
+  asignaturas Asignatura[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Alumno {
+  id         Int          @id @default(autoincrement())
+  nombre     String
+  apellidos  String
+  dni        String       @unique
+  email      String       @unique
+  gradoId    Int
+  grado      Grado        @relation(fields: [gradoId], references: [id])
+  asignaturas AlumnoAsignatura[]
+  examenes   AlumnoExamen[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model AlumnoAsignatura {
+  alumnoId     Int
+  alumno       Alumno     @relation(fields: [alumnoId], references: [id])
+  asignaturaId Int
+  asignatura   Asignatura @relation(fields: [asignaturaId], references: [id])
+
+  @@id([alumnoId, asignaturaId])
+}
+
+model BateriaDePreguntas {
+  id          Int        @id @default(autoincrement())
+  asignaturaId Int       @unique
+  asignatura  Asignatura @relation(fields: [asignaturaId], references: [id])
+  preguntas   Pregunta[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Pregunta {
+  id               Int          @id @default(autoincrement())
+  enunciado        String
+  tema             String
+  dificultad       Dificultad
+  estado           EstadoPregunta @default(EN_CONSTRUCCION)
+  bateriaId        Int
+  bateria          BateriaDePreguntas @relation(fields: [bateriaId], references: [id])
+  respuestas       Respuesta[]
+  examenes         ExamenPregunta[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Respuesta {
+  id         Int      @id @default(autoincrement())
+  opcion     String
+  esCorrecta Boolean
+  preguntaId Int
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Examen {
+  id              Int          @id @default(autoincrement())
+  evaluacion      Evaluacion
+  claveCorreccion String?
+  estado          EstadoExamen @default(GENERADO)
+  asignaturaId    Int
+  asignatura      Asignatura   @relation(fields: [asignaturaId], references: [id])
+  preguntas       ExamenPregunta[]
+  alumnos         AlumnoExamen[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model ExamenPregunta {
+  examenId   Int
+  examen     Examen   @relation(fields: [examenId], references: [id])
+  preguntaId Int
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+  @@id([examenId, preguntaId])
+}
+
+model AlumnoExamen {
+  alumnoId     Int
+  alumno       Alumno   @relation(fields: [alumnoId], references: [id])
+  examenId     Int
+  examen       Examen   @relation(fields: [examenId], references: [id])
+  hashAsignacion String? @unique
+  respuestas   String?
+  nota         Float?
+  createdAt    DateTime @default(now())
+
+  @@id([alumnoId, examenId])
+}
