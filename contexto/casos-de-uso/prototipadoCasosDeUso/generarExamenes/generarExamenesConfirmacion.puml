@@ -1,0 +1,31 @@
+@startsalt
+{+
+  <b>GENERAR EXÁMENES</b>
+  --
+  Asignatura: | ^Matemáticas II^
+  Evaluación: | ^1º Parcial^
+  ..
+  
+  Tema/Temas:
+  {SI
+    [X] Tema 1
+    [X] Tema 2
+    [ ] Tema 3
+    [X] Tema 4
+    ...
+  }
+  
+  ..
+  Número de preguntas:       | "10   "
+  Número de exámenes para II: **< 34 >**
+  Número de exámenes para IOI: **< 25 >**
+  Cantidad de tipos de exámen para II: | "34   "
+  Cantidad de tipos de exámen para IOI: | "25   "
+  Proporción de dificultad de II:    | ^30% Fácil / 40% Media / 30% Difícil^
+  Proporción de dificultad de IOI:    | ^15% Fácil / 55% Media / 30% Difícil^
+  
+  --
+  
+  [ Salir ] | [ Confirmar y Generar ]
+}
+@endsalt

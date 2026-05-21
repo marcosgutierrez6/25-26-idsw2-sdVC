@@ -1,0 +1,74 @@
+@startuml importarPreguntas
+
+skinparam linetype polyline
+
+state PREGUNTAS_CONTEXTUALES_ABIERTO
+state PREGUNTAS_CONTEXTUALES_ABIERTO2 as "PREGUNTAS_CONTEXTUALES_ABIERTO"
+state PREGUNTAS_ABIERTO2 as "PREGUNTAS_ABIERTO"
+
+state importarPreguntas as "importarPreguntas()" {
+
+    state " " as RequiringImport
+    state " " as ProvidingPreguntas
+    state " " as ProvidingConfirmation
+    state c <<choice>>
+
+    [*] -[#green]-> RequiringImport
+    note on link
+    <b>Docente</b> solicita importar preguntas
+    end note    
+
+    RequiringImport -[#green]-> ProvidingPreguntas
+    note on link
+    <b>Sistema</b> permite 
+    • introducir preguntas a importar
+    • salir de importación
+    end note
+
+    ProvidingPreguntas -[#green]-> ProvidingConfirmation
+    note on link
+    <b>Docente</b> introduce preguntas a importar
+    end note
+
+    ProvidingConfirmation -[#green]-> c
+    note on link
+    <b>Sistema</b> permite
+    • confirmar importación
+    • cancelar importación
+    end note
+
+    c -[#red]-> ProvidingPreguntas
+    note on link
+    Docente cancela importación
+    end note
+
+    c -[#red]-> ProvidingPreguntas
+    note on link
+    Docente confirma importación: error en la importación
+    end note
+
+    c -[#green]-> [*]
+    note on link
+    Docente confirma importación: importación exitosa
+    end note
+        
+    ProvidingPreguntas -[#blue]-> [*]
+    note on link
+    Docente solicita salir de importación
+    end note
+}
+
+' Conexiones existentes
+PREGUNTAS_ABIERTO -[#green]-> importarPreguntas
+importarPreguntas -[#green]-> PREGUNTAS_ABIERTO2
+
+
+' Conexiones NUEVAS (Contextuales)
+PREGUNTAS_CONTEXTUALES_ABIERTO -[#green]-> importarPreguntas
+importarPreguntas -[#green]-> PREGUNTAS_CONTEXTUALES_ABIERTO2
+note on link
+Importado a batería de preguntas concreta
+end note
+
+
+@enduml

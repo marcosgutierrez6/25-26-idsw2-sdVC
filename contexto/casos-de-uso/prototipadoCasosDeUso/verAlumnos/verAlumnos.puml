@@ -1,0 +1,16 @@
+@startsalt abrirProfesores-wireframe
+{ 
+<b>GESTIÓN DE ALUMNOS</b>  
+===
+{+  DNI | NOMBRE | APELLIDOS | ACCIÓN
+  --|--|--|--
+  12345678A | Roberto | Sánz Roca | [Editar] |[Eliminar]
+  87654321B | Raúl | González Gurruchaga | [Editar] |[Eliminar]
+ PXYZ | Pepe | López | [Editar] |[Eliminar]
+  }
+  ~~
+  {<b>BUSCAR:</b> [                                      ] | [Filtrar]}
+  ~~
+  { [Crear nuevo] | [Importar] | . | [Salir] }
+}
+@endsalt

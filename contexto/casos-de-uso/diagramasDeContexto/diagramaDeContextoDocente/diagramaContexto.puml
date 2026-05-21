@@ -1,0 +1,168 @@
+@startuml diagrama-contexto-docente
+
+left to right direction
+
+'Estados'
+
+state "SESION_CERRADA" as NoAuth
+state "SISTEMA_DISPONIBLE" as Menu
+
+state "GRADOS_ABIERTO" as ListGrados
+state "GRADO_ABIERTO" as EditGrado
+
+state "ASIGNATURAS_ABIERTO" as ListAsignaturas
+state "ASIGNATURA_ABIERTO" as EditAsignatura
+
+state "ALUMNOS_ABIERTO" as ListAlumnos
+state "ALUMNO_ABIERTO" as EditAlumno
+
+state "PREGUNTAS_ABIERTO" as ListPreguntas
+state "PREGUNTA_ABIERTO" as EditPregunta
+
+state "EXAMENES_GENERADOS" as ExamenesGenerados
+state "EXAMENES_ASIGNADOS" as ExamenesAsignados
+
+state "EXAMENES_CORREGIDOS" as ExamenesCorregidos
+
+state "RESPUESTAS_ABIERTO" as ListRespuestas
+state "RESPUESTA_ABIERTO" as EditRespuesta
+
+state "PREGUNTAS_CONTEXTUALES_ABIERTO" as ListPreguntasContextuales
+state "PREGUNTA_CONTEXTUAL_ABIERTO" as EditPreguntaContextual
+
+state "RESPUESTAS_CONTEXTUALES_ABIERTO" as ListRespuestasContextuales
+state "RESPUESTA_CONTEXTUAL_ABIERTO" as EditRespuestaContextual
+
+state "EXAMENES_GENERADOS_CONTEXTUALES" as ExamenesGeneradosContextuales
+state "EXAMENES_ASIGNADOS_CONTEXTUALES" as ExamenesAsignadosContextuales
+
+
+'Modulo sesion'
+[*] --> NoAuth
+NoAuth --> Menu : iniciarSesion()
+Menu --> NoAuth : cerrarSesion()
+
+'Modulo grados'
+
+
+Menu --> ListGrados: verGrados()
+ListGrados --> ListGrados: eliminarGrado()
+ListGrados --> ListGrados: importarGrados()
+ListGrados --> EditGrado: crearGrado()
+ListGrados --> EditGrado: editarGrado()
+EditGrado --> EditGrado: editarGrado()
+EditGrado --> ListGrados: verGrados()
+EditGrado --> ListGrados: eliminarGrado()
+ListGrados --> Menu: completarGestion()
+
+'Modulo asignaturas'
+
+Menu --> ListAsignaturas: verAsignaturas()
+ListAsignaturas --> EditAsignatura: crearAsignatura()
+ListAsignaturas --> ListAsignaturas: eliminarAsignatura()
+ListAsignaturas --> ListAsignaturas: importarAsignatura()
+EditAsignatura --> EditAsignatura: editarAsignatura()
+EditAsignatura --> ListAsignaturas: verAsignaturas()
+EditAsignatura --> ListAsignaturas: eliminarAsignatura()
+ListAsignaturas --> EditAsignatura: editarAsignatura()
+ListAsignaturas --> Menu: completarGestion()
+
+'Modulo alumnos'
+
+Menu --> ListAlumnos: verAlumnos()
+ListAlumnos --> EditAlumno: crearAlumno()
+ListAlumnos --> EditAlumno: editarAlumno()
+ListAlumnos --> ListAlumnos: eliminarAlumno()
+ListAlumnos --> ListAlumnos: importarAlumnos()
+EditAlumno --> EditAlumno: editarAlumno()
+EditAlumno --> ListAlumnos: verAlumnos()
+EditAlumno --> ListAlumnos: eliminarAlumno()
+ListAlumnos --> Menu: completarGestion()
+
+'Modulo preguntas'
+
+Menu --> ListPreguntas: verPreguntas()
+ListPreguntas --> EditPregunta: crearPregunta()
+ListPreguntas --> EditPregunta: editarPregunta()
+ListPreguntas --> ListPreguntas: eliminarPregunta()
+ListPreguntas --> ListPreguntas: importarPreguntas()
+EditPregunta --> EditPregunta: editarPregunta()
+EditPregunta --> ListPreguntas: verPreguntas()
+EditPregunta --> ListPreguntas: eliminarPregunta()
+ListPreguntas --> Menu: completarGestion()
+
+'Modulo preguntas contextuales '
+
+EditAsignatura --> ListPreguntasContextuales: verPreguntas()
+ListPreguntasContextuales --> EditPreguntaContextual: crearPregunta()
+ListPreguntasContextuales --> EditPreguntaContextual: editarPregunta()
+ListPreguntasContextuales --> ListPreguntasContextuales: eliminarPregunta()
+ListPreguntasContextuales --> ListPreguntasContextuales: importarPreguntas()
+EditPreguntaContextual --> EditPreguntaContextual: editarPregunta()
+EditPreguntaContextual --> ListPreguntasContextuales: verPreguntas()
+ListPreguntasContextuales --> EditAsignatura: editarAsignatura()
+EditPreguntaContextual --> ListRespuestasContextuales: verRespuestas()
+EditPreguntaContextual --> ListPreguntasContextuales: eliminarPregunta()
+ListRespuestasContextuales --> EditRespuestaContextual: editarRespuesta()
+ListRespuestasContextuales --> EditRespuestaContextual: crearRespuesta()
+EditRespuestaContextual --> ListRespuestasContextuales: verRespuestas()
+EditRespuestaContextual --> ListRespuestasContextuales: eliminarRespuesta()
+ListRespuestasContextuales --> ListRespuestasContextuales: eliminarRespuesta()
+EditRespuestaContextual --> EditRespuestaContextual: editarRespuesta()
+ListRespuestasContextuales --> EditPreguntaContextual: editarPregunta()
+
+
+'Modulo Respuesta'
+EditPregunta --> ListRespuestas: verRespuestas()
+ListRespuestas --> EditRespuesta: editarRespuesta()
+ListRespuestas --> EditRespuesta: crearRespuesta()
+ListRespuestas --> ListRespuestas: eliminarRespuesta()
+EditRespuesta --> EditRespuesta: editarRespuesta()
+EditRespuesta --> ListRespuestas: verRespuestas()
+EditRespuesta --> ListRespuestas: eliminarRespuesta()
+ListRespuestas --> EditPregunta: editarPregunta()
+
+'Modulo configuracion general'
+
+Menu --> Menu: importarConfiguracionGlobal()
+Menu --> Menu: exportarConfiguracionGlobal()
+
+'Modulo examenes'
+
+Menu --> ExamenesGenerados: generarExamenes()
+ExamenesGenerados --> ExamenesAsignados: asignarExamenes()
+ExamenesAsignados --> Menu: completarGestion()
+ExamenesGenerados --> Menu: cancelarGeneracion()
+
+'Modulo examenes contextuales'
+EditAsignatura --> ExamenesGeneradosContextuales: generarExamenes()
+ExamenesGeneradosContextuales --> ExamenesAsignadosContextuales: asignarExamenes()
+ExamenesGeneradosContextuales --> EditAsignatura: cancelarGeneracion()
+ExamenesAsignadosContextuales --> EditAsignatura: editarAsignatura() 
+
+
+'Módulo correccion'
+
+Menu --> ExamenesCorregidos: corregirExamenes()
+ExamenesCorregidos --> Menu: completarGestion()
+
+@enduml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

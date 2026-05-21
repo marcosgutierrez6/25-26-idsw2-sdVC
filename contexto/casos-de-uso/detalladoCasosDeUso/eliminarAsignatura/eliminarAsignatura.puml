@@ -1,0 +1,57 @@
+@startuml eliminarAsignatura
+skinparam linetype polyline
+
+state ASIGNATURA_ABIERTO
+state ASIGNATURAS_ABIERTO2 as "ASIGNATURAS_ABIERTO"
+state ASIGNATURAS_ABIERTO3 as "ASIGNATURAS_ABIERTO"
+state ASIGNATURAS_ABIERTO4 as "ASIGNATURAS_ABIERTO"
+
+state eliminarAsignatura as "eliminarAsignatura()" {
+
+    state " " as ConfirmandoEliminacion
+    state " " as EliminandoAsignatura
+
+    [*] -[#green]-> ConfirmandoEliminacion
+    note on link
+    <b>Docente</b> solicita eliminar asignatura
+    end note
+
+    ConfirmandoEliminacion -[#green]-> EliminandoAsignatura
+    note on link
+    <b>Sistema</b> presenta información de la asignatura a eliminar
+    • Nombre 
+    • Código 
+    • Curso académico 
+    • Batería de preguntas
+
+    • Presenta advertencia de eliminación
+    • Permite solicitar confirmar eliminación
+    • Permite solicitar cancelar eliminación
+    end note
+
+    EliminandoAsignatura -[#green]-> [*]
+    note on link
+    <b>Docente</b> solicita confirmación de eliminación
+    <b>Sistema</b> confirma eliminación
+    end note
+}
+
+ASIGNATURAS_ABIERTO -[#green]-> eliminarAsignatura
+ASIGNATURA_ABIERTO -[#green]-> eliminarAsignatura
+
+eliminarAsignatura -[#green]-> ASIGNATURAS_ABIERTO2
+note on link
+lista actualizada
+end note
+
+eliminarAsignatura -[#blue]-> ASIGNATURAS_ABIERTO3
+note on link
+cancelar eliminación
+end note
+
+eliminarAsignatura -[#blue]-> ASIGNATURAS_ABIERTO4
+note on link
+cancelar eliminación
+end note
+
+@enduml

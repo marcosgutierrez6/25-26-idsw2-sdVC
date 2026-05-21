@@ -1,0 +1,56 @@
+@startuml eliminarGrado
+skinparam linetype polyline
+
+state GRADO_ABIERTO
+state GRADOS_ABIERTO2 as "GRADOS_ABIERTO"
+state GRADOS_ABIERTO3 as "GRADOS_ABIERTO"
+state GRADOS_ABIERTO4 as "GRADOS_ABIERTO"
+
+state eliminarGrado as "eliminarGrado()" {
+
+    state " " as ConfirmandoEliminacion
+    state " " as EliminandoGrado
+
+    [*] -[#green]-> ConfirmandoEliminacion
+    note on link
+    <b>Docente</b> solicita eliminar grado
+    end note
+
+    ConfirmandoEliminacion -[#green]-> EliminandoGrado
+    note on link
+    <b>Sistema</b> presenta información del grado a eliminar
+    • Nombre 
+    • Código
+    • Alumnos enlistados
+
+    • Presenta advertencia de eliminación
+    • Permite solicitar confirmar eliminación
+    • Permite solicitar cancelar eliminación
+    end note
+
+    EliminandoGrado -[#green]-> [*]
+    note on link
+    <b>Docente</b> solicita confirmación de eliminación
+    <b>Sistema</b> confirma eliminación
+    end note
+}
+
+GRADOS_ABIERTO -[#green]-> eliminarGrado
+GRADO_ABIERTO -[#green]-> eliminarGrado
+
+eliminarGrado -[#green]-> GRADOS_ABIERTO2
+note on link
+lista actualizada
+end note
+
+eliminarGrado -[#blue]-> GRADOS_ABIERTO3
+note on link
+cancelar eliminación
+end note
+
+eliminarGrado -[#blue]-> GRADOS_ABIERTO4
+note on link
+cancelar eliminación
+end note
+
+@enduml

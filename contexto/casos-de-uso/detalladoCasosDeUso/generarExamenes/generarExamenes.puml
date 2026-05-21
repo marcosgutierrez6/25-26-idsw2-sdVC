@@ -1,0 +1,82 @@
+@startuml generar
+
+skinparam linetype polyline
+
+state generarExamenes as "generarExamenes()" {
+
+    state " " as RequiringGeneration
+    state " " as ProvidingData
+    state " " as ProvidingConfirmation
+    state c <<choice>>
+
+    [*] -[#green]-> RequiringGeneration 
+    note on link
+    <b>Docente</b> solicita generar exámenes
+    end note    
+    
+    RequiringGeneration -[#green]-> ProvidingData
+    note on link
+    <b>Sistema</b> permite
+    • introducir datos disponibles para la generación
+    • salir de generación
+    end note
+    
+    ProvidingData -[#green]-> ProvidingConfirmation
+    note on link
+    <b>Docente</b> introduce datos mínimos para la generación
+    • Asignatura (obligatorio)
+    • Tema/Temas (obligatorio)
+    • Número de exámenes para cada grado de la asignatura seleccionada (obligatorio)
+    • Número de preguntas (obligatorio)
+    • Cantidad de tipos de exámen para cada grado de la asignatura seleccionada (obligatorio)
+    • Proporción de dificultad de cada grado de la asignatura seleccionada (obligatorio)
+    • Evaluación (obligatorio)
+    end note
+    
+    ProvidingConfirmation -[#green]-> c
+    note on link
+    <b>Sistema</b> permite
+    • confirmar generación
+    • cancelar generación
+    end note
+    
+    c -[#red]-> ProvidingData
+    note on link
+    Docente cancela generación
+    end note
+
+    c -[#red]-> ProvidingData
+    note on link
+    Docente confirma generación: datos insuficientes
+    end note
+
+    c -[#green]-> [*]
+    note on link
+    Docente confirma generación: generación exitosa
+    end note
+    
+    ProvidingData -[#blue]-> [*]
+    note on link
+    Docente solicta salir de generación
+    end note
+}
+
+state EXAMENES_GENERADOS
+state EXAMENES_GENERADOS_CONTEXTUALES
+
+SISTEMA_DISPONIBLE -[#green]-> generarExamenes
+
+generarExamenes -[#green]-> EXAMENES_GENERADOS
+note on link
+vista de examenes generados
+end note
+
+generarExamenes -[#green]-> EXAMENES_GENERADOS_CONTEXTUALES
+note on link
+vista de examenes generados
+end note
+
+ASIGNATURA_ABIERTO -[#green]-> generarExamenes
+
+
+@enduml

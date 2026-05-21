@@ -1,0 +1,26 @@
+@startuml 
+
+skinparam linetype polyline
+
+state exportarConfiguracionGlobal as "exportarConfiguracionGlobal"
+
+state exportarPreguntas as "exportarPreguntas()" {
+
+    state " " as RequiringExport
+    state " " as ProvidingPreguntas
+
+    [*] -[#green]-> RequiringExport
+    note on link
+    <b>exportarConfiguracionGlobal</b> solicita exportar Preguntas
+    end note    
+
+    RequiringExport -[#green]-> ProvidingPreguntas
+    note on link
+    <b>Sistema</b> permite exportar Preguntas
+    end note
+
+}
+
+exportarConfiguracionGlobal -[#green]-> exportarPreguntas
+
+@enduml

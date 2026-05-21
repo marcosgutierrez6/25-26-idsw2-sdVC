@@ -1,0 +1,36 @@
+@startuml verAsignaturas
+
+skinparam linetype polyline
+
+state verAsignaturas as "verAsignaturas()" {
+
+    state " " as MostrandoAsignaturas
+    state " " as FiltrandoAsignaturas
+
+    [*] -[#green]-> MostrandoAsignaturas 
+    note on link
+    <b>Docente</b> solicita ver asignaturas
+    end note    
+    
+    MostrandoAsignaturas -[#green]-> FiltrandoAsignaturas
+    note on link
+    <b>Sistema</b> presenta lista de asignaturas
+    • Nombre, código, curso académico, alumnos matriculados y grados asociados
+    
+    • Permite solicitar filtrar lista
+    end note
+    
+    FiltrandoAsignaturas -[#green]-> FiltrandoAsignaturas
+    note on link
+    <b>Docente</b> solicita filtrar lista
+    <b>Sistema</b> presenta lista filtrada
+    end note
+}
+
+SISTEMA_DISPONIBLE -[#green]-> verAsignaturas
+
+ASIGNATURA_ABIERTO -[#green]-> verAsignaturas
+
+verAsignaturas -[#green]-> ASIGNATURAS_ABIERTO
+
+@enduml

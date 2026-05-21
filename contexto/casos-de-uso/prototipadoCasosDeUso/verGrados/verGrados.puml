@@ -1,0 +1,30 @@
+@startsalt verGrados_WIREFRAME
+{+
+    <b>GESTIÓN DE TÍTULOS Y GRADOS</b>
+    ===
+    <b>1. Búsqueda y Filtros</b>
+    <i>Busque por código oficial o nombre del título</i>
+    .
+    {
+        Búsqueda: | "                    " | [Filtrar Lista]
+    }
+    .
+    --
+    .
+    <b>2. Listado de Grados Activos</b>
+    .
+    {#
+        <b>Código</b> | <b>Título del Grado</b> | <b>Alumnos Enlistados</b> | <b>Acciones</b>
+        GII-24 | Grado en Ing. Informática | 450 inscritos | [Editar] | [Eliminar]
+        GIM-10 | Grado en Ing. Mecánica | 320 inscritos | [Editar] | [Eliminar]
+        ADE-19 | Admin. y Dirección Empresas | 600 inscritos | [Editar] | [Eliminar]
+        ARC-21 | Grado en Arquitectura | 150 inscritos | [Editar] | [Eliminar]
+        . | . | . | .
+    }
+    .
+    ~~
+    .
+    "Acciones de Gestión:"
+    { [ Crear Grado ] | [ Importar ] | . | [ Volver al Inicio ] }
+}
+@endsalt

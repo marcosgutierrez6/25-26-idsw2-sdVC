@@ -1,0 +1,17 @@
+@startsalt editarAlumno_CORREGIDO
+{+
+    <b>EDITAR DATOS DEL ALUMNO</b>
+    ===
+    <b>Datos Personales</b>
+    <i>Modifique los campos necesarios</i>
+    .
+    {
+        DNI (*):       | "12345678Z             "
+        Nombre (*):    | "Juan                  "
+        Apellidos (*): | "Pérez García          "
+    }
+    .
+    --
+    { [Guardar Cambios] | [ Eliminar ] | [Cancelar] }
+}
+@endsalt

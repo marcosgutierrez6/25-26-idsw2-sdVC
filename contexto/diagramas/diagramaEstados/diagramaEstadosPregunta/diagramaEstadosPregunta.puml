@@ -1,0 +1,32 @@
+@startuml
+title Diagrama de Estados - Entidad Pregunta
+
+state "En Construcción" as construccion 
+state "Habilitada" as habilitada
+state "Inhabilitada" as inhabilitada 
+
+[*] --> construccion : Crear
+construccion --> habilitada : Guardar
+
+habilitada --> inhabilitada : Deshabilitar
+inhabilitada --> habilitada : Habilitar
+
+habilitada --> habilitada : Editar
+inhabilitada --> inhabilitada : Editar
+@enduml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

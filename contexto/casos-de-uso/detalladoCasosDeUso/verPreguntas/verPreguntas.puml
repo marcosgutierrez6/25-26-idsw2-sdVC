@@ -1,0 +1,59 @@
+@startuml verPreguntas
+skinparam linetype polyline
+
+' 1. Definición de Estados Externos
+state ASIGNATURA_ABIERTO
+state SISTEMA_DISPONIBLE
+state PREGUNTA_CONTEXTUAL_ABIERTO
+state PREGUNTA_ABIERTO
+state PREGUNTAS_ABIERTO
+state PREGUNTAS_CONTEXTUALES_ABIERTO
+
+' 2. Transiciones de ENTRADA (Todos los orígenes solicitados)
+ASIGNATURA_ABIERTO -[#green]-> verPreguntas
+SISTEMA_DISPONIBLE -[#green]-> verPreguntas
+PREGUNTA_CONTEXTUAL_ABIERTO -[#green]-> verPreguntas
+PREGUNTA_ABIERTO -[#green]-> verPreguntas
+
+state verPreguntas as "verPreguntas()" {
+
+    state " " as MostrandoPreguntas
+    state " " as FiltrandoPreguntas
+
+    [*] -[#green]-> MostrandoPreguntas
+    note on link
+    <b>Docente</b> solicita ver preguntas
+    end note    
+    
+    MostrandoPreguntas -[#green]-> FiltrandoPreguntas
+    note on link
+    <b>Sistema</b> presenta lista de preguntas
+    • Enunciado, asignatura, tema, dificultad, respuestas
+    
+    <b>Acciones disponibles:</b>
+    • Filtrar lista
+    end note
+    
+    FiltrandoPreguntas -[#green]-> FiltrandoPreguntas
+    note on link
+    <b>Docente</b> solicita filtrar lista
+    <b>Sistema</b> permite filtrar lista
+    end note
+    
+}
+
+' Salida 2: Cargar lista general
+verPreguntas -[#green]-> PREGUNTAS_ABIERTO
+note on link
+Mostrar lista general
+end note
+
+' Salida 3: Cargar lista contextual
+verPreguntas -[#green]-> PREGUNTAS_CONTEXTUALES_ABIERTO
+note on link
+Mostrar lista contextual
+(Preguntas de una asignatura)
+end note
+
+
+@enduml
