@@ -1,0 +1,59 @@
+@startuml secuencia-corregirExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CorregirExamenesView
+control ExamenesController
+entity ExamenesRepository
+entity Examen
+entity AlumnoExamen
+
+== Flujo Principal - Corrección Exitosa ==
+
+Docente -> CorregirExamenesView: solicita corregir exámenes
+activate CorregirExamenesView
+CorregirExamenesView --> Docente: muestra formulario de carga
+Docente -> CorregirExamenesView: introduce exámenes realizados
+CorregirExamenesView --> Docente: solicita confirmación
+Docente -> CorregirExamenesView: confirma corrección
+CorregirExamenesView -> ExamenesController: corregir(examenId, alumnoId, respuestas)
+activate ExamenesController
+ExamenesController -> ExamenesRepository: obtenerExamenConPreguntas(examenId)
+activate ExamenesRepository
+ExamenesRepository -> Examen: consulta preguntas y respuestas
+activate Examen
+Examen --> ExamenesRepository: preguntas con respuestas correctas
+deactivate Examen
+ExamenesRepository --> ExamenesController: examen con datos
+deactivate ExamenesRepository
+ExamenesController -> ExamenesController: cruza respuestas y calcula nota (aciertos/total)*10
+ExamenesController -> ExamenesRepository: guardarCorreccion(alumnoId, examenId, respuestas, nota)
+activate ExamenesRepository
+ExamenesRepository -> AlumnoExamen: actualiza respuestas y nota
+activate AlumnoExamen
+AlumnoExamen --> ExamenesRepository: ok
+deactivate AlumnoExamen
+ExamenesRepository --> ExamenesController: resultado
+deactivate ExamenesRepository
+ExamenesController --> CorregirExamenesView: { nota, aciertos, total, detalles }
+deactivate ExamenesController
+CorregirExamenesView --> Docente: muestra resultado exitoso
+
+== Flujo Alternativo - Error en Corrección ==
+
+Docente -> CorregirExamenesView: confirma corrección
+CorregirExamenesView -> ExamenesController: corregir(examenId, alumnoId, respuestas)
+ExamenesController -> ExamenesRepository: obtenerExamenConPreguntas(examenId)
+ExamenesRepository --> ExamenesController: error / datos inválidos
+ExamenesController --> CorregirExamenesView: error
+CorregirExamenesView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> CorregirExamenesView: cancela corrección
+CorregirExamenesView --> Docente: vuelve a formulario de carga
+deactivate CorregirExamenesView
+
+@enduml

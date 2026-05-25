@@ -1,0 +1,33 @@
+@startuml colaboracion-corregirExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CorregirExamenesView" as v
+control "ExamenesController" as c
+entity "ExamenesRepository" as r
+entity "Examen" as e
+entity "AlumnoExamen" as ae
+
+a -> v : 1: solicita corregir\nexámenes
+v -> c : 2: corregir(examenId,\nalumnoId, respuestas)
+c -> r : 3: obtenerExamenConPreguntas(examenId)
+r -> e : 3.1: consulta preguntas\ny respuestas correctas
+e --> r : datos
+r --> c : examen + preguntas\n+ respuestas correctas
+c -> r : 4: guardarCorreccion(alumnoId,\nexamenId, respuestas, nota)
+r -> ae : 4.1: actualizar respuestas\ny nota
+ae --> r : ok
+r --> c : resultado
+c --> v : { nota, aciertos,\ntotal, detalles }
+v --> a : 5: presenta resultado\n(éxito / error)
+
+note right of c
+  Internamente cruza
+  respuestas del alumno
+  vs respuestas correctas
+  y calcula nota = (aciertos/total)*10
+end note
+
+@enduml

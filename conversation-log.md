@@ -72,3 +72,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Creado `modelosUML/analisis/_plantilla/colaboracion.puml` con el diagrama de colaboración genérico
 
 **Decisión:** Aceptado todo. Se usó la estructura `documents/analisis/<casoUso>/README.md` para el análisis y `modelosUML/analisis/<casoUso>/colaboracion.puml` para el diagrama. La plantilla incluye: clases BCE con responsabilidades, diagrama de colaboración numerado, opciones de navegación (mapeadas del prototipo), estados de análisis (mapeados del detallado), y trazabilidad con la implementación real.
+
+---
+
+## [19:22] Análisis de corregirExamenes() + iteraciones de revisión
+
+**Prompt:** Crear el análisis RUP (BCE) de `corregirExamenes()`. Incluir clases de análisis, diagramas de colaboración y secuencia, flujos, navegación, estados y trazabilidad. Luego iterar sobre el análisis para validar contra el contexto del proyecto.
+
+**Resultado:**
+- Creado `documents/analisis/corregirExamenes/README.md` con análisis completo (BCE, flujos, estados, trazabilidad, patrones)
+- Creados `modelosUML/analisis/corregirExamenes/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía PlantUML server (`images/analisis/corregirExamenes/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** En la primera iteración se corrigieron 3 issues: (1) transición de estado del examen simplificada (se actualizó a `ASIGNADO→RESUELTO→CORREGIDO`), (2) añadida sección "Estados de Análisis" faltante, (3) aclarado propósito del campo `claveCorreccion`. En la segunda iteración se corrigió un cuarto issue: (4) referencia a `SISTEMA_DISPONIBLE` como salida cuando todas las salidas van a `EXAMENES_CORREGIDOS`. El análisis quedó completo y validado contra el contexto del proyecto.

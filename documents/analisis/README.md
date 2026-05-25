@@ -27,7 +27,7 @@ modelosUML/analisis/
 
 | Caso de uso | Estado |
 |---|---|
-| _pendiente_ | ... |
+| corregirExamenes | Completado |
 
 ## Cómo crear un nuevo análisis
 
