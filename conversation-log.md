@@ -114,3 +114,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** En la iteración se corrigieron 2 issues: (1) flujo de cancelación mencionaba "o sale a SISTEMA_DISPONIBLE" que no existe en el state diagram (cancelación siempre vuelve a ProvidingGlobalConfiguration), (2) entidad Pregunta no mencionaba relación con Respuesta (tiene respuestas[] en el schema y el flujo paso 10 dice "con sus respuestas"). El análisis refleja que el caso de uso está priorizado como #3 pero no implementado.
+
+---
+
+## [21:52] Análisis de exportarConfiguracionGlobal() + iteración de revisión
+
+**Prompt:** Crear el análisis RUP (BCE) de `exportarConfiguracionGlobal()` siguiendo la misma estructura que `importarConfiguracionGlobal()`. Incluir clases de análisis, diagramas de colaboración y secuencia, flujos, navegación, estados y trazabilidad. Luego iterar para validar contra el contexto del proyecto.
+
+**Resultado:**
+- Creado `documents/analisis/exportarConfiguracionGlobal/README.md` con análisis completo (mismo ConfiguracionController, operación inversa: lectura batch + compilación de archivo)
+- Creados `modelosUML/analisis/exportarConfiguracionGlobal/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía PlantUML server (`images/analisis/exportarConfiguracionGlobal/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Análisis validado sin correcciones. Se verificaron estados, transiciones, wireframes (error export solo tiene "Volver a exportar" sin Cancel, a diferencia de import), sub-operaciones con `<<include>>`, y entidades contra schema de Prisma. Todo correcto.

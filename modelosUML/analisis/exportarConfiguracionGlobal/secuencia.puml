@@ -1,0 +1,63 @@
+@startuml secuencia-exportarConfiguracionGlobal
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary ExportarConfiguracionGlobalView
+control ConfiguracionController
+entity ConfiguracionRepository
+entity Grado
+entity Asignatura
+entity Alumno
+entity Pregunta
+
+== Flujo Principal - Exportación Exitosa ==
+
+Docente -> ExportarConfiguracionGlobalView: solicita exportar configuración
+activate ExportarConfiguracionGlobalView
+ExportarConfiguracionGlobalView --> Docente: muestra opciones de exportación
+Docente -> ExportarConfiguracionGlobalView: solicita exportar y confirma
+ExportarConfiguracionGlobalView -> ConfiguracionController: exportarConfiguracion()
+activate ConfiguracionController
+ConfiguracionController -> ConfiguracionRepository: obtenerConfiguracion()
+activate ConfiguracionRepository
+ConfiguracionRepository -> Grado: obtener todos los grados
+activate Grado
+Grado --> ConfiguracionRepository: grados
+deactivate Grado
+ConfiguracionRepository -> Asignatura: obtener todas las asignaturas
+activate Asignatura
+Asignatura --> ConfiguracionRepository: asignaturas
+deactivate Asignatura
+ConfiguracionRepository -> Alumno: obtener todos los alumnos
+activate Alumno
+Alumno --> ConfiguracionRepository: alumnos
+deactivate Alumno
+ConfiguracionRepository -> Pregunta: obtener todas las preguntas con respuestas
+activate Pregunta
+Pregunta --> ConfiguracionRepository: preguntas
+deactivate Pregunta
+ConfiguracionRepository --> ConfiguracionController: configuración completa
+deactivate ConfiguracionRepository
+ConfiguracionController -> ConfiguracionController: compila y genera archivo
+ConfiguracionController --> ExportarConfiguracionGlobalView: archivo de configuración
+deactivate ConfiguracionController
+ExportarConfiguracionGlobalView --> Docente: descarga archivo y muestra éxito
+
+== Flujo Alternativo - Error en Exportación ==
+
+Docente -> ExportarConfiguracionGlobalView: confirma exportación
+ExportarConfiguracionGlobalView -> ConfiguracionController: exportarConfiguracion()
+ConfiguracionController -> ConfiguracionRepository: obtenerConfiguracion()
+ConfiguracionRepository --> ConfiguracionController: error de acceso a datos
+ConfiguracionController --> ExportarConfiguracionGlobalView: error
+ExportarConfiguracionGlobalView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> ExportarConfiguracionGlobalView: cancela exportación
+ExportarConfiguracionGlobalView --> Docente: vuelve a opciones de exportación
+deactivate ExportarConfiguracionGlobalView
+
+@enduml

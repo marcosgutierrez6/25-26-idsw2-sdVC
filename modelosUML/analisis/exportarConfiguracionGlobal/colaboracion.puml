@@ -1,0 +1,38 @@
+@startuml colaboracion-exportarConfiguracionGlobal
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "ExportarConfiguracionGlobalView" as v
+control "ConfiguracionController" as c
+entity "ConfiguracionRepository" as r
+entity "Grado" as g
+entity "Asignatura" as asig
+entity "Alumno" as al
+entity "Pregunta" as p
+
+a -> v : 1: solicita exportar\nconfiguración global
+v -> c : 2: exportarConfiguracion()
+c -> r : 3: obtenerConfiguracion()
+r -> g : 3.1: obtener\ntodos los grados
+g --> r : datos
+r -> asig : 3.2: obtener todas\nlas asignaturas
+asig --> r : datos
+r -> al : 3.3: obtener todos\nlos alumnos
+al --> r : datos
+r -> p : 3.4: obtener todas\nlas preguntas
+p --> r : datos
+r --> c : configuración\ncompleta
+c -> c : 4: compila y genera\narchivo de\nconfiguración
+c --> v : archivo de\nconfiguración
+v --> a : 5: descarga archivo\ny muestra resultado
+
+note right of c
+  Obtiene todos los
+  datos del sistema y
+  los compila en un
+  archivo exportable
+end note
+
+@enduml

@@ -30,6 +30,7 @@ modelosUML/analisis/
 | corregirExamenes | Completado |
 | generarExamenes | Completado |
 | importarConfiguracionGlobal | Completado |
+| exportarConfiguracionGlobal | Completado |
 
 ## Cómo crear un nuevo análisis
 
