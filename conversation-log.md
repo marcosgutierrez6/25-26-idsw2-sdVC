@@ -86,3 +86,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** En la primera iteración se corrigieron 3 issues: (1) transición de estado del examen simplificada (se actualizó a `ASIGNADO→RESUELTO→CORREGIDO`), (2) añadida sección "Estados de Análisis" faltante, (3) aclarado propósito del campo `claveCorreccion`. En la segunda iteración se corrigió un cuarto issue: (4) referencia a `SISTEMA_DISPONIBLE` como salida cuando todas las salidas van a `EXAMENES_CORREGIDOS`. El análisis quedó completo y validado contra el contexto del proyecto.
+
+---
+
+## [19:37] Análisis de generarExamenes() + iteración de revisión
+
+**Prompt:** Crear el análisis RUP (BCE) de `generarExamenes()` siguiendo la misma estructura que `corregirExamenes()`. Incluir clases de análisis, diagramas de colaboración y secuencia, flujos, navegación, estados y trazabilidad. Luego iterar para validar contra el contexto del proyecto.
+
+**Resultado:**
+- Creado `documents/analisis/generarExamenes/README.md` con análisis completo (BCE con 4 entidades: BateriaDePreguntas, Examen, Pregunta, ExamenesRepository)
+- Creados `modelosUML/analisis/generarExamenes/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía PlantUML server (`images/analisis/generarExamenes/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** En la iteración se corrigieron 3 issues: (1) destinos de "Salir" apuntaban a `SISTEMA_DISPONIBLE`/`ASIGNATURA_ABIERTO` cuando deberían ir a `EXAMENES_GENERADOS`/`EXAMENES_GENERADOS_CONTEXTUALES` (el `[*]` interno sale al estado externo), (2) misma corrección en tabla de requisitos y transiciones de estados, (3) añadida sección "Trazabilidad con la Implementación" faltante (controlador, servicio, DTO, vista, modelos BD).

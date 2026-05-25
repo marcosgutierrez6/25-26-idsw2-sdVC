@@ -1,0 +1,40 @@
+@startuml colaboracion-generarExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "GenerarExamenesView" as v
+control "ExamenesController" as c
+entity "ExamenesRepository" as r
+entity "BateriaDePreguntas" as b
+entity "Pregunta" as p
+entity "Examen" as e
+
+a -> v : 1: solicita generar\nexámenes
+v -> c : 2: generar(generarDto)
+c -> r : 3: obtenerBateria(asignaturaId, temas)
+r -> b : 3.1: consulta batería\ny preguntas HABILITADAS
+b --> r : preguntas filtradas\npor temas
+r --> c : batería con preguntas
+c -> c : 4: particiona por\ndificultad, aplica\nshuffle y selecciona\nsegún proporciones
+c -> r : 5: crearExamenesConPreguntas(\nexamenes[])
+r -> e : 5.1: crear N exámenes\ncon ExamenPregunta
+e --> r : exámenes creados
+r --> c : resultado
+c --> v : { exámenes\ngenerados }
+v --> a : 6: presenta resultado\n(éxito / error)
+
+note right of c
+  Para cada examen:
+  1. Calcula count por
+     dificultad según
+     proporciones
+  2. Fisher-Yates shuffle
+     por cada dificultad
+  3. Selecciona y completa
+     hasta numeroPreguntas
+  4. Repite N veces
+end note
+
+@enduml

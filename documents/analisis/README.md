@@ -28,6 +28,7 @@ modelosUML/analisis/
 | Caso de uso | Estado |
 |---|---|
 | corregirExamenes | Completado |
+| generarExamenes | Completado |
 
 ## Cómo crear un nuevo análisis
 

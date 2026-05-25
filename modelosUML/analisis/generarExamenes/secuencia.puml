@@ -1,0 +1,59 @@
+@startuml secuencia-generarExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary GenerarExamenesView
+control ExamenesController
+entity ExamenesRepository
+entity BateriaDePreguntas
+entity Examen
+
+== Flujo Principal - Generación Exitosa ==
+
+Docente -> GenerarExamenesView: solicita generar exámenes
+activate GenerarExamenesView
+GenerarExamenesView --> Docente: muestra formulario de carga
+Docente -> GenerarExamenesView: introduce datos (asignatura, temas,\nnº exámenes, nº preguntas, proporciones)
+GenerarExamenesView --> Docente: solicita confirmación
+Docente -> GenerarExamenesView: confirma generación
+GenerarExamenesView -> ExamenesController: generar(generarDto)
+activate ExamenesController
+ExamenesController -> ExamenesRepository: obtenerBateria(asignaturaId, temas)
+activate ExamenesRepository
+ExamenesRepository -> BateriaDePreguntas: consulta preguntas HABILITADAS
+activate BateriaDePreguntas
+BateriaDePreguntas --> ExamenesRepository: preguntas filtradas
+deactivate BateriaDePreguntas
+ExamenesRepository --> ExamenesController: batería con preguntas
+deactivate ExamenesRepository
+ExamenesController -> ExamenesController: particiona por dificultad,\naplica shuffle, selecciona\nsegún proporciones (x N exámenes)
+ExamenesController -> ExamenesRepository: crearExamenesConPreguntas(examenes[])
+activate ExamenesRepository
+ExamenesRepository -> Examen: crea N exámenes con estado GENERADO
+activate Examen
+Examen --> ExamenesRepository: exámenes creados
+deactivate Examen
+ExamenesRepository --> ExamenesController: resultado
+deactivate ExamenesRepository
+ExamenesController --> GenerarExamenesView: { exámenes generados }
+deactivate ExamenesController
+GenerarExamenesView --> Docente: muestra resultado exitoso
+
+== Flujo Alternativo - Error en Generación ==
+
+Docente -> GenerarExamenesView: confirma generación
+GenerarExamenesView -> ExamenesController: generar(generarDto)
+ExamenesController -> ExamenesRepository: obtenerBateria(asignaturaId, temas)
+ExamenesRepository --> ExamenesController: batería no encontrada /\npreguntas insuficientes
+ExamenesController --> GenerarExamenesView: error
+GenerarExamenesView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> GenerarExamenesView: cancela generación
+GenerarExamenesView --> Docente: vuelve a formulario de carga
+deactivate GenerarExamenesView
+
+@enduml
