@@ -59,3 +59,16 @@ Frontend Vue 3 construido:
 Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ archivos), apps/frontend (15+ archivos), packages/shared, TODO.md, .env
 
 **Decisión:** Se aceptó todo. Decisiones tomadas: (1) Turborepo dentro de src/ con apps/backend y apps/frontend, (2) los diagramas existentes en contexto/ son de análisis y no se mueven a modelosUML/, (3) se usó SQLite para desarrollo porque MySQL no está disponible localmente, intercambiable a MySQL cambiando el provider y la DATABASE_URL.
+
+---
+
+## [19:10] Estandarizar formato de análisis RUP (BCE)
+
+**Prompt:** Unificar el criterio de análisis de casos de uso para que todos los análisis del proyecto sigan el mismo patrón BCE (Boundary-Control-Entity). Se revisaron varios enfoques y se acordó crear una plantilla común.
+
+**Resultado:**
+- Creado `documents/analisis/README.md` como índice de análisis con instrucciones
+- Creado `documents/analisis/_plantilla/README.md` con la plantilla estándar para análisis BCE (5 secciones: clases, colaboración, navegación, estados, trazabilidad)
+- Creado `modelosUML/analisis/_plantilla/colaboracion.puml` con el diagrama de colaboración genérico
+
+**Decisión:** Aceptado todo. Se usó la estructura `documents/analisis/<casoUso>/README.md` para el análisis y `modelosUML/analisis/<casoUso>/colaboracion.puml` para el diagrama. La plantilla incluye: clases BCE con responsabilidades, diagrama de colaboración numerado, opciones de navegación (mapeadas del prototipo), estados de análisis (mapeados del detallado), y trazabilidad con la implementación real.

@@ -1,0 +1,22 @@
+@startuml colaboracion-<nombreCasoUso>
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "<Actor>" as a
+boundary "<Nombre>View" as v
+control "<Nombre>Controller" as c
+entity "<Entidad>Repository" as r
+entity "<Entidad>" as e
+entity "<EntidadSecundaria>" as es
+
+a -> v : 1: <acción inicial>
+v -> c : 2: <método>()
+c -> r : 3: <operación>()
+r -> e : 3.1: <consulta>
+e --> r : datos
+r --> c : resultado
+c --> v : respuesta
+v --> a : 4: <presentación resultado>
+
+@enduml
