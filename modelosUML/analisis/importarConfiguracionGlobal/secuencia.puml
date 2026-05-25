@@ -1,0 +1,64 @@
+@startuml secuencia-importarConfiguracionGlobal
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary ImportarConfiguracionGlobalView
+control ConfiguracionController
+entity ConfiguracionRepository
+entity Grado
+entity Asignatura
+entity Alumno
+entity Pregunta
+
+== Flujo Principal - Importación Exitosa ==
+
+Docente -> ImportarConfiguracionGlobalView: solicita importar configuración
+activate ImportarConfiguracionGlobalView
+ImportarConfiguracionGlobalView --> Docente: muestra interfaz de carga
+Docente -> ImportarConfiguracionGlobalView: carga archivo de configuración
+ImportarConfiguracionGlobalView --> Docente: solicita confirmación
+Docente -> ImportarConfiguracionGlobalView: confirma importación
+ImportarConfiguracionGlobalView -> ConfiguracionController: importarConfiguracion(archivo)
+activate ConfiguracionController
+ConfiguracionController -> ConfiguracionController: valida datos del archivo
+ConfiguracionController -> ConfiguracionRepository: guardarConfiguracion(datos)
+activate ConfiguracionRepository
+ConfiguracionRepository -> Grado: crear/actualizar grados
+activate Grado
+Grado --> ConfiguracionRepository: ok
+deactivate Grado
+ConfiguracionRepository -> Asignatura: crear/actualizar asignaturas
+activate Asignatura
+Asignatura --> ConfiguracionRepository: ok
+deactivate Asignatura
+ConfiguracionRepository -> Alumno: crear/actualizar alumnos
+activate Alumno
+Alumno --> ConfiguracionRepository: ok
+deactivate Alumno
+ConfiguracionRepository -> Pregunta: crear/actualizar preguntas
+activate Pregunta
+Pregunta --> ConfiguracionRepository: ok
+deactivate Pregunta
+ConfiguracionRepository --> ConfiguracionController: resultado
+deactivate ConfiguracionRepository
+ConfiguracionController --> ImportarConfiguracionGlobalView: resultado exitoso
+deactivate ConfiguracionController
+ImportarConfiguracionGlobalView --> Docente: muestra "Configuración Importada con Éxito"
+
+== Flujo Alternativo - Error en Importación ==
+
+Docente -> ImportarConfiguracionGlobalView: confirma importación
+ImportarConfiguracionGlobalView -> ConfiguracionController: importarConfiguracion(archivo)
+ConfiguracionController -> ConfiguracionController: valida datos del archivo
+ConfiguracionController --> ImportarConfiguracionGlobalView: error de validación / datos inválidos
+ImportarConfiguracionGlobalView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> ImportarConfiguracionGlobalView: cancela importación
+ImportarConfiguracionGlobalView --> Docente: vuelve a interfaz de carga
+deactivate ImportarConfiguracionGlobalView
+
+@enduml

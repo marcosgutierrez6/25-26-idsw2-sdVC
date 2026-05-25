@@ -100,3 +100,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** En la iteración se corrigieron 3 issues: (1) destinos de "Salir" apuntaban a `SISTEMA_DISPONIBLE`/`ASIGNATURA_ABIERTO` cuando deberían ir a `EXAMENES_GENERADOS`/`EXAMENES_GENERADOS_CONTEXTUALES` (el `[*]` interno sale al estado externo), (2) misma corrección en tabla de requisitos y transiciones de estados, (3) añadida sección "Trazabilidad con la Implementación" faltante (controlador, servicio, DTO, vista, modelos BD).
+
+---
+
+## [21:33] Análisis de importarConfiguracionGlobal() + iteración de revisión
+
+**Prompt:** Crear el análisis RUP (BCE) de `importarConfiguracionGlobal()` siguiendo la misma estructura que los anteriores. Incluir clases de análisis, diagramas de colaboración y secuencia, flujos, navegación, estados y trazabilidad. Luego iterar para validar contra el contexto del proyecto.
+
+**Resultado:**
+- Creado `documents/analisis/importarConfiguracionGlobal/README.md` con análisis completo (BCE con controller propio: ConfiguracionController, y 4 entidades: Grado, Asignatura, Alumno, Pregunta)
+- Creados `modelosUML/analisis/importarConfiguracionGlobal/colaboracion.puml` y `secuencia.puml` (importación batch)
+- Generados SVGs vía PlantUML server (`images/analisis/importarConfiguracionGlobal/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** En la iteración se corrigieron 2 issues: (1) flujo de cancelación mencionaba "o sale a SISTEMA_DISPONIBLE" que no existe en el state diagram (cancelación siempre vuelve a ProvidingGlobalConfiguration), (2) entidad Pregunta no mencionaba relación con Respuesta (tiene respuestas[] en el schema y el flujo paso 10 dice "con sus respuestas"). El análisis refleja que el caso de uso está priorizado como #3 pero no implementado.

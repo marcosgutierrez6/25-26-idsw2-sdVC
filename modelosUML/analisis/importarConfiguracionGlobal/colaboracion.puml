@@ -1,0 +1,36 @@
+@startuml colaboracion-importarConfiguracionGlobal
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "ImportarConfiguracionGlobalView" as v
+control "ConfiguracionController" as c
+entity "ConfiguracionRepository" as r
+entity "Grado" as g
+entity "Asignatura" as asig
+entity "Alumno" as al
+entity "Pregunta" as p
+
+a -> v : 1: solicita importar\nconfiguración global
+v -> c : 2: importarConfiguracion(archivo)
+c -> r : 3: guardarConfiguracion(datos)
+r -> g : 3.1: crear/actualizar\ngrados
+g --> r : ok
+r -> asig : 3.2: crear/actualizar\nasignaturas
+asig --> r : ok
+r -> al : 3.3: crear/actualizar\nalumnos
+al --> r : ok
+r -> p : 3.4: crear/actualizar\npreguntas
+p --> r : ok
+r --> c : resultado
+c --> v : { resultado\nde importación }
+v --> a : 4: presenta resultado\n(éxito / error)
+
+note right of c
+  Valida integridad
+  de los datos antes
+  de persistir
+end note
+
+@enduml
