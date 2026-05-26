@@ -128,3 +128,13 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** Análisis validado sin correcciones. Se verificaron estados, transiciones, wireframes (error export solo tiene "Volver a exportar" sin Cancel, a diferencia de import), sub-operaciones con `<<include>>`, y entidades contra schema de Prisma. Todo correcto.
+
+---
+
+## [10:06] Añadir comando /review con prompt de Clean Code
+
+**Prompt:** Añadir un comando /review que use el prompt de sistema de Clean Code (nombrado, comentarios, formato, YAGNI, DRY, código muerto) más una regla de mínima intervención para no modificar código al revisar.
+
+**Resultado:** Creado `opencode.json` en la raíz con el comando `review` configurado. El prompt incluye todas las reglas de Clean Code y el "Principio de Mínima Intervención" (regla 5: no modificar código al revisar a menos que se pida refactorización explícita).
+
+**Decisión:** Se aceptó crear el archivo `opencode.json` con el comando.
