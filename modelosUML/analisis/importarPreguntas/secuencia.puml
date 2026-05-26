@@ -1,0 +1,70 @@
+@startuml secuencia-importarPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary ImportarPreguntasView
+control PreguntasController
+entity PreguntasRepository
+entity BateriaDePreguntas
+entity Pregunta
+entity Respuesta
+
+== Flujo Principal - Importación Exitosa ==
+
+Docente -> ImportarPreguntasView: solicita importar preguntas
+activate ImportarPreguntasView
+ImportarPreguntasView --> Docente: muestra interfaz de carga
+
+Docente -> ImportarPreguntasView: carga archivo de preguntas
+Docente -> ImportarPreguntasView: confirma importación
+
+ImportarPreguntasView -> PreguntasController: importarPreguntas(archivo, bateriaId?)
+activate PreguntasController
+
+PreguntasController -> PreguntasController: valida formato del archivo
+
+PreguntasController -> PreguntasRepository: guardarPreguntas(preguntas, bateriaId)
+activate PreguntasRepository
+
+PreguntasRepository -> BateriaDePreguntas: verificar existencia de batería destino
+activate BateriaDePreguntas
+BateriaDePreguntas --> PreguntasRepository: batería válida
+deactivate BateriaDePreguntas
+
+PreguntasRepository -> PreguntasRepository: valida 2-5 respuestas, alguna correcta
+
+PreguntasRepository -> Pregunta: crear preguntas en lote
+activate Pregunta
+Pregunta --> PreguntasRepository: preguntas creadas
+deactivate Pregunta
+
+PreguntasRepository -> Respuesta: crear respuestas asociadas
+activate Respuesta
+Respuesta --> PreguntasRepository: respuestas creadas
+deactivate Respuesta
+
+PreguntasRepository --> PreguntasController: importación exitosa
+deactivate PreguntasRepository
+
+PreguntasController --> ImportarPreguntasView: mensaje de éxito
+deactivate PreguntasController
+
+ImportarPreguntasView --> Docente: muestra "Preguntas importadas con éxito"
+deactivate ImportarPreguntasView
+
+== Flujo Alternativo - Error en Importación ==
+
+Docente -> ImportarPreguntasView: confirma importación
+ImportarPreguntasView -> PreguntasController: importarPreguntas(archivo, bateriaId?)
+PreguntasController -> PreguntasController: formato del archivo inválido
+PreguntasController --> ImportarPreguntasView: error de validación
+ImportarPreguntasView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> ImportarPreguntasView: cancela importación
+ImportarPreguntasView --> Docente: vuelve a carga de archivo
+
+@enduml

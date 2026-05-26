@@ -1,0 +1,35 @@
+@startuml colaboracion-importarPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "ImportarPreguntasView" as v
+control "PreguntasController" as c
+entity "PreguntasRepository" as r
+entity "Pregunta" as p
+entity "Respuesta" as res
+entity "BateriaDePreguntas" as b
+
+a -> v : 1: solicita importar\npreguntas
+v -> c : 2: importarPreguntas(\n  archivo, bateriaId?)
+c -> c : 2.1: valida formato\ndel archivo
+c -> r : 3: guardarPreguntas(\n  preguntas, bateriaId)
+r -> b : 3.1: verifica existencia\nde batería destino
+b --> r : validación
+r -> r : 3.2: valida reglas:\n2-5 respuestas,\nalguna correcta
+r -> p : 3.3: crea preguntas\nen lote
+p --> r : preguntas\ncreadas
+r -> res : 3.4: crea respuestas\nasociadas
+res --> r : respuestas\ncreadas
+r --> c : resultado de\nimportación
+c --> v : mensaje de\nresultado
+v --> a : 4: visualiza\nresultado
+
+note right of c
+  Validación sintáctica:
+  - Formato de archivo
+  - Estructura de datos
+end note
+
+@enduml

@@ -152,3 +152,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** En la iteración se corrigieron 3 issues: (1) separación de validación sintáctica (Controller) vs semántica (Repository), (2) flujo de error con reintento ("Importar alumnos") contemplado según el prototipo, (3) tabla de navegación con reintento y cancel desde error. Diagrama de colaboración ajustado en orden de mensajes (validación antes de creación). Todo validado contra el diagrama detallado, prototipos de interfaz y schema Prisma.
+
+---
+
+## [10:18] Análisis RUP de importarPreguntas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `importarPreguntas()` (#6). Crear análisis RUP (BCE) siguiendo el mismo patrón que importarAlumnos(), con diagramas de colaboración y secuencia, SVGs, y actualizar el índice.
+
+**Resultado:**
+- Creado `documents/analisis/importarPreguntas/README.md` con análisis completo (BCE con ImportarPreguntasView, PreguntasController, PreguntasRepository, Pregunta, Respuesta, BateriaDePreguntas)
+- Creados `modelosUML/analisis/importarPreguntas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía kroki.io (`images/analisis/importarPreguntas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó el análisis. En la iteración de revisión se corrigieron 2 issues: (1) el flujo de error en el diagrama de secuencia mezclaba validación sintáctica (Controller) con semántica (Repository), se separaron correctamente; (2) la responsabilidad "validar datos obligatorios" del Repository era ambigua y se reemplazó por "validar que cada pregunta tenga al menos una respuesta correcta". El análisis es correcto y está alineado con el diagrama detallado, los prototipos y la implementación existente.
