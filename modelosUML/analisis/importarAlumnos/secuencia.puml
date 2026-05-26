@@ -1,0 +1,62 @@
+@startuml secuencia-importarAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary ImportarAlumnosView
+control AlumnosController
+entity AlumnosRepository
+entity Grado
+entity Alumno
+
+== Flujo Principal - Importación Exitosa ==
+
+Docente -> ImportarAlumnosView: solicita importar alumnos
+activate ImportarAlumnosView
+ImportarAlumnosView --> Docente: muestra interfaz de carga
+
+Docente -> ImportarAlumnosView: carga archivo de alumnos
+Docente -> ImportarAlumnosView: confirma importación
+
+ImportarAlumnosView -> AlumnosController: importarAlumnos(archivo)
+activate AlumnosController
+
+AlumnosController -> AlumnosController: valida datos del archivo
+
+AlumnosController -> AlumnosRepository: guardarAlumnos(alumnos)
+activate AlumnosRepository
+
+AlumnosRepository -> Grado: verificar existencia de gradoId
+activate Grado
+Grado --> AlumnosRepository: grados válidos
+deactivate Grado
+
+AlumnosRepository -> Alumno: crear alumnos en lote
+activate Alumno
+Alumno --> AlumnosRepository: alumnos creados
+deactivate Alumno
+
+AlumnosRepository --> AlumnosController: importación exitosa
+deactivate AlumnosRepository
+
+AlumnosController --> ImportarAlumnosView: mensaje de éxito
+deactivate AlumnosController
+
+ImportarAlumnosView --> Docente: muestra "Alumnos importados con éxito"
+deactivate ImportarAlumnosView
+
+== Flujo Alternativo - Error en Importación ==
+
+Docente -> ImportarAlumnosView: confirma importación
+ImportarAlumnosView -> AlumnosController: importarAlumnos(archivo)
+AlumnosController -> AlumnosController: datos inválidos (formato/duplicados)
+AlumnosController --> ImportarAlumnosView: error de validación
+ImportarAlumnosView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> ImportarAlumnosView: cancela importación
+ImportarAlumnosView --> Docente: vuelve a carga de archivo
+
+@enduml

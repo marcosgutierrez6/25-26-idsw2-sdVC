@@ -1,0 +1,32 @@
+@startuml colaboracion-importarAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "ImportarAlumnosView" as v
+control "AlumnosController" as c
+entity "AlumnosRepository" as r
+entity "Alumno" as al
+entity "Grado" as g
+
+a -> v : 1: solicita importar\nalumnos
+v -> c : 2: importarAlumnos(archivo)
+c -> c : 2.1: valida datos\ndel archivo
+c -> r : 3: guardarAlumnos(alumnos)
+r -> r : 3.1: valida unicidad\nde DNI/email
+r -> g : 3.2: verifica\nexistencia\nde gradoId
+g --> r : validación
+r -> al : 3.3: crea alumnos\nen lote
+al --> r : alumnos\ncreados
+r --> c : resultado de\nimportación
+c --> v : mensaje de\nresultado
+v --> a : 4: visualiza\nresultado
+
+note right of c
+  Validación sintáctica:
+  - Formato de archivo
+  - Tipos de datos
+end note
+
+@enduml

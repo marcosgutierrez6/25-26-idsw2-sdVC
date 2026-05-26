@@ -138,3 +138,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Resultado:** Creado `opencode.json` en la raíz con el comando `review` configurado. El prompt incluye todas las reglas de Clean Code y el "Principio de Mínima Intervención" (regla 5: no modificar código al revisar a menos que se pida refactorización explícita).
 
 **Decisión:** Se aceptó crear el archivo `opencode.json` con el comando.
+
+---
+
+## [10:08] Análisis RUP de importarAlumnos() + iteración de revisión
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `importarAlumnos()` (#5). Crear análisis RUP (BCE), diagramas de colaboración y secuencia, SVGs, y actualizar el índice. Luego iterar para validar contra el contexto del proyecto.
+
+**Resultado:**
+- Creado `documents/analisis/importarAlumnos/README.md` con análisis completo (BCE con ImportarAlumnosView, AlumnosController, AlumnosRepository, Alumno, Grado)
+- Creados `modelosUML/analisis/importarAlumnos/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía kroki.io (`images/analisis/importarAlumnos/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** En la iteración se corrigieron 3 issues: (1) separación de validación sintáctica (Controller) vs semántica (Repository), (2) flujo de error con reintento ("Importar alumnos") contemplado según el prototipo, (3) tabla de navegación con reintento y cancel desde error. Diagrama de colaboración ajustado en orden de mensajes (validación antes de creación). Todo validado contra el diagrama detallado, prototipos de interfaz y schema Prisma.
