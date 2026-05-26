@@ -1,0 +1,29 @@
+@startuml secuencia-exportarAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+control ConfiguracionController
+entity ConfiguracionRepository
+entity Alumno
+
+== Flujo Principal - Exportación Exitosa ==
+
+ConfiguracionController -> ConfiguracionRepository: obtenerAlumnos()
+activate ConfiguracionRepository
+
+ConfiguracionRepository -> Alumno: obtener todos los alumnos con sus grados
+activate Alumno
+Alumno --> ConfiguracionRepository: alumnos
+deactivate Alumno
+
+ConfiguracionRepository --> ConfiguracionController: alumnos con grados
+deactivate ConfiguracionRepository
+
+== Flujo Alternativo - Error de Acceso ==
+
+ConfiguracionController -> ConfiguracionRepository: obtenerAlumnos()
+ConfiguracionRepository --> ConfiguracionController: error de acceso a datos
+ConfiguracionController -> ConfiguracionController: propaga error a exportarConfiguracionGlobal()
+
+@enduml

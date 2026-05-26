@@ -1,0 +1,20 @@
+@startuml colaboracion-exportarAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+control "ConfiguracionController" as c
+entity "ConfiguracionRepository" as r
+entity "Alumno" as al
+
+c -> r : 1: obtenerAlumnos()
+r -> al : 1.1: obtener todos\nlos alumnos con\nsus grados
+al --> r : datos
+r --> c : alumnos con\ngrados
+
+note right of c
+  Invocado por
+  exportarConfiguracionGlobal()
+end note
+
+@enduml

@@ -166,3 +166,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** Se aceptó el análisis. En la iteración de revisión se corrigieron 2 issues: (1) el flujo de error en el diagrama de secuencia mezclaba validación sintáctica (Controller) con semántica (Repository), se separaron correctamente; (2) la responsabilidad "validar datos obligatorios" del Repository era ambigua y se reemplazó por "validar que cada pregunta tenga al menos una respuesta correcta". El análisis es correcto y está alineado con el diagrama detallado, los prototipos y la implementación existente.
+
+---
+
+## [10:25] Análisis RUP de exportarAlumnos()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `exportarAlumnos()` (#7, Abstracto). Crear análisis RUP (BCE) considerando que es sub-operación de `exportarConfiguracionGlobal()`, sin interacción directa con el actor.
+
+**Resultado:**
+- Creado `documents/analisis/exportarAlumnos/README.md` con análisis adaptado para caso de uso abstracto (sin capa de vista)
+- Creados `modelosUML/analisis/exportarAlumnos/colaboracion.puml` y `secuencia.puml` (solo Control + Entidad, sin Boundary ni Actor)
+- Generados SVGs vía kroki.io (`images/analisis/exportarAlumnos/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. En la iteración de revisión se corrigieron 4 issues: (1) diagrama de colaboración separaba Alumno y Grado en dos consultas — unificado en una sola, (2) self-message "compila" eliminado porque pertenece al caso de uso padre, (3) mismo cambio en diagrama de secuencia, (4) trazabilidad aclarada: el análisis usa ConfiguracionRepository pero la implementación real es AlumnosService.findAll().
