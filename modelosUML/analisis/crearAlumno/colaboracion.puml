@@ -1,0 +1,32 @@
+@startuml colaboracion-crearAlumno
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CrearAlumnoView" as v
+control "AlumnosController" as c
+entity "AlumnosRepository" as r
+entity "Grado" as g
+entity "Alumno" as p
+
+a -> v : 1: solicita crear\nnuevo alumno
+v -> c : 2: create(createAlumnoDto)
+c -> r : 3: verificarGrado(gradoId)
+r -> g : 3.1: consulta existencia\nde grado
+g --> r : existe
+r --> c : resultado
+c -> r : 4: crearAlumno(datos)
+r -> p : 4.1: crear alumno\ncon datos
+p --> r : alumno creado
+r --> c : alumno
+c --> v : { alumno\ncreado }
+v --> a : 5: presenta resultado\ny transiciona a\neditarAlumno()
+
+note right of c
+  Valida DTO y
+  verifica grado
+  antes de crear
+end note
+
+@enduml

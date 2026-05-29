@@ -265,3 +265,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearPregunta()`, con entrada única desde DOCENTES_ABIERTO, salida dual (DOCENTE_ABIERTO con transición a editarDocente, o cancelación a DOCENTES_ABIERTO2), y 2 estados internos (SolicitandoDatos → CreandoDocente). Me aseguré de que el hashing de contraseña con bcrypt quedara reflejado como responsabilidad del controlador (paso 6 del flujo principal y nota en colaboracion.puml), y de que la entidad se llame Profesor (nombre del modelo en Prisma) aunque el caso de uso use el término Docente. La trazabilidad apunta a `POST /profesores` con `CreateProfesorDto`, ya implementado en `ProfesoresService.create()`.
 
+---
+
+## [16:01] Análisis RUP de crearAlumno()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `crearAlumno()` (#14, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `crearDocente()`, con entrada única desde el listado de alumnos.
+
+**Resultado:**
+- Creado `documents/analisis/crearAlumno/README.md` con análisis completo (BCE: CrearAlumnoView, AlumnosController, AlumnosRepository, Alumno, Grado)
+- Creados `modelosUML/analisis/crearAlumno/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía plantuml.com con plantuml-encoder (`images/analisis/crearAlumno/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearDocente()`, con entrada única desde ALUMNOS_ABIERTO, salida dual (ALUMNO_ABIERTO con transición a editarAlumno, o cancelación a ALUMNOS_ABIERTO2), y 2 estados internos (SolicitandoDatos → CreandoAlumno). A diferencia de crearDocente, incluye verificación de existencia del Grado (FK a gradoId) antes de persistir, reflejada en los diagramas con un paso 3. La trazabilidad apunta a `POST /alumnos` con `CreateAlumnoDto`, ya implementado en `AlumnosService.create()`.
+

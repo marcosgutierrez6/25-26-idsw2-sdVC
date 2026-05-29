@@ -1,0 +1,54 @@
+@startuml secuencia-crearAlumno
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CrearAlumnoView
+control AlumnosController
+entity AlumnosRepository
+entity Grado
+entity Alumno
+
+== Flujo Principal - Creación Exitosa ==
+
+Docente -> CrearAlumnoView: solicita crear nuevo alumno
+activate CrearAlumnoView
+CrearAlumnoView --> Docente: muestra formulario con campos
+Docente -> CrearAlumnoView: introduce datos y pulsa "Crear alumno"
+CrearAlumnoView -> AlumnosController: create(createAlumnoDto)
+activate AlumnosController
+AlumnosController -> AlumnosRepository: verificarGrado(gradoId)
+activate AlumnosRepository
+AlumnosRepository -> Grado: consulta existencia de grado
+activate Grado
+Grado --> AlumnosRepository: grado existe
+deactivate Grado
+AlumnosRepository --> AlumnosController: ok
+deactivate AlumnosRepository
+AlumnosController -> AlumnosRepository: crearAlumno(datos)
+activate AlumnosRepository
+AlumnosRepository -> Alumno: crear alumno con datos
+activate Alumno
+Alumno --> AlumnosRepository: alumno creado
+deactivate Alumno
+AlumnosRepository --> AlumnosController: alumno
+deactivate AlumnosRepository
+AlumnosController --> CrearAlumnoView: { alumno creado }
+deactivate AlumnosController
+CrearAlumnoView --> Docente: muestra resultado y transiciona a editarAlumno()
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> CrearAlumnoView: introduce datos y pulsa "Crear alumno"
+CrearAlumnoView -> AlumnosController: create(createAlumnoDto)
+AlumnosController --> CrearAlumnoView: error de validación
+CrearAlumnoView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> CrearAlumnoView: pulsa "Cancelar"
+CrearAlumnoView --> Docente: vuelve al listado de alumnos
+deactivate CrearAlumnoView
+
+@enduml
