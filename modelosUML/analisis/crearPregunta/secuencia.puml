@@ -1,0 +1,54 @@
+@startuml secuencia-crearPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CrearPreguntaView
+control PreguntasController
+entity PreguntasRepository
+entity BateriaDePreguntas
+entity Pregunta
+
+== Flujo Principal - Creación Exitosa ==
+
+Docente -> CrearPreguntaView: solicita crear nueva pregunta
+activate CrearPreguntaView
+CrearPreguntaView --> Docente: muestra formulario con campos
+Docente -> CrearPreguntaView: introduce datos y pulsa "Crear pregunta"
+CrearPreguntaView -> PreguntasController: create(createPreguntaDto)
+activate PreguntasController
+PreguntasController -> PreguntasRepository: verificarBateria(bateriaId)
+activate PreguntasRepository
+PreguntasRepository -> BateriaDePreguntas: consulta existencia de batería
+activate BateriaDePreguntas
+BateriaDePreguntas --> PreguntasRepository: batería existe
+deactivate BateriaDePreguntas
+PreguntasRepository --> PreguntasController: ok
+deactivate PreguntasRepository
+PreguntasController -> PreguntasRepository: crearPregunta(datos)
+activate PreguntasRepository
+PreguntasRepository -> Pregunta: crear pregunta con estado EN_CONSTRUCCION
+activate Pregunta
+Pregunta --> PreguntasRepository: pregunta creada
+deactivate Pregunta
+PreguntasRepository --> PreguntasController: pregunta
+deactivate PreguntasRepository
+PreguntasController --> CrearPreguntaView: { pregunta creada }
+deactivate PreguntasController
+CrearPreguntaView --> Docente: muestra resultado y transiciona a editarPregunta()
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> CrearPreguntaView: introduce datos y pulsa "Crear pregunta"
+CrearPreguntaView -> PreguntasController: create(createPreguntaDto)
+PreguntasController --> CrearPreguntaView: error de validación
+CrearPreguntaView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> CrearPreguntaView: pulsa "Cancelar"
+CrearPreguntaView --> Docente: vuelve al listado de preguntas
+deactivate CrearPreguntaView
+
+@enduml

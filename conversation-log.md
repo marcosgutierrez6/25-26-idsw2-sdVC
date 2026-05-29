@@ -209,3 +209,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis incluye: entrada dual (EXAMENES_GENERADOS / EXAMENES_GENERADOS_CONTEXTUALES), flujo con selección de alumnos por grado y búsqueda, generación de hash SHA-256 por alumno (coincide con la implementación real en `ExamenesService.asignar()`), actualización de estado GENERADO → ASIGNADO, y almacenamiento de clave de corrección. La trazabilidad apunta a `POST /examenes/asignar` con `AsignarExamenesDto`.
 
+---
+
+## [15:39] Análisis RUP de crearPregunta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `crearPregunta()` (#10, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que los anteriores, con entrada dual desde listado de preguntas (global y contextual).
+
+**Resultado:**
+- Creado `documents/analisis/crearPregunta/README.md` con análisis completo (BCE: CrearPreguntaView, PreguntasController, PreguntasRepository, Pregunta, BateriaDePreguntas)
+- Creados `modelosUML/analisis/crearPregunta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía plantuml.com con plantuml-encoder (`images/analisis/crearPregunta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. En la iteración de revisión se corrigieron 4 issues: (1) transición de cancelación movida de `SolicitandoDatosPregunta` → `ProcesandoCreacion` (el state diagram la saca del `[*]` del submachine), (2) descripción de `SolicitandoDatosPregunta` ya no incluye "muestra formulario" (se muestra en la transición), (3) descripción de `ProcesandoCreacion` actualizada con presentación del formulario y opciones crear/cancelar, (4) `colaboracion.puml`: `existe / no encontrada` → solo `existe`. El análisis refleja el flujo simplificado del caso de uso (solo 2 estados), con salida dual a PREGUNTA_ABIERTO/PREGUNTA_CONTEXTUAL_ABIERTO (transición a editarPregunta) o cancelación al listado. La trazabilidad apunta a `POST /preguntas` con `CreatePreguntaDto`, ya implementado en `PreguntasService.create()`.
+

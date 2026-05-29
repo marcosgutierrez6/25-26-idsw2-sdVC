@@ -1,0 +1,32 @@
+@startuml colaboracion-crearPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CrearPreguntaView" as v
+control "PreguntasController" as c
+entity "PreguntasRepository" as r
+entity "BateriaDePreguntas" as b
+entity "Pregunta" as p
+
+a -> v : 1: solicita crear\nnueva pregunta
+v -> c : 2: create(createPreguntaDto)
+c -> r : 3: verificarBateria(bateriaId)
+r -> b : 3.1: consulta existencia\nde batería
+b --> r : existe
+r --> c : resultado
+c -> r : 4: crearPregunta(datos)
+r -> p : 4.1: crear pregunta\ncon estado\nEN_CONSTRUCCION
+p --> r : pregunta creada
+r --> c : pregunta
+c --> v : { pregunta\ncreada }
+v --> a : 5: presenta resultado\ny transiciona a\neditarPregunta()
+
+note right of c
+  Valida DTO y
+  verifica batería
+  antes de crear
+end note
+
+@enduml
