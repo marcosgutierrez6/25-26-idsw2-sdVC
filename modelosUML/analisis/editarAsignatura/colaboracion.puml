@@ -1,0 +1,36 @@
+@startuml colaboracion-editarAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EditarAsignaturaView" as v
+control "AsignaturasController" as c
+entity "AsignaturasRepository" as r
+entity "Asignatura" as e
+
+a -> v : 1: solicita editar\nasignatura existente
+v -> c : 2: loadAsignatura(id)
+c -> r : 3: findById(id)
+r -> e : 3.1: consulta datos\nde la asignatura
+e --> r : datos + grado +\nalumnos + batería
+r --> c : asignatura con\ndatos completos
+c --> v : { asignatura,\ndatos }
+v --> a : 4: presenta formulario\ncon datos precargados
+
+a -> v : 5: modifica campos\ny pulsa\n"Guardar cambios"
+v -> c : 6: update(id,\nupdateAsignaturaDto)
+c -> r : 7: updateAsignatura(id,\ndata)
+r -> e : 7.1: actualiza\natributos
+e --> r : asignatura\nactualizada
+r --> c : asignatura\nactualizada
+c --> v : { asignatura\nactualizada }
+v --> a : 8: muestra resultado\ny navega a\nASIGNATURA_ABIERTO2
+
+note right of c
+  Valida DTO y
+  verifica existencia
+  antes de actualizar
+end note
+
+@enduml

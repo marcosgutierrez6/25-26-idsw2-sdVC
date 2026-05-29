@@ -237,3 +237,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis cubre los 6 orígenes de entrada (preguntas/respuestas global y contextual, vista de pregunta), las 4 salidas diferenciadas (guardar → PREGUNTA_ABIERTO2, cancelar → PREGUNTAS_ABIERTO2, eliminar → PREGUNTAS_ABIERTO3, ver respuestas → RESPUESTAS_ABIERTO2), y los 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). La trazabilidad apunta a `PATCH /preguntas/:id` con `UpdatePreguntaDto` y `DELETE /preguntas/:id`, ya implementados en `PreguntasService.update()` y `PreguntasService.remove()`. Me aseguré de que el flujo de carga previa (findOne antes de update/remove) quedara reflejado, y de que la entidad Respuesta apareciera documentada aunque en el diagrama de colaboración se unifica con Pregunta (incluida en la misma consulta). Las salidas con sufijo 2/3 quedaron alineadas con las del state diagram.
 
+---
+
+## [15:50] Análisis RUP de editarAsignatura()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarAsignatura()` (#12, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `editarPregunta()`, con entrada múltiple desde listado de asignaturas, vista de asignatura, preguntas contextuales y exámenes asignados contextuales.
+
+**Resultado:**
+- Creado `documents/analisis/editarAsignatura/README.md` con análisis completo (BCE: EditarAsignaturaView, AsignaturasController, AsignaturasRepository, Asignatura, Grado, Alumno, BateriaDePreguntas)
+- Creados `modelosUML/analisis/editarAsignatura/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía plantuml.com con plantuml-encoder (`images/analisis/editarAsignatura/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis cubre los 4 orígenes de entrada (ASIGNATURAS_ABIERTO, ASIGNATURA_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO, EXAMENES_ASIGNADOS_CONTEXTUALES), las 5 salidas diferenciadas (guardar → ASIGNATURA_ABIERTO2, cancelar → ASIGNATURAS_ABIERTO2, eliminar → ASIGNATURAS_ABIERTO1, ver preguntas → PREGUNTAS_CONTEXTUALES_ABIERTO1, generar examen → EXAMENES_GENERADOS_CONTEXTUALES), y los 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). Me aseguré de que las entidades de soporte (Grado, Alumno, BateriaDePreguntas) quedaran documentadas en el README pero no en los diagramas (se unifican en la consulta a Asignatura), y de que los sufijos de las salidas (ABIERTO1, ABIERTO2) coincidieran con el state diagram. La trazabilidad apunta a `PATCH /asignaturas/:id` con `UpdateAsignaturaDto` y `DELETE /asignaturas/:id`, ya implementados en `AsignaturasService.update()` y `AsignaturasService.remove()`.
+

@@ -1,0 +1,70 @@
+@startuml secuencia-editarAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EditarAsignaturaView
+control AsignaturasController
+entity AsignaturasRepository
+entity Asignatura
+
+== Flujo Principal - Carga y Edición Exitosa ==
+
+Docente -> EditarAsignaturaView: solicita editar asignatura existente
+activate EditarAsignaturaView
+EditarAsignaturaView -> AsignaturasController: loadAsignatura(id)
+activate AsignaturasController
+AsignaturasController -> AsignaturasRepository: findById(id)
+activate AsignaturasRepository
+AsignaturasRepository -> Asignatura: consulta datos de la asignatura
+activate Asignatura
+Asignatura --> AsignaturasRepository: datos + grado + alumnos + batería
+deactivate Asignatura
+AsignaturasRepository --> AsignaturasController: asignatura con datos completos
+deactivate AsignaturasRepository
+AsignaturasController --> EditarAsignaturaView: { asignatura, datos }
+deactivate AsignaturasController
+EditarAsignaturaView --> Docente: presenta formulario con datos precargados
+Docente -> EditarAsignaturaView: modifica campos y pulsa "Guardar cambios"
+EditarAsignaturaView -> AsignaturasController: update(id, updateAsignaturaDto)
+activate AsignaturasController
+AsignaturasController -> AsignaturasRepository: updateAsignatura(id, data)
+activate AsignaturasRepository
+AsignaturasRepository -> Asignatura: actualiza atributos
+activate Asignatura
+Asignatura --> AsignaturasRepository: asignatura actualizada
+deactivate Asignatura
+AsignaturasRepository --> AsignaturasController: asignatura actualizada
+deactivate AsignaturasRepository
+AsignaturasController --> EditarAsignaturaView: { asignatura actualizada }
+deactivate AsignaturasController
+EditarAsignaturaView --> Docente: muestra resultado y navega a ASIGNATURA_ABIERTO2
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> EditarAsignaturaView: modifica campos y pulsa "Guardar cambios"
+EditarAsignaturaView -> AsignaturasController: update(id, updateAsignaturaDto)
+AsignaturasController --> EditarAsignaturaView: error de validación
+EditarAsignaturaView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> EditarAsignaturaView: pulsa "Cancelar"
+EditarAsignaturaView --> Docente: vuelve al listado de asignaturas
+
+== Flujo Alternativo - Eliminación ==
+
+Docente -> EditarAsignaturaView: pulsa "Eliminar"
+EditarAsignaturaView -> AsignaturasController: remove(id)
+activate AsignaturasController
+AsignaturasController -> AsignaturasRepository: eliminarAsignatura(id)
+activate AsignaturasRepository
+AsignaturasRepository --> AsignaturasController: asignatura eliminada
+deactivate AsignaturasRepository
+AsignaturasController --> EditarAsignaturaView: { eliminada }
+deactivate AsignaturasController
+EditarAsignaturaView --> Docente: muestra resultado y navega a ASIGNATURAS_ABIERTO1
+deactivate EditarAsignaturaView
+
+@enduml
