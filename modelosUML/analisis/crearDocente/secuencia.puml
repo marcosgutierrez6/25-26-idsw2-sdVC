@@ -1,0 +1,45 @@
+@startuml secuencia-crearDocente
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador institucional" as Admin
+boundary CrearDocenteView
+control ProfesoresController
+entity ProfesoresRepository
+entity Profesor
+
+== Flujo Principal - Creación Exitosa ==
+
+Admin -> CrearDocenteView: solicita crear nuevo docente
+activate CrearDocenteView
+CrearDocenteView --> Admin: muestra formulario con campos
+Admin -> CrearDocenteView: introduce datos y pulsa "Crear docente"
+CrearDocenteView -> ProfesoresController: create(createProfesorDto)
+activate ProfesoresController
+ProfesoresController -> ProfesoresRepository: crearDocente(datos)
+activate ProfesoresRepository
+ProfesoresRepository -> Profesor: crear docente con rol DOCENTE
+activate Profesor
+Profesor --> ProfesoresRepository: docente creado
+deactivate Profesor
+ProfesoresRepository --> ProfesoresController: docente
+deactivate ProfesoresRepository
+ProfesoresController --> CrearDocenteView: { docente creado }
+deactivate ProfesoresController
+CrearDocenteView --> Admin: muestra resultado y transiciona a editarDocente()
+
+== Flujo Alternativo - Error de Validación ==
+
+Admin -> CrearDocenteView: introduce datos y pulsa "Crear docente"
+CrearDocenteView -> ProfesoresController: create(createProfesorDto)
+ProfesoresController --> CrearDocenteView: error de validación
+CrearDocenteView --> Admin: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Admin -> CrearDocenteView: pulsa "Cancelar"
+CrearDocenteView --> Admin: vuelve al listado de docentes
+deactivate CrearDocenteView
+
+@enduml

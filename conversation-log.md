@@ -251,3 +251,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis cubre los 4 orígenes de entrada (ASIGNATURAS_ABIERTO, ASIGNATURA_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO, EXAMENES_ASIGNADOS_CONTEXTUALES), las 5 salidas diferenciadas (guardar → ASIGNATURA_ABIERTO2, cancelar → ASIGNATURAS_ABIERTO2, eliminar → ASIGNATURAS_ABIERTO1, ver preguntas → PREGUNTAS_CONTEXTUALES_ABIERTO1, generar examen → EXAMENES_GENERADOS_CONTEXTUALES), y los 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). Me aseguré de que las entidades de soporte (Grado, Alumno, BateriaDePreguntas) quedaran documentadas en el README pero no en los diagramas (se unifican en la consulta a Asignatura), y de que los sufijos de las salidas (ABIERTO1, ABIERTO2) coincidieran con el state diagram. La trazabilidad apunta a `PATCH /asignaturas/:id` con `UpdateAsignaturaDto` y `DELETE /asignaturas/:id`, ya implementados en `AsignaturasService.update()` y `AsignaturasService.remove()`.
 
+---
+
+## [15:58] Análisis RUP de crearDocente()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `crearDocente()` (#13, Administrador institucional). Crear análisis RUP (BCE) siguiendo la misma estructura que `crearPregunta()`, adaptado al actor Administrador institucional con entrada única desde el listado de docentes.
+
+**Resultado:**
+- Creado `documents/analisis/crearDocente/README.md` con análisis completo (BCE: CrearDocenteView, ProfesoresController, ProfesoresRepository, Profesor)
+- Creados `modelosUML/analisis/crearDocente/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía plantuml.com con plantuml-encoder (`images/analisis/crearDocente/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearPregunta()`, con entrada única desde DOCENTES_ABIERTO, salida dual (DOCENTE_ABIERTO con transición a editarDocente, o cancelación a DOCENTES_ABIERTO2), y 2 estados internos (SolicitandoDatos → CreandoDocente). Me aseguré de que el hashing de contraseña con bcrypt quedara reflejado como responsabilidad del controlador (paso 6 del flujo principal y nota en colaboracion.puml), y de que la entidad se llame Profesor (nombre del modelo en Prisma) aunque el caso de uso use el término Docente. La trazabilidad apunta a `POST /profesores` con `CreateProfesorDto`, ya implementado en `ProfesoresService.create()`.
+

@@ -1,0 +1,27 @@
+@startuml colaboracion-crearDocente
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador\ninstitucional" as a
+boundary "CrearDocenteView" as v
+control "ProfesoresController" as c
+entity "ProfesoresRepository" as r
+entity "Profesor" as p
+
+a -> v : 1: solicita crear\nnuevo docente
+v -> c : 2: create(createProfesorDto)
+c -> r : 3: crearDocente(datos)
+r -> p : 3.1: crear docente\ncon rol DOCENTE\npor defecto
+p --> r : docente creado
+r --> c : docente
+c --> v : { docente\ncreado }
+v --> a : 4: presenta resultado\ny transiciona a\neditarDocente()
+
+note right of c
+  Valida DTO,
+  hashea password
+  con bcrypt
+end note
+
+@enduml
