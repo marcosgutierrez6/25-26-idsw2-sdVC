@@ -37,6 +37,7 @@ modelosUML/analisis/
 | exportarPreguntas | Completado |
 | asignarExamenes | Completado |
 | crearPregunta | Completado |
+| editarPregunta | Completado |
 
 ## Cómo crear un nuevo análisis
 

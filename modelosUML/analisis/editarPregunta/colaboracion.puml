@@ -1,0 +1,36 @@
+@startuml colaboracion-editarPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EditarPreguntaView" as v
+control "PreguntasController" as c
+entity "PreguntasRepository" as r
+entity "Pregunta" as p
+
+a -> v : 1: solicita editar\npregunta existente
+v -> c : 2: loadPregunta(id)
+c -> r : 3: findById(id)
+r -> p : 3.1: consulta datos\nde la pregunta
+p --> r : datos + respuestas
+r --> c : pregunta con\nrespuestas
+c --> v : { pregunta,\nrespuestas }
+v --> a : 4: presenta formulario\ncon datos precargados
+
+a -> v : 5: modifica campos\ny pulsa\n"Guardar cambios"
+v -> c : 6: update(id,\nupdatePreguntaDto)
+c -> r : 7: updatePregunta(id,\ndata)
+r -> p : 7.1: actualiza\natributos
+p --> r : pregunta\nactualizada
+r --> c : pregunta\nactualizada
+c --> v : { pregunta\nactualizada }
+v --> a : 8: muestra resultado\ny navega a\nPREGUNTA_ABIERTO2
+
+note right of c
+  Valida DTO y
+  verifica existencia
+  antes de actualizar
+end note
+
+@enduml

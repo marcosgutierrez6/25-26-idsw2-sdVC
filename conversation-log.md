@@ -223,3 +223,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. En la iteración de revisión se corrigieron 4 issues: (1) transición de cancelación movida de `SolicitandoDatosPregunta` → `ProcesandoCreacion` (el state diagram la saca del `[*]` del submachine), (2) descripción de `SolicitandoDatosPregunta` ya no incluye "muestra formulario" (se muestra en la transición), (3) descripción de `ProcesandoCreacion` actualizada con presentación del formulario y opciones crear/cancelar, (4) `colaboracion.puml`: `existe / no encontrada` → solo `existe`. El análisis refleja el flujo simplificado del caso de uso (solo 2 estados), con salida dual a PREGUNTA_ABIERTO/PREGUNTA_CONTEXTUAL_ABIERTO (transición a editarPregunta) o cancelación al listado. La trazabilidad apunta a `POST /preguntas` con `CreatePreguntaDto`, ya implementado en `PreguntasService.create()`.
 
+---
+
+## [15:45] Análisis RUP de editarPregunta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarPregunta()` (#11, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `crearPregunta()`, con entrada múltiple desde listados de preguntas/respuestas y vista de pregunta.
+
+**Resultado:**
+- Creado `documents/analisis/editarPregunta/README.md` con análisis completo (BCE: EditarPreguntaView, PreguntasController, PreguntasRepository, Pregunta, BateriaDePreguntas, Respuesta)
+- Creados `modelosUML/analisis/editarPregunta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía plantuml.com con plantuml-encoder (`images/analisis/editarPregunta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis cubre los 6 orígenes de entrada (preguntas/respuestas global y contextual, vista de pregunta), las 4 salidas diferenciadas (guardar → PREGUNTA_ABIERTO2, cancelar → PREGUNTAS_ABIERTO2, eliminar → PREGUNTAS_ABIERTO3, ver respuestas → RESPUESTAS_ABIERTO2), y los 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). La trazabilidad apunta a `PATCH /preguntas/:id` con `UpdatePreguntaDto` y `DELETE /preguntas/:id`, ya implementados en `PreguntasService.update()` y `PreguntasService.remove()`. Me aseguré de que el flujo de carga previa (findOne antes de update/remove) quedara reflejado, y de que la entidad Respuesta apareciera documentada aunque en el diagrama de colaboración se unifica con Pregunta (incluida en la misma consulta). Las salidas con sufijo 2/3 quedaron alineadas con las del state diagram.
+

@@ -1,0 +1,70 @@
+@startuml secuencia-editarPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EditarPreguntaView
+control PreguntasController
+entity PreguntasRepository
+entity Pregunta
+
+== Flujo Principal - Carga y Edición Exitosa ==
+
+Docente -> EditarPreguntaView: solicita editar pregunta existente
+activate EditarPreguntaView
+EditarPreguntaView -> PreguntasController: loadPregunta(id)
+activate PreguntasController
+PreguntasController -> PreguntasRepository: findById(id)
+activate PreguntasRepository
+PreguntasRepository -> Pregunta: consulta datos de la pregunta
+activate Pregunta
+Pregunta --> PreguntasRepository: datos + respuestas
+deactivate Pregunta
+PreguntasRepository --> PreguntasController: pregunta con respuestas
+deactivate PreguntasRepository
+PreguntasController --> EditarPreguntaView: { pregunta, respuestas }
+deactivate PreguntasController
+EditarPreguntaView --> Docente: presenta formulario con datos precargados
+Docente -> EditarPreguntaView: modifica campos y pulsa "Guardar cambios"
+EditarPreguntaView -> PreguntasController: update(id, updatePreguntaDto)
+activate PreguntasController
+PreguntasController -> PreguntasRepository: updatePregunta(id, data)
+activate PreguntasRepository
+PreguntasRepository -> Pregunta: actualiza atributos
+activate Pregunta
+Pregunta --> PreguntasRepository: pregunta actualizada
+deactivate Pregunta
+PreguntasRepository --> PreguntasController: pregunta actualizada
+deactivate PreguntasRepository
+PreguntasController --> EditarPreguntaView: { pregunta actualizada }
+deactivate PreguntasController
+EditarPreguntaView --> Docente: muestra resultado y navega a PREGUNTA_ABIERTO2
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> EditarPreguntaView: modifica campos y pulsa "Guardar cambios"
+EditarPreguntaView -> PreguntasController: update(id, updatePreguntaDto)
+PreguntasController --> EditarPreguntaView: error de validación
+EditarPreguntaView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> EditarPreguntaView: pulsa "Cancelar"
+EditarPreguntaView --> Docente: vuelve al listado de preguntas
+
+== Flujo Alternativo - Eliminación ==
+
+Docente -> EditarPreguntaView: pulsa "Eliminar"
+EditarPreguntaView -> PreguntasController: remove(id)
+activate PreguntasController
+PreguntasController -> PreguntasRepository: eliminarPregunta(id)
+activate PreguntasRepository
+PreguntasRepository --> PreguntasController: pregunta eliminada
+deactivate PreguntasRepository
+PreguntasController --> EditarPreguntaView: { eliminada }
+deactivate PreguntasController
+EditarPreguntaView --> Docente: muestra resultado y navega a PREGUNTAS_ABIERTO3
+deactivate EditarPreguntaView
+
+@enduml
