@@ -180,3 +180,18 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Actualizado `documents/analisis/README.md` (índice)
 
 **Decisión:** Se aceptó. En la iteración de revisión se corrigieron 4 issues: (1) diagrama de colaboración separaba Alumno y Grado en dos consultas — unificado en una sola, (2) self-message "compila" eliminado porque pertenece al caso de uso padre, (3) mismo cambio en diagrama de secuencia, (4) trazabilidad aclarada: el análisis usa ConfiguracionRepository pero la implementación real es AlumnosService.findAll().
+
+---
+
+## [15:29] Análisis RUP de exportarPreguntas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `exportarPreguntas()` (#8, Abstracto). Crear análisis RUP (BCE) siguiendo el mismo patrón que `exportarAlumnos()`, considerando que es sub-operación de `exportarConfiguracionGlobal()`, sin interacción directa con el actor.
+
+**Resultado:**
+- Creado `documents/analisis/exportarPreguntas/README.md` con análisis adaptado para caso de uso abstracto (sin capa de vista), con entidades Pregunta, Respuesta y BateriaDePreguntas
+- Creados `modelosUML/analisis/exportarPreguntas/colaboracion.puml` y `secuencia.puml` (solo Control + Entidad, sin Boundary ni Actor)
+- Creado directorio `images/analisis/exportarPreguntas/` para SVGs (pendiente de generar)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó el análisis. En la iteración de revisión se corrigió 1 issue: los diagramas de colaboración y secuencia separaban `Respuesta` y `BateriaDePreguntas` en llamadas independientes, pero la implementación real (`PreguntasService.findAll()` con `include`) es una sola consulta. Se unificó en una sola interacción con `Pregunta`, siguiendo el mismo patrón que `exportarAlumnos`. Las entidades `Respuesta` y `BateriaDePreguntas` se mantienen documentadas en el README (igual que `Grado` en `exportarAlumnos`) pero no aparecen en los diagramas.
+

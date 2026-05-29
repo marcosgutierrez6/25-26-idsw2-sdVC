@@ -1,0 +1,29 @@
+@startuml secuencia-exportarPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+control ConfiguracionController
+entity ConfiguracionRepository
+entity Pregunta
+
+== Flujo Principal - Exportación Exitosa ==
+
+ConfiguracionController -> ConfiguracionRepository: obtenerPreguntas()
+activate ConfiguracionRepository
+
+ConfiguracionRepository -> Pregunta: obtener todas las preguntas con respuestas y batería
+activate Pregunta
+Pregunta --> ConfiguracionRepository: preguntas completas
+deactivate Pregunta
+
+ConfiguracionRepository --> ConfiguracionController: preguntas con respuestas y batería
+deactivate ConfiguracionRepository
+
+== Flujo Alternativo - Error de Acceso ==
+
+ConfiguracionController -> ConfiguracionRepository: obtenerPreguntas()
+ConfiguracionRepository --> ConfiguracionController: error de acceso a datos
+ConfiguracionController -> ConfiguracionController: propaga error a exportarConfiguracionGlobal()
+
+@enduml

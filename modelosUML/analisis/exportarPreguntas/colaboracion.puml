@@ -1,0 +1,20 @@
+@startuml colaboracion-exportarPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+control "ConfiguracionController" as c
+entity "ConfiguracionRepository" as r
+entity "Pregunta" as p
+
+c -> r : 1: obtenerPreguntas()
+r -> p : 1.1: obtener todas\nlas preguntas con\nrespuestas y batería
+p --> r : preguntas\ncompletas
+r --> c : preguntas con\nrespuestas\ny batería
+
+note right of c
+  Invocado por
+  exportarConfiguracionGlobal()
+end note
+
+@enduml
