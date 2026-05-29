@@ -195,3 +195,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó el análisis. En la iteración de revisión se corrigió 1 issue: los diagramas de colaboración y secuencia separaban `Respuesta` y `BateriaDePreguntas` en llamadas independientes, pero la implementación real (`PreguntasService.findAll()` con `include`) es una sola consulta. Se unificó en una sola interacción con `Pregunta`, siguiendo el mismo patrón que `exportarAlumnos`. Las entidades `Respuesta` y `BateriaDePreguntas` se mantienen documentadas en el README (igual que `Grado` en `exportarAlumnos`) pero no aparecen en los diagramas.
 
+---
+
+## [15:32] Análisis RUP de asignarExamenes()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `asignarExamenes()` (#9, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `corregirExamenes()`, con entrada dual desde listado de exámenes generados (global y contextual).
+
+**Resultado:**
+- Creado `documents/analisis/asignarExamenes/README.md` con análisis completo (BCE: AsignarExamenesView, ExamenesController, ExamenesRepository, Examen, AlumnoExamen, Alumno)
+- Creados `modelosUML/analisis/asignarExamenes/colaboracion.puml` y `secuencia.puml`
+- Creado directorio `images/analisis/asignarExamenes/` para SVGs (pendiente de generar)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis incluye: entrada dual (EXAMENES_GENERADOS / EXAMENES_GENERADOS_CONTEXTUALES), flujo con selección de alumnos por grado y búsqueda, generación de hash SHA-256 por alumno (coincide con la implementación real en `ExamenesService.asignar()`), actualización de estado GENERADO → ASIGNADO, y almacenamiento de clave de corrección. La trazabilidad apunta a `POST /examenes/asignar` con `AsignarExamenesDto`.
+

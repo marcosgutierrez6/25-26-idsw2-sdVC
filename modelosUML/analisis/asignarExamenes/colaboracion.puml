@@ -1,0 +1,39 @@
+@startuml colaboracion-asignarExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "AsignarExamenesView" as v
+control "ExamenesController" as c
+entity "ExamenesRepository" as r
+entity "Examen" as e
+entity "AlumnoExamen" as ae
+
+a -> v : 1: solicita asignar\nexámenes
+v -> c : 2: asignar(examenId,\nalumnoIds)
+c -> r : 3: obtenerExamenConPreguntas(examenId)
+r -> e : 3.1: consulta preguntas\ny respuestas correctas
+e --> r : examen con datos
+r --> c : examen + preguntas\n+ respuestas correctas
+c -> c : 4: genera hash SHA-256\npor cada alumno
+c -> r : 5: crearAsignaciones(examenId,\nalumnoIds, hashPorAlumno)
+r -> ae : 5.1: crear registros\nAlumnoExamen\ncon hash
+ae --> r : asignaciones creadas
+r -> e : 5.2: actualizar estado\na ASIGNADO y\nclaveCorreccion
+e --> r : ok
+r --> c : resultado
+c --> v : { examenId,\nalumnosAsignados }
+v --> a : 6: presenta resultado\n(éxito / error)
+
+note right of c
+  Calcula orden de
+  respuestas correctas
+  y genera hash SHA-256
+  por cada alumno:
+  hash = sha256(examenId-
+  alumnoId-ordenRespuestas-
+  Date.now())
+end note
+
+@enduml

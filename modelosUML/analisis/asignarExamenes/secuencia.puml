@@ -1,0 +1,63 @@
+@startuml secuencia-asignarExamenes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary AsignarExamenesView
+control ExamenesController
+entity ExamenesRepository
+entity Examen
+entity AlumnoExamen
+
+== Flujo Principal - Asignación Exitosa ==
+
+Docente -> AsignarExamenesView: solicita asignar exámenes
+activate AsignarExamenesView
+AsignarExamenesView --> Docente: muestra formulario con alumnos por grado
+Docente -> AsignarExamenesView: selecciona alumnos destinatarios
+AsignarExamenesView --> Docente: solicita confirmación
+Docente -> AsignarExamenesView: confirma asignación
+AsignarExamenesView -> ExamenesController: asignar(examenId, alumnoIds)
+activate ExamenesController
+ExamenesController -> ExamenesRepository: obtenerExamenConPreguntas(examenId)
+activate ExamenesRepository
+ExamenesRepository -> Examen: consulta preguntas y respuestas correctas
+activate Examen
+Examen --> ExamenesRepository: examen con preguntas y respuestas
+deactivate Examen
+ExamenesRepository --> ExamenesController: examen con datos
+deactivate ExamenesRepository
+ExamenesController -> ExamenesController: genera hash SHA-256 por cada alumno
+ExamenesController -> ExamenesRepository: crearAsignaciones(examenId, alumnoIds, hashPorAlumno)
+activate ExamenesRepository
+ExamenesRepository -> AlumnoExamen: crear registros con hash
+activate AlumnoExamen
+AlumnoExamen --> ExamenesRepository: asignaciones creadas
+deactivate AlumnoExamen
+ExamenesRepository -> Examen: actualizar estado a ASIGNADO y claveCorreccion
+activate Examen
+Examen --> ExamenesRepository: ok
+deactivate Examen
+ExamenesRepository --> ExamenesController: resultado
+deactivate ExamenesRepository
+ExamenesController --> AsignarExamenesView: { examenId, alumnosAsignados }
+deactivate ExamenesController
+AsignarExamenesView --> Docente: muestra resultado exitoso
+
+== Flujo Alternativo - Error en Asignación ==
+
+Docente -> AsignarExamenesView: confirma asignación
+AsignarExamenesView -> ExamenesController: asignar(examenId, alumnoIds)
+ExamenesController -> ExamenesRepository: obtenerExamenConPreguntas(examenId)
+ExamenesRepository --> ExamenesController: error / examen no encontrado
+ExamenesController --> AsignarExamenesView: error
+AsignarExamenesView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> AsignarExamenesView: cancela asignación
+AsignarExamenesView --> Docente: vuelve a formulario de selección
+deactivate AsignarExamenesView
+
+@enduml
