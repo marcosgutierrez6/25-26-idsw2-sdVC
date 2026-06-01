@@ -1,0 +1,45 @@
+@startuml secuencia-crearAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CrearAsignaturaView
+control AsignaturasController
+entity AsignaturasService
+entity Asignatura
+
+== Flujo Principal - Creación Exitosa ==
+
+Docente -> CrearAsignaturaView: solicita crear asignatura nueva
+activate CrearAsignaturaView
+CrearAsignaturaView --> Docente: presenta formulario con campos
+Docente -> CrearAsignaturaView: rellena datos y pulsa "Crear Asignatura"
+CrearAsignaturaView -> AsignaturasController: create(createAsignaturaDto)
+activate AsignaturasController
+AsignaturasController -> AsignaturasService: create(createAsignaturaDto)
+activate AsignaturasService
+AsignaturasService -> Asignatura: crea la asignatura y su batería de preguntas
+activate Asignatura
+Asignatura --> AsignaturasService: asignatura creada
+deactivate Asignatura
+AsignaturasService --> AsignaturasController: asignatura creada
+deactivate AsignaturasService
+AsignaturasController --> CrearAsignaturaView: { asignatura }
+deactivate AsignaturasController
+CrearAsignaturaView --> Docente: muestra resultado y transiciona a editarAsignatura()
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> CrearAsignaturaView: rellena datos y pulsa "Crear Asignatura"
+CrearAsignaturaView -> AsignaturasController: create(createAsignaturaDto)
+AsignaturasController --> CrearAsignaturaView: error de validación
+CrearAsignaturaView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> CrearAsignaturaView: pulsa "Cancelar"
+CrearAsignaturaView --> Docente: vuelve al listado de asignaturas
+deactivate CrearAsignaturaView
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml colaboracion-crearAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CrearAsignaturaView" as v
+control "AsignaturasController" as c
+entity "AsignaturasService" as s
+entity "Asignatura" as e
+
+a -> v : 1: solicita crear\nasignatura nueva
+v -> c : 2: create(\ncreateAsignaturaDto)
+c -> s : 3: create(\ncreateAsignaturaDto)
+s -> e : 3.1: crea la asignatura\ny su batería de\npreguntas
+e --> s : asignatura creada\ncon batería
+s --> c : asignatura\ncreada
+c --> v : { asignatura }
+v --> a : 4: muestra resultado\ny transiciona a\neditarAsignatura()
+
+note right of c
+  Valida DTO y
+  verifica unicidad
+  de codigo y curso
+end note
+
+@enduml

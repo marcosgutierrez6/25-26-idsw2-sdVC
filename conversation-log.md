@@ -321,3 +321,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearDocente()`, con entrada única desde GRADOS_ABIERTO, salida dual (GRADO_ABIERTO con transición a editarGrado, o cancelación a GRADOS_ABIERTO2), y 2 estados internos (SolicitandoDatosGrado → CreandoGrado). La trazabilidad apunta a `POST /grados` con `CreateGradoDto`, implementado en `GradosService.create()`.
 
+---
+
+## [16:45] Análisis RUP de crearAsignatura()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `crearAsignatura()` (#18, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `crearGrado()`, con entrada única desde el listado de asignaturas.
+
+**Resultado:**
+- Creado `documents/analisis/crearAsignatura/README.md` con análisis completo (BCE: CrearAsignaturaView, AsignaturasController, AsignaturasService, Asignatura, Grado, BateriaDePreguntas)
+- Creados `modelosUML/analisis/crearAsignatura/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/crearAsignatura/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearGrado()`, con entrada única desde ASIGNATURAS_ABIERTO, salida dual (ASIGNATURA_ABIERTO con transición a editarAsignatura, o cancelación a ASIGNATURAS_ABIERTO2), y 2 estados internos (SolicitandoDatosAsignatura → CreandoAsignatura). Se documenta que la creación incluye la batería de preguntas según el state diagram. La trazabilidad apunta a `POST /asignaturas` con `CreateAsignaturaDto`, implementado en `AsignaturasService.create()`.
+
