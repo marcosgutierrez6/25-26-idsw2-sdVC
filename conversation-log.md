@@ -419,3 +419,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón de visualización con entrada dual (SISTEMA_DISPONIBLE, DOCENTE_ABIERTO), 2 estados internos (MostrandoDocentes → FiltrandoDocentes), salida única a DOCENTES_ABIERTO. Trazabilidad: `GET /profesores` con `ProfesoresService.findAll()` (`omit: { password: true }`).
 
+---
+
+## [20:52] Análisis RUP de eliminarPregunta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `eliminarPregunta()` (#25, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/eliminarPregunta/README.md` con análisis completo (BCE: EliminarPreguntaView, PreguntasController, PreguntasService, Pregunta)
+- Creados `modelosUML/analisis/eliminarPregunta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/eliminarPregunta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis cubre entrada dual (PREGUNTAS_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoPregunta), y salida cuádruple (listados actualizados o cancelación). Trazabilidad: `DELETE /preguntas/:id` con `PreguntasService.remove()` (verifica existencia vía `findOne()` antes de eliminar).
+

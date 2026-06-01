@@ -1,0 +1,35 @@
+@startuml colaboracion-eliminarPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EliminarPreguntaView" as v
+control "PreguntasController" as c
+entity "PreguntasService" as s
+entity "Pregunta" as e
+
+a -> v : 1: solicita eliminar\npregunta
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\npregunta con\nrespuestas y\nasignatura
+e --> s : datos\ncompletos
+s --> c : pregunta con\nrelaciones
+c --> v : { pregunta,\nrespuestas,\nasignatura }
+v --> a : 4: presenta info\ny advertencia
+
+a -> v : 5: confirma\neliminación
+v -> c : 6: remove(id)
+c -> s : 7: remove(id)
+s -> e : 7.1: verifica\nexistencia\ny elimina
+e --> s : ok
+s --> c : pregunta\neliminada
+c --> v : ok
+v --> a : 8: vuelve a\nlistado\nactualizado
+
+note right of c
+  GET /preguntas/:id
+  DELETE /preguntas/:id
+end note
+
+@enduml

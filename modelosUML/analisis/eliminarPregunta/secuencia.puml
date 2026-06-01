@@ -1,0 +1,52 @@
+@startuml secuencia-eliminarPregunta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EliminarPreguntaView
+control PreguntasController
+entity PreguntasService
+entity Pregunta
+
+== Flujo Principal - Confirmar Eliminación ==
+
+Docente -> EliminarPreguntaView: solicita eliminar pregunta
+activate EliminarPreguntaView
+EliminarPreguntaView -> PreguntasController: findOne(id)
+activate PreguntasController
+PreguntasController -> PreguntasService: findOne(id)
+activate PreguntasService
+PreguntasService -> Pregunta: consulta con respuestas y asignatura
+activate Pregunta
+Pregunta --> PreguntasService: datos completos
+deactivate Pregunta
+PreguntasService --> PreguntasController: pregunta con relaciones
+deactivate PreguntasService
+PreguntasController --> EliminarPreguntaView: { pregunta, respuestas, asignatura }
+deactivate PreguntasController
+EliminarPreguntaView --> Docente: presenta info y advertencia
+
+Docente -> EliminarPreguntaView: confirma eliminación
+activate EliminarPreguntaView
+EliminarPreguntaView -> PreguntasController: remove(id)
+activate PreguntasController
+PreguntasController -> PreguntasService: remove(id)
+activate PreguntasService
+PreguntasService -> Pregunta: verifica existencia y elimina
+activate Pregunta
+Pregunta --> PreguntasService: ok
+deactivate Pregunta
+PreguntasService --> PreguntasController: pregunta eliminada
+deactivate PreguntasService
+PreguntasController --> EliminarPreguntaView: ok
+deactivate PreguntasController
+EliminarPreguntaView --> Docente: vuelve a listado actualizado
+deactivate EliminarPreguntaView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> EliminarPreguntaView: cancela eliminación
+EliminarPreguntaView --> Docente: vuelve a listado anterior
+
+@enduml
