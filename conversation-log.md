@@ -531,3 +531,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Caso de uso central (dashboard/menú principal), con 7 orígenes de entrada (todos los listados del sistema), 1 estado interno (PresentandoOpciones), y salida única a SISTEMA_DISPONIBLE. El menú se adapta según el rol (AuthStore). Trazabilidad: `DashboardView.vue` y router.
 
+---
+
+## [21:03] Análisis RUP de verRespuestas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verRespuestas()` (#33, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/verRespuestas/README.md` con análisis completo (BCE: VerRespuestasView, RespuestasController, RespuestasService, Respuesta)
+- Creados `modelosUML/analisis/verRespuestas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verRespuestas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Patrón de visualización con 4 orígenes de entrada (PREGUNTA_ABIERTO, RESPUESTA_ABIERTO, PREGUNTA_CONTEXTUAL_ABIERTO, RESPUESTA_CONTEXTUAL_ABIERTO), 2 estados internos (MostrandoRespuestas → FiltrandoRespuestas), y salida dual contextual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO). Trazabilidad: `GET /respuestas/pregunta/:preguntaId` con `RespuestasService.findByPregunta()`.
+

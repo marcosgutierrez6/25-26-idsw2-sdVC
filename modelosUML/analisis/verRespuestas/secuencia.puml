@@ -1,0 +1,45 @@
+@startuml secuencia-verRespuestas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary VerRespuestasView
+control RespuestasController
+entity RespuestasService
+entity Respuesta
+
+== Flujo Principal - Carga Inicial ==
+
+Docente -> VerRespuestasView: solicita ver respuestas
+activate VerRespuestasView
+VerRespuestasView -> RespuestasController: findByPregunta(preguntaId)
+activate RespuestasController
+RespuestasController -> RespuestasService: findByPregunta(preguntaId)
+activate RespuestasService
+RespuestasService -> Respuesta: consulta respuestas por preguntaId
+activate Respuesta
+Respuesta --> RespuestasService: lista de respuestas
+deactivate Respuesta
+RespuestasService --> RespuestasController: respuestas de la pregunta
+deactivate RespuestasService
+RespuestasController --> VerRespuestasView: { respuestas }
+deactivate RespuestasController
+VerRespuestasView --> Docente: presenta tabla con acciones
+
+== Flujo Alternativo - Filtrado ==
+
+Docente -> VerRespuestasView: aplica filtro de búsqueda
+activate VerRespuestasView
+VerRespuestasView -> RespuestasController: findByPregunta(preguntaId, filtro)
+activate RespuestasController
+RespuestasController -> RespuestasService: findByPregunta(preguntaId, filtro)
+activate RespuestasService
+RespuestasService --> RespuestasController: lista filtrada
+deactivate RespuestasService
+RespuestasController --> VerRespuestasView: { respuestas filtradas }
+deactivate RespuestasController
+VerRespuestasView --> Docente: actualiza tabla
+deactivate VerRespuestasView
+
+@enduml

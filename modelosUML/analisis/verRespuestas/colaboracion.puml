@@ -1,0 +1,33 @@
+@startuml colaboracion-verRespuestas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "VerRespuestasView" as v
+control "RespuestasController" as c
+entity "RespuestasService" as s
+entity "Respuesta" as e
+
+a -> v : 1: solicita ver\nrespuestas
+v -> c : 2: findByPregunta\n(preguntaId)
+c -> s : 3: findByPregunta\n(preguntaId)
+s -> e : 3.1: consulta\nrespuestas por\npreguntaId
+e --> s : lista de\nrespuestas
+s --> c : respuestas de\nla pregunta
+c --> v : { respuestas }
+v --> a : 4: presenta tabla\ncon acciones
+
+a -> v : 5: aplica filtro\nde búsqueda
+v -> c : 6: findByPregunta\n(preguntaId,\nfiltro)
+c -> s : 7: findByPregunta\n(preguntaId,\nfiltro)
+s --> c : lista\nfiltrada
+c --> v : { respuestas\nfiltradas }
+v --> a : 8: actualiza tabla
+
+note right of c
+  GET /respuestas/
+  pregunta/:preguntaId
+end note
+
+@enduml
