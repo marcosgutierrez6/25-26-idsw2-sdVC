@@ -1,0 +1,70 @@
+@startuml secuencia-editarDocente
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador institucional" as a
+boundary EditarDocenteView
+control ProfesoresController
+entity ProfesoresService
+entity Profesor
+
+== Flujo Principal - Carga y Edición Exitosa ==
+
+a -> EditarDocenteView: solicita editar docente existente
+activate EditarDocenteView
+EditarDocenteView -> ProfesoresController: findOne(id)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: findOne(id)
+activate ProfesoresService
+ProfesoresService -> Profesor: consulta datos del docente
+activate Profesor
+Profesor --> ProfesoresService: datos del docente
+deactivate Profesor
+ProfesoresService --> ProfesoresController: docente (sin contraseña)
+deactivate ProfesoresService
+ProfesoresController --> EditarDocenteView: { docente }
+deactivate ProfesoresController
+EditarDocenteView --> a: presenta formulario con datos precargados
+a -> EditarDocenteView: modifica campos y pulsa "Guardar cambios"
+EditarDocenteView -> ProfesoresController: update(id, updateProfesorDto)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: update(id, data)
+activate ProfesoresService
+ProfesoresService -> Profesor: actualiza atributos
+activate Profesor
+Profesor --> ProfesoresService: docente actualizado
+deactivate Profesor
+ProfesoresService --> ProfesoresController: docente actualizado
+deactivate ProfesoresService
+ProfesoresController --> EditarDocenteView: { docente actualizado }
+deactivate ProfesoresController
+EditarDocenteView --> a: muestra resultado y navega a DOCENTE_ABIERTO2
+
+== Flujo Alternativo - Error de Validación ==
+
+a -> EditarDocenteView: modifica campos y pulsa "Guardar cambios"
+EditarDocenteView -> ProfesoresController: update(id, updateProfesorDto)
+ProfesoresController --> EditarDocenteView: error de validación
+EditarDocenteView --> a: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+a -> EditarDocenteView: pulsa "Cancelar"
+EditarDocenteView --> a: vuelve al listado de docentes
+
+== Flujo Alternativo - Eliminación ==
+
+a -> EditarDocenteView: pulsa "Eliminar"
+EditarDocenteView -> ProfesoresController: remove(id)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: remove(id)
+activate ProfesoresService
+ProfesoresService --> ProfesoresController: docente eliminado
+deactivate ProfesoresService
+ProfesoresController --> EditarDocenteView: { eliminada }
+deactivate ProfesoresController
+EditarDocenteView --> a: muestra resultado y navega a DOCENTES_ABIERTO3
+deactivate EditarDocenteView
+
+@enduml

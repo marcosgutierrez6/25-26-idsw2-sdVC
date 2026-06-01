@@ -279,3 +279,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearDocente()`, con entrada única desde ALUMNOS_ABIERTO, salida dual (ALUMNO_ABIERTO con transición a editarAlumno, o cancelación a ALUMNOS_ABIERTO2), y 2 estados internos (SolicitandoDatos → CreandoAlumno). A diferencia de crearDocente, incluye verificación de existencia del Grado (FK a gradoId) antes de persistir, reflejada en los diagramas con un paso 3. La trazabilidad apunta a `POST /alumnos` con `CreateAlumnoDto`, ya implementado en `AlumnosService.create()`.
 
+---
+
+## [16:15] Análisis RUP de editarDocente()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarDocente()` (#15, Administrador institucional). Crear análisis RUP (BCE) siguiendo la misma estructura que `editarAsignatura()`, con entrada dual desde listado de docentes y vista de docente.
+
+**Resultado:**
+- Creado `documents/analisis/editarDocente/README.md` con análisis completo (BCE: EditarDocenteView, ProfesoresController, ProfesoresService, Profesor)
+- Creados `modelosUML/analisis/editarDocente/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs vía kroki.io (`images/analisis/editarDocente/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de edición que `editarAsignatura()`, con entrada dual (DOCENTES_ABIERTO, DOCENTE_ABIERTO), salida triple (DOCENTE_ABIERTO2, DOCENTES_ABIERTO2, DOCENTES_ABIERTO3), y 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). Se refleja el hashing de contraseña con bcrypt como responsabilidad del servicio (paso 9 del flujo principal y nota en colaboracion.puml). La entidad se denomina `Profesor` en la implementación (Prisma/NestJS) aunque el caso de uso use el término Docente. La trazabilidad apunta a `PATCH /profesores/:id` con `UpdateProfesorDto` y `DELETE /profesores/:id`, ya implementados en `ProfesoresService.update()` y `ProfesoresService.remove()`.
+

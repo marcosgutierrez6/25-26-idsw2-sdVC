@@ -41,6 +41,7 @@ modelosUML/analisis/
 | editarAsignatura | Completado |
 | crearDocente | Completado |
 | crearAlumno | Completado |
+| editarDocente | Completado |
 
 ## Cómo crear un nuevo análisis
 
