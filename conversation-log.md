@@ -587,3 +587,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón de eliminación, con entrada dual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoRespuesta), y salida cuádruple (listados actualizados o cancelación). Trazabilidad: `DELETE /respuestas/:id` con `RespuestasService.remove()`.
 
+---
+
+## [21:07] Análisis RUP de cancelarGeneracion()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `cancelarGeneracion()` (#37, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/cancelarGeneracion/README.md` con análisis completo (BCE: CancelarGeneracionView, ExamenesController, ExamenesService, Examen)
+- Creados `modelosUML/analisis/cancelarGeneracion/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/cancelarGeneracion/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Caso de uso de cancelación con entrada dual (EXAMENES_GENERADOS, EXAMENES_GENERADOS_CONTEXTUALES), 2 estados internos (RequiringCancelGeneration → ProvidingConfirmation), y salida cuádruple (SISTEMA_DISPONIBLE/ASIGNATURA_ABIERTO si confirma, o vuelta a listados si deniega). Nota: no existe endpoint batch dedicado; el análisis asume `DELETE /examenes/:id` por cada examen o un nuevo endpoint `POST /examenes/cancelar-generacion`.
+

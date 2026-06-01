@@ -1,0 +1,33 @@
+@startuml colaboracion-cancelarGeneracion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CancelarGeneracionView" as v
+control "ExamenesController" as c
+entity "ExamenesService" as s
+entity "Examen" as e
+
+a -> v : 1: solicita\ncancelar\ngeneración
+v --> a : 2: presenta\nadvertencia
+
+a -> v : 3: confirma\ncancelación
+v -> c : 4: remove(id)\n(por cada\nexamen)
+c -> s : 5: remove(id)
+s -> e : 5.1: verifica\ny elimina
+e --> s : ok
+s --> c : examen\neliminado
+c --> v : ok
+v --> a : 6: redirige a\nSISTEMA_DISPONIBLE\no ASIGNATURA_ABIERTO
+
+note right of c
+  DELETE /examenes/:id
+  (uno por examen
+  generado)
+
+  Sin endpoint
+  batch dedicado
+end note
+
+@enduml

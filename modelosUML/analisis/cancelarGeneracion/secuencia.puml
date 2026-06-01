@@ -1,0 +1,41 @@
+@startuml secuencia-cancelarGeneracion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CancelarGeneracionView
+control ExamenesController
+entity ExamenesService
+entity Examen
+
+== Flujo Principal - Confirmar Cancelación ==
+
+Docente -> CancelarGeneracionView: solicita cancelar generación
+activate CancelarGeneracionView
+CancelarGeneracionView --> Docente: presenta advertencia de pérdida
+
+Docente -> CancelarGeneracionView: confirma cancelación
+loop por cada examen generado
+CancelarGeneracionView -> ExamenesController: remove(id)
+activate ExamenesController
+ExamenesController -> ExamenesService: remove(id)
+activate ExamenesService
+ExamenesService -> Examen: verifica existencia y elimina
+activate Examen
+Examen --> ExamenesService: ok
+deactivate Examen
+ExamenesService --> ExamenesController: examen eliminado
+deactivate ExamenesService
+ExamenesController --> CancelarGeneracionView: ok
+deactivate ExamenesController
+end
+CancelarGeneracionView --> Docente: redirige a SISTEMA_DISPONIBLE o ASIGNATURA_ABIERTO
+deactivate CancelarGeneracionView
+
+== Flujo Alternativo - Denegar Cancelación ==
+
+Docente -> CancelarGeneracionView: deniega cancelación
+CancelarGeneracionView --> Docente: vuelve a EXAMENES_GENERADOS
+
+@enduml

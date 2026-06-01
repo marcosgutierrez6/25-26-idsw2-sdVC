@@ -63,6 +63,7 @@ modelosUML/analisis/
 | crearRespuesta | Completado |
 | editarRespuesta | Completado |
 | eliminarRespuesta | Completado |
+| cancelarGeneracion | Completado |
 
 ## Cómo crear un nuevo análisis
 
