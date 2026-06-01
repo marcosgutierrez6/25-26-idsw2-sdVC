@@ -1,0 +1,40 @@
+@startuml secuencia-importarGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+control GradosController
+entity GradosService
+entity Grado
+
+== Flujo Principal - Importación Exitosa ==
+
+Docente -> GradosController: importa grados
+activate GradosController
+loop por cada grado
+GradosController -> GradosService: create(dto)
+activate GradosService
+GradosService -> Grado: crea grado
+activate Grado
+Grado --> GradosService: grado creado
+deactivate Grado
+GradosService --> GradosController: ok
+deactivate GradosService
+end
+GradosController --> Docente: importación exitosa
+deactivate GradosController
+
+== Flujo Alternativo - Error ==
+
+Docente -> GradosController: importa grados
+GradosController -> GradosService: create(dto)
+GradosService --> GradosController: error
+GradosController --> Docente: error, reintentar
+
+== Flujo Alternativo - Salir ==
+
+Docente -> GradosController: solicita salir
+Docente <-- GradosController: vuelve a GRADOS_ABIERTO
+
+@enduml

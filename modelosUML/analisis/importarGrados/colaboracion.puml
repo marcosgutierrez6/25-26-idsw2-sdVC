@@ -1,0 +1,28 @@
+@startuml colaboracion-importarGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+control "GradosController" as c
+entity "GradosService" as s
+entity "Grado" as e
+
+a -> c : 1: importar\ngrados
+c -> s : 2: create(dto)\n(por cada\ngrado)
+s -> e : 2.1: crea\ngrado
+e --> s : grado\ncreado
+s --> c : { grado }
+c --> a : 3: resultado\nde la\nimportación
+
+note right of c
+  POST /grados
+  (batch)
+end note
+
+note left of a
+  Sin Boundary:
+  caso abstracto
+end note
+
+@enduml

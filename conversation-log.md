@@ -615,3 +615,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Patrón de importación abstracto (sin vista propia), con entrada única desde ASIGNATURAS_ABIERTO, 3 estados internos (RequiringImport → ProvidingAsignaturas → ProvidingConfirmation con loop de error/cancelación y salida temprana), y salida a ASIGNATURAS_ABIERTO2. Trazabilidad: `POST /asignaturas` con `AsignaturasService.create()`.
 
+---
+
+## [21:09] Análisis RUP de importarGrados()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `importarGrados()` (#39, Docente, Abstracto). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/importarGrados/README.md` con análisis completo (BCE: GradosController, GradosService, Grado — sin Boundary por ser abstracto)
+- Creados `modelosUML/analisis/importarGrados/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/importarGrados/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón que importarAsignaturas, con entrada única desde GRADOS_ABIERTO, 3 estados internos con loop de error/cancelación, y salida a GRADOS_ABIERTO2. Trazabilidad: `POST /grados` con `GradosService.create()`.
+

@@ -65,6 +65,7 @@ modelosUML/analisis/
 | eliminarRespuesta | Completado |
 | cancelarGeneracion | Completado |
 | importarAsignaturas | Completado |
+| importarGrados | Completado |
 
 ## Cómo crear un nuevo análisis
 
