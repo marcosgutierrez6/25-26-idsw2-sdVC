@@ -1,0 +1,34 @@
+@startuml colaboracion-verPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "VerPreguntasView" as v
+control "PreguntasController" as c
+entity "PreguntasService" as s
+entity "Pregunta" as e
+
+a -> v : 1: solicita ver\npreguntas
+v -> c : 2: findAll(filters)
+c -> s : 3: findAll(filters)
+s -> e : 3.1: consulta preguntas\ncon respuestas\ny asignatura
+e --> s : preguntas con\ndatos completos
+s --> c : lista de\npreguntas
+c --> v : { preguntas }
+v --> a : 4: presenta tabla\ncon filtros\ny acciones
+
+a -> v : 5: aplica filtros\ny pulsa\n"Buscar / Filtrar"
+v -> c : 6: findAll(tema,\ndificultad,\nbateriaId)
+c -> s : 7: findAll(filtros)
+s --> c : lista\nfiltrada
+c --> v : { preguntas\nfiltradas }
+v --> a : 8: actualiza tabla\ncon resultados
+
+note right of c
+  Query params:
+  tema, dificultad,
+  bateriaId
+end note
+
+@enduml

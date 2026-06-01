@@ -1,0 +1,54 @@
+@startuml secuencia-verPreguntas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary VerPreguntasView
+control PreguntasController
+entity PreguntasService
+entity Pregunta
+
+== Flujo Principal - Carga Inicial ==
+
+Docente -> VerPreguntasView: solicita ver preguntas
+activate VerPreguntasView
+VerPreguntasView -> PreguntasController: findAll()
+activate PreguntasController
+PreguntasController -> PreguntasService: findAll(filters)
+activate PreguntasService
+PreguntasService -> Pregunta: consulta preguntas con respuestas y asignatura
+activate Pregunta
+Pregunta --> PreguntasService: preguntas con datos completos
+deactivate Pregunta
+PreguntasService --> PreguntasController: lista de preguntas
+deactivate PreguntasService
+PreguntasController --> VerPreguntasView: { preguntas }
+deactivate PreguntasController
+VerPreguntasView --> Docente: presenta tabla con filtros y acciones
+
+== Flujo Alternativo - Filtrado ==
+
+Docente -> VerPreguntasView: aplica filtros y pulsa "Buscar / Filtrar"
+activate VerPreguntasView
+VerPreguntasView -> PreguntasController: findAll(tema, dificultad, bateriaId)
+activate PreguntasController
+PreguntasController -> PreguntasService: findAll(filtros)
+activate PreguntasService
+PreguntasService --> PreguntasController: lista filtrada
+deactivate PreguntasService
+PreguntasController --> VerPreguntasView: { preguntas filtradas }
+deactivate PreguntasController
+VerPreguntasView --> Docente: actualiza tabla con resultados
+deactivate VerPreguntasView
+
+== Flujo Alternativo - Error de Consulta ==
+
+Docente -> VerPreguntasView: solicita ver preguntas
+VerPreguntasView -> PreguntasController: findAll()
+PreguntasController -> PreguntasService: findAll(filters)
+PreguntasService --> PreguntasController: error de base de datos
+PreguntasController --> VerPreguntasView: error
+VerPreguntasView --> Docente: muestra mensaje de error
+
+@enduml

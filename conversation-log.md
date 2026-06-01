@@ -349,3 +349,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de edición que `editarAlumno()`, con entrada dual (GRADO_ABIERTO, GRADOS_ABIERTO), salida triple (GRADO_ABIERTO2, GRADOS_ABIERTO2, GRADOS_ABIERTO3), y 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). La trazabilidad apunta a `PATCH /grados/:id` con `UpdateGradoDto` y `DELETE /grados/:id`, implementados en `GradosService.update()` y `GradosService.remove()`.
 
+---
+
+## [17:05] Análisis RUP de verPreguntas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verPreguntas()` (#20, Docente). Es el primer caso de uso de tipo "visualización" (ver/listar). Crear análisis RUP (BCE) adaptado a un flujo de solo lectura con filtros.
+
+**Resultado:**
+- Creado `documents/analisis/verPreguntas/README.md` con análisis completo (BCE: VerPreguntasView, PreguntasController, PreguntasService, Pregunta, BateriaDePreguntas)
+- Creados `modelosUML/analisis/verPreguntas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verPreguntas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis se adaptó al patrón de visualización: entrada cuádruple (ASIGNATURA_ABIERTO, SISTEMA_DISPONIBLE, PREGUNTA_CONTEXTUAL_ABIERTO, PREGUNTA_ABIERTO), 2 estados internos (MostrandoPreguntas → FiltrandoPreguntas con auto-loop de filtrado), y salida contextual dual (PREGUNTAS_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO). Sin flujo de persistencia — solo consultas con filtros. La trazabilidad apunta a `GET /preguntas` con query params (tema, dificultad, bateriaId), implementado en `PreguntasService.findAll()`.
+
