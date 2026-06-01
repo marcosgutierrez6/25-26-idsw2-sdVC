@@ -1,0 +1,21 @@
+@startuml secuencia-exportarGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "exportarConfiguracionGlobal" as parent
+entity GradosService
+entity Grado
+
+== Flujo Principal - Exportar Grados ==
+
+parent -> GradosService: exportarGrados()
+activate GradosService
+GradosService -> Grado: findAll()
+activate Grado
+Grado --> GradosService: lista de grados
+deactivate Grado
+GradosService --> parent: datos de grados
+deactivate GradosService
+
+@enduml

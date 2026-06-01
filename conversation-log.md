@@ -643,3 +643,21 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón que exportarAlumnos/exportarPreguntas: sub-operación de exportarConfiguracionGlobal, 2 estados internos (RequiringExport → ProvidingAsignaturas), sin vista ni controlador. Trazabilidad: `AsignaturasService.findAll()` con include.
 
+---
+
+## [21:12] Análisis RUP de exportarGrados()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `exportarGrados()` (#41, Docente, Abstracto). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/exportarGrados/README.md` con análisis completo (BCE: GradosService, Grado)
+- Creados `modelosUML/analisis/exportarGrados/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/exportarGrados/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón abstracto, sub-operación de exportarConfiguracionGlobal. Trazabilidad: `GradosService.findAll()`.
+
+---
+
+**Todos los 41 casos de uso priorizados han sido analizados.**
+

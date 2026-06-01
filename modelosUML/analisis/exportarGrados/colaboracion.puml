@@ -1,0 +1,25 @@
+@startuml colaboracion-exportarGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+entity "GradosService" as s
+entity "Grado" as e
+
+a -> s : 1: exportarConfiguracionGlobal\nsolicita exportar\ngrados
+s -> e : 1.1: consulta todos\nlos grados
+e --> s : lista de\ngrados
+s --> a : datos para\ncompilación
+
+note right of s
+  findAll()
+end note
+
+note left of a
+  Sin Boundary
+  ni Controller:
+  caso abstracto
+end note
+
+@enduml
