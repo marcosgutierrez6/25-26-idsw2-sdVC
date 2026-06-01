@@ -1,0 +1,35 @@
+@startuml colaboracion-eliminarAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EliminarAsignaturaView" as v
+control "AsignaturasController" as c
+entity "AsignaturasService" as s
+entity "Asignatura" as e
+
+a -> v : 1: solicita eliminar\nasignatura
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\nasignatura con\ngrado, profesor,\nexamenes, bateria
+e --> s : datos\ncompletos
+s --> c : asignatura con\nrelaciones
+c --> v : { asignatura }
+v --> a : 4: presenta info\ny advertencia
+
+a -> v : 5: confirma\neliminación
+v -> c : 6: remove(id)
+c -> s : 7: remove(id)
+s -> e : 7.1: verifica\nexistencia\ny elimina
+e --> s : ok
+s --> c : asignatura\neliminada
+c --> v : ok
+v --> a : 8: vuelve a\nlistado\nactualizado
+
+note right of c
+  GET /asignaturas/:id
+  DELETE /asignaturas/:id
+end note
+
+@enduml

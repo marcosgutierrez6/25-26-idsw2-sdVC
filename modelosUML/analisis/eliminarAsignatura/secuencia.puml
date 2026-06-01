@@ -1,0 +1,52 @@
+@startuml secuencia-eliminarAsignatura
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EliminarAsignaturaView
+control AsignaturasController
+entity AsignaturasService
+entity Asignatura
+
+== Flujo Principal - Confirmar Eliminación ==
+
+Docente -> EliminarAsignaturaView: solicita eliminar asignatura
+activate EliminarAsignaturaView
+EliminarAsignaturaView -> AsignaturasController: findOne(id)
+activate AsignaturasController
+AsignaturasController -> AsignaturasService: findOne(id)
+activate AsignaturasService
+AsignaturasService -> Asignatura: consulta con grado, profesor,\nexamenes, bateria
+activate Asignatura
+Asignatura --> AsignaturasService: datos completos
+deactivate Asignatura
+AsignaturasService --> AsignaturasController: asignatura con relaciones
+deactivate AsignaturasService
+AsignaturasController --> EliminarAsignaturaView: { asignatura }
+deactivate AsignaturasController
+EliminarAsignaturaView --> Docente: presenta info y advertencia
+
+Docente -> EliminarAsignaturaView: confirma eliminación
+activate EliminarAsignaturaView
+EliminarAsignaturaView -> AsignaturasController: remove(id)
+activate AsignaturasController
+AsignaturasController -> AsignaturasService: remove(id)
+activate AsignaturasService
+AsignaturasService -> Asignatura: verifica existencia y elimina
+activate Asignatura
+Asignatura --> AsignaturasService: ok
+deactivate Asignatura
+AsignaturasService --> AsignaturasController: asignatura eliminada
+deactivate AsignaturasService
+AsignaturasController --> EliminarAsignaturaView: ok
+deactivate AsignaturasController
+EliminarAsignaturaView --> Docente: vuelve a listado actualizado
+deactivate EliminarAsignaturaView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> EliminarAsignaturaView: cancela eliminación
+EliminarAsignaturaView --> Docente: vuelve a listado anterior
+
+@enduml

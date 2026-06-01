@@ -52,6 +52,7 @@ modelosUML/analisis/
 | verAlumnos | Completado |
 | verDocentes | Completado |
 | eliminarPregunta | Completado |
+| eliminarAsignatura | Completado |
 
 ## Cómo crear un nuevo análisis
 

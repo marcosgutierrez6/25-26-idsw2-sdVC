@@ -433,3 +433,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis cubre entrada dual (PREGUNTAS_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoPregunta), y salida cuádruple (listados actualizados o cancelación). Trazabilidad: `DELETE /preguntas/:id` con `PreguntasService.remove()` (verifica existencia vía `findOne()` antes de eliminar).
 
+---
+
+## [20:55] Análisis RUP de eliminarAsignatura()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `eliminarAsignatura()` (#26, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/eliminarAsignatura/README.md` con análisis completo (BCE: EliminarAsignaturaView, AsignaturasController, AsignaturasService, Asignatura)
+- Creados `modelosUML/analisis/eliminarAsignatura/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/eliminarAsignatura/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón que eliminarPregunta, con entrada dual (ASIGNATURAS_ABIERTO, ASIGNATURA_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoAsignatura), y salida triple (ASIGNATURAS_ABIERTO2 confirmado, ASIGNATURAS_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /asignaturas/:id` con `AsignaturasService.remove()`.
+
