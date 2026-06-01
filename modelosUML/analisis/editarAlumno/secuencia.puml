@@ -1,0 +1,70 @@
+@startuml secuencia-editarAlumno
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EditarAlumnoView
+control AlumnosController
+entity AlumnosService
+entity Alumno
+
+== Flujo Principal - Carga y Edición Exitosa ==
+
+Docente -> EditarAlumnoView: solicita editar alumno existente
+activate EditarAlumnoView
+EditarAlumnoView -> AlumnosController: findOne(id)
+activate AlumnosController
+AlumnosController -> AlumnosService: findOne(id)
+activate AlumnosService
+AlumnosService -> Alumno: consulta datos del alumno
+activate Alumno
+Alumno --> AlumnosService: datos del alumno
+deactivate Alumno
+AlumnosService --> AlumnosController: alumno con datos
+deactivate AlumnosService
+AlumnosController --> EditarAlumnoView: { alumno, datos }
+deactivate AlumnosController
+EditarAlumnoView --> Docente: presenta formulario con datos precargados
+Docente -> EditarAlumnoView: modifica campos y pulsa "Guardar cambios"
+EditarAlumnoView -> AlumnosController: update(id, updateAlumnoDto)
+activate AlumnosController
+AlumnosController -> AlumnosService: update(id, data)
+activate AlumnosService
+AlumnosService -> Alumno: actualiza atributos
+activate Alumno
+Alumno --> AlumnosService: alumno actualizado
+deactivate Alumno
+AlumnosService --> AlumnosController: alumno actualizado
+deactivate AlumnosService
+AlumnosController --> EditarAlumnoView: { alumno actualizado }
+deactivate AlumnosController
+EditarAlumnoView --> Docente: muestra resultado y navega a ALUMNOS_ABIERTO2
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> EditarAlumnoView: modifica campos y pulsa "Guardar cambios"
+EditarAlumnoView -> AlumnosController: update(id, updateAlumnoDto)
+AlumnosController --> EditarAlumnoView: error de validación
+EditarAlumnoView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> EditarAlumnoView: pulsa "Cancelar"
+EditarAlumnoView --> Docente: vuelve al listado de alumnos
+
+== Flujo Alternativo - Eliminación ==
+
+Docente -> EditarAlumnoView: pulsa "Eliminar"
+EditarAlumnoView -> AlumnosController: remove(id)
+activate AlumnosController
+AlumnosController -> AlumnosService: remove(id)
+activate AlumnosService
+AlumnosService --> AlumnosController: alumno eliminado
+deactivate AlumnosService
+AlumnosController --> EditarAlumnoView: { eliminado }
+deactivate AlumnosController
+EditarAlumnoView --> Docente: muestra resultado y navega a ALUMNOS_ABIERTO4
+deactivate EditarAlumnoView
+
+@enduml

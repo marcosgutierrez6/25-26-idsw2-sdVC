@@ -1,0 +1,36 @@
+@startuml colaboracion-editarAlumno
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EditarAlumnoView" as v
+control "AlumnosController" as c
+entity "AlumnosService" as s
+entity "Alumno" as e
+
+a -> v : 1: solicita editar\nalumno existente
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta datos\ndel alumno
+e --> s : datos del\nalumno
+s --> c : alumno con\ndatos
+c --> v : { alumno,\ndatos }
+v --> a : 4: presenta formulario\ncon datos precargados
+
+a -> v : 5: modifica campos\ny pulsa\n"Guardar cambios"
+v -> c : 6: update(id,\nupdateAlumnoDto)
+c -> s : 7: update(id, data)
+s -> e : 7.1: actualiza\natributos
+e --> s : alumno\nactualizado
+s --> c : alumno\nactualizado
+c --> v : { alumno\nactualizado }
+v --> a : 8: muestra resultado\ny navega a\nALUMNOS_ABIERTO2
+
+note right of c
+  Valida DTO y
+  verifica existencia
+  antes de actualizar
+end note
+
+@enduml

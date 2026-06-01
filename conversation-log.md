@@ -293,3 +293,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de edición que `editarAsignatura()`, con entrada dual (DOCENTES_ABIERTO, DOCENTE_ABIERTO), salida triple (DOCENTE_ABIERTO2, DOCENTES_ABIERTO2, DOCENTES_ABIERTO3), y 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). Se refleja el hashing de contraseña con bcrypt como responsabilidad del servicio (paso 9 del flujo principal y nota en colaboracion.puml). La entidad se denomina `Profesor` en la implementación (Prisma/NestJS) aunque el caso de uso use el término Docente. La trazabilidad apunta a `PATCH /profesores/:id` con `UpdateProfesorDto` y `DELETE /profesores/:id`, ya implementados en `ProfesoresService.update()` y `ProfesoresService.remove()`.
 
+---
+
+## [16:25] Análisis RUP de editarAlumno()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarAlumno()` (#16, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `editarDocente()`, con entrada dual desde listado de alumnos y vista de alumno.
+
+**Resultado:**
+- Creado `documents/analisis/editarAlumno/README.md` con análisis completo (BCE: EditarAlumnoView, AlumnosController, AlumnosService, Alumno, Grado)
+- Creados `modelosUML/analisis/editarAlumno/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/editarAlumno/`)
+- Actualizado `documents/analisis/README.md` (indice)
+
+**Decision:** Se acepto. El analisis sigue el mismo patron de edicion que `editarDocente()`, con entrada dual (ALUMNOS_ABIERTO, ALUMNO_ABIERTO), salida triple (ALUMNOS_ABIERTO2, ALUMNOS_ABIERTO3, ALUMNOS_ABIERTO4), y 2 estados internos (EditandoDatos -> GuardandoDatos con loop de modificacion). La trazabilidad apunta a `PATCH /alumnos/:id` con `UpdateAlumnoDto` y `DELETE /alumnos/:id`, ya implementados en `AlumnosService.update()` y `AlumnosService.remove()`. Se incluye Grado como entidad de soporte al igual que en `crearAlumno`.
+
