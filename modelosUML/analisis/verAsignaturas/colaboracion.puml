@@ -1,0 +1,34 @@
+@startuml colaboracion-verAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "VerAsignaturasView" as v
+control "AsignaturasController" as c
+entity "AsignaturasService" as s
+entity "Asignatura" as e
+
+a -> v : 1: solicita ver\nasignaturas
+v -> c : 2: findAll()
+c -> s : 3: findAll()
+s -> e : 3.1: consulta\nasignaturas con\ngrado y profesor
+e --> s : asignaturas\ncon datos
+s --> c : lista de\nasignaturas
+c --> v : { asignaturas }
+v --> a : 4: presenta tabla\ncon filtros\ny acciones
+
+a -> v : 5: aplica filtros\ny pulsa "Buscar"
+v -> c : 6: findAll(filtros)
+c -> s : 7: findAll(filtros)
+s --> c : lista\nfiltrada
+c --> v : { asignaturas\nfiltradas }
+v --> a : 8: actualiza tabla\ncon resultados
+
+note right of c
+  GET /asignaturas
+  con query params
+  opcionales
+end note
+
+@enduml

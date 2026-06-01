@@ -363,3 +363,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis se adaptó al patrón de visualización: entrada cuádruple (ASIGNATURA_ABIERTO, SISTEMA_DISPONIBLE, PREGUNTA_CONTEXTUAL_ABIERTO, PREGUNTA_ABIERTO), 2 estados internos (MostrandoPreguntas → FiltrandoPreguntas con auto-loop de filtrado), y salida contextual dual (PREGUNTAS_ABIERTO, PREGUNTAS_CONTEXTUALES_ABIERTO). Sin flujo de persistencia — solo consultas con filtros. La trazabilidad apunta a `GET /preguntas` con query params (tema, dificultad, bateriaId), implementado en `PreguntasService.findAll()`.
 
+---
+
+## [17:15] Análisis RUP de verAsignaturas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verAsignaturas()` (#21, Docente). Crear análisis RUP (BCE) siguiendo el mismo patrón de visualización que `verPreguntas()`, adaptado para asignaturas.
+
+**Resultado:**
+- Creado `documents/analisis/verAsignaturas/README.md` con análisis completo (BCE: VerAsignaturasView, AsignaturasController, AsignaturasService, Asignatura)
+- Creados `modelosUML/analisis/verAsignaturas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verAsignaturas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de visualización que `verPreguntas()`, con entrada dual (SISTEMA_DISPONIBLE, ASIGNATURA_ABIERTO), 2 estados internos (MostrandoAsignaturas → FiltrandoAsignaturas con auto-loop), y salida única a ASIGNATURAS_ABIERTO. La trazabilidad apunta a `GET /asignaturas` implementado en `AsignaturasService.findAll()`.
+

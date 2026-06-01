@@ -1,0 +1,54 @@
+@startuml secuencia-verAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary VerAsignaturasView
+control AsignaturasController
+entity AsignaturasService
+entity Asignatura
+
+== Flujo Principal - Carga Inicial ==
+
+Docente -> VerAsignaturasView: solicita ver asignaturas
+activate VerAsignaturasView
+VerAsignaturasView -> AsignaturasController: findAll()
+activate AsignaturasController
+AsignaturasController -> AsignaturasService: findAll()
+activate AsignaturasService
+AsignaturasService -> Asignatura: consulta asignaturas con grado y profesor
+activate Asignatura
+Asignatura --> AsignaturasService: asignaturas con datos
+deactivate Asignatura
+AsignaturasService --> AsignaturasController: lista de asignaturas
+deactivate AsignaturasService
+AsignaturasController --> VerAsignaturasView: { asignaturas }
+deactivate AsignaturasController
+VerAsignaturasView --> Docente: presenta tabla con filtros y acciones
+
+== Flujo Alternativo - Filtrado ==
+
+Docente -> VerAsignaturasView: aplica filtros y pulsa "Buscar"
+activate VerAsignaturasView
+VerAsignaturasView -> AsignaturasController: findAll(filtros)
+activate AsignaturasController
+AsignaturasController -> AsignaturasService: findAll(filtros)
+activate AsignaturasService
+AsignaturasService --> AsignaturasController: lista filtrada
+deactivate AsignaturasService
+AsignaturasController --> VerAsignaturasView: { asignaturas filtradas }
+deactivate AsignaturasController
+VerAsignaturasView --> Docente: actualiza tabla con resultados
+deactivate VerAsignaturasView
+
+== Flujo Alternativo - Error de Consulta ==
+
+Docente -> VerAsignaturasView: solicita ver asignaturas
+VerAsignaturasView -> AsignaturasController: findAll()
+AsignaturasController -> AsignaturasService: findAll()
+AsignaturasService --> AsignaturasController: error de base de datos
+AsignaturasController --> VerAsignaturasView: error
+VerAsignaturasView --> Docente: muestra mensaje de error
+
+@enduml
