@@ -601,3 +601,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Caso de uso de cancelación con entrada dual (EXAMENES_GENERADOS, EXAMENES_GENERADOS_CONTEXTUALES), 2 estados internos (RequiringCancelGeneration → ProvidingConfirmation), y salida cuádruple (SISTEMA_DISPONIBLE/ASIGNATURA_ABIERTO si confirma, o vuelta a listados si deniega). Nota: no existe endpoint batch dedicado; el análisis asume `DELETE /examenes/:id` por cada examen o un nuevo endpoint `POST /examenes/cancelar-generacion`.
 
+---
+
+## [21:08] Análisis RUP de importarAsignaturas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `importarAsignaturas()` (#38, Docente, Abstracto). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/importarAsignaturas/README.md` con análisis completo (BCE: AsignaturasController, AsignaturasService, Asignatura — sin Boundary por ser abstracto)
+- Creados `modelosUML/analisis/importarAsignaturas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/importarAsignaturas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Patrón de importación abstracto (sin vista propia), con entrada única desde ASIGNATURAS_ABIERTO, 3 estados internos (RequiringImport → ProvidingAsignaturas → ProvidingConfirmation con loop de error/cancelación y salida temprana), y salida a ASIGNATURAS_ABIERTO2. Trazabilidad: `POST /asignaturas` con `AsignaturasService.create()`.
+

@@ -1,0 +1,40 @@
+@startuml secuencia-importarAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+control AsignaturasController
+entity AsignaturasService
+entity Asignatura
+
+== Flujo Principal - Importación Exitosa ==
+
+Docente -> AsignaturasController: importa asignaturas
+activate AsignaturasController
+loop por cada asignatura
+AsignaturasController -> AsignaturasService: create(dto)
+activate AsignaturasService
+AsignaturasService -> Asignatura: crea asignatura
+activate Asignatura
+Asignatura --> AsignaturasService: asignatura creada
+deactivate Asignatura
+AsignaturasService --> AsignaturasController: ok
+deactivate AsignaturasService
+end
+AsignaturasController --> Docente: importación exitosa
+deactivate AsignaturasController
+
+== Flujo Alternativo - Error ==
+
+Docente -> AsignaturasController: importa asignaturas
+AsignaturasController -> AsignaturasService: create(dto)
+AsignaturasService --> AsignaturasController: error
+AsignaturasController --> Docente: error en importación, reintentar
+
+== Flujo Alternativo - Salir ==
+
+Docente -> AsignaturasController: solicita salir
+Docente <-- AsignaturasController: vuelve a ASIGNATURAS_ABIERTO
+
+@enduml

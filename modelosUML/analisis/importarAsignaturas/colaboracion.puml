@@ -1,0 +1,28 @@
+@startuml colaboracion-importarAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+control "AsignaturasController" as c
+entity "AsignaturasService" as s
+entity "Asignatura" as e
+
+a -> c : 1: importar\nasignaturas
+c -> s : 2: create(dto)\n(por cada\nasignatura)
+s -> e : 2.1: crea\nasignatura
+e --> s : asignatura\ncreada
+s --> c : { asignatura }
+c --> a : 3: resultado\nde la\nimportación
+
+note right of c
+  POST /asignaturas
+  (batch)
+end note
+
+note left of a
+  Sin Boundary:
+  caso abstracto
+end note
+
+@enduml
