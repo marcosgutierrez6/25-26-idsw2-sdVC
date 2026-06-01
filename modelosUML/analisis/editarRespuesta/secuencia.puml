@@ -1,0 +1,65 @@
+@startuml secuencia-editarRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EditarRespuestaView
+control RespuestasController
+entity RespuestasService
+entity Respuesta
+
+== Flujo Principal - Guardar Cambios ==
+
+Docente -> EditarRespuestaView: solicita editar respuesta
+activate EditarRespuestaView
+EditarRespuestaView -> RespuestasController: findOne(id)
+activate RespuestasController
+RespuestasController -> RespuestasService: findOne(id)
+activate RespuestasService
+RespuestasService -> Respuesta: consulta respuesta
+activate Respuesta
+Respuesta --> RespuestasService: datos de respuesta
+deactivate Respuesta
+RespuestasService --> RespuestasController: { respuesta }
+deactivate RespuestasService
+RespuestasController --> EditarRespuestaView: { respuesta }
+deactivate RespuestasController
+EditarRespuestaView --> Docente: presenta formulario precargado
+
+Docente -> EditarRespuestaView: modifica campos
+EditarRespuestaView --> Docente: actualiza formulario
+
+Docente -> EditarRespuestaView: guarda cambios
+activate EditarRespuestaView
+EditarRespuestaView -> RespuestasController: update(id, dto)
+activate RespuestasController
+RespuestasController -> RespuestasService: update(id, dto)
+activate RespuestasService
+RespuestasService -> Respuesta: verifica existencia y actualiza
+activate Respuesta
+Respuesta --> RespuestasService: respuesta actualizada
+deactivate Respuesta
+RespuestasService --> RespuestasController: { respuesta }
+deactivate RespuestasService
+RespuestasController --> EditarRespuestaView: ok
+deactivate RespuestasController
+EditarRespuestaView --> Docente: sale a RESPUESTA_ABIERTO
+deactivate EditarRespuestaView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> EditarRespuestaView: cancela edición
+EditarRespuestaView --> Docente: vuelve a listado
+
+== Flujo Alternativo - Eliminar ==
+
+Docente -> EditarRespuestaView: solicita eliminar
+EditarRespuestaView -> RespuestasController: remove(id)
+RespuestasController -> RespuestasService: remove(id)
+RespuestasService -> Respuesta: verifica y elimina
+RespuestasService --> RespuestasController: ok
+RespuestasController --> EditarRespuestaView: ok
+EditarRespuestaView --> Docente: sale a listado actualizado
+
+@enduml

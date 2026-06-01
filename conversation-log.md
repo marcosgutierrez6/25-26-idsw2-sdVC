@@ -559,3 +559,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Patrón de creación simple con entrada dual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO), 2 estados internos (SolicitandoDatosRespuesta → ProcesandoCreacion), y salida cuádruple (a editar o cancelación). Incluye regla de negocio: máximo 5 respuestas por pregunta. Trazabilidad: `POST /respuestas` con `RespuestasService.create()`.
 
+---
+
+## [21:05] Análisis RUP de editarRespuesta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarRespuesta()` (#35, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/editarRespuesta/README.md` con análisis completo (BCE: EditarRespuestaView, RespuestasController, RespuestasService, Respuesta)
+- Creados `modelosUML/analisis/editarRespuesta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/editarRespuesta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Patrón de edición con 4 orígenes de entrada, 2 estados internos (EditandoDatos ⇄ GuardandoDatos con loop de modificación), y salida séxtuple (guardar, cancelar, eliminar desde contexto global o contextual). Trazabilidad: `PATCH /respuestas/:id` con `RespuestasService.update()` y `DELETE /respuestas/:id` con `RespuestasService.remove()`.
+

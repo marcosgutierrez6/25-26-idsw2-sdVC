@@ -1,0 +1,39 @@
+@startuml colaboracion-editarRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EditarRespuestaView" as v
+control "RespuestasController" as c
+entity "RespuestasService" as s
+entity "Respuesta" as e
+
+a -> v : 1: solicita editar\nrespuesta
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\nrespuesta
+e --> s : datos de\nrespuesta
+s --> c : { respuesta }
+c --> v : { respuesta }
+v --> a : 4: presenta\nformulario\nprecargado
+
+a -> v : 5: modifica\ncampos
+v --> a : 6: actualiza\nformulario
+
+a -> v : 7: guarda\ncambios
+v -> c : 8: update(id, dto)
+c -> s : 9: update(id, dto)
+s -> e : 9.1: verifica\ny actualiza
+e --> s : respuesta\nactualizada
+s --> c : { respuesta }
+c --> v : ok
+v --> a : 10: sale a\nRESPUESTA_ABIERTO
+
+note right of c
+  GET /respuestas/:id
+  PATCH /respuestas/:id
+  DELETE /respuestas/:id
+end note
+
+@enduml
