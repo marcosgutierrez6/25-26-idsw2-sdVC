@@ -1,0 +1,70 @@
+@startuml secuencia-editarGrado
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EditarGradoView
+control GradosController
+entity GradosService
+entity Grado
+
+== Flujo Principal - Carga y Edición Exitosa ==
+
+Docente -> EditarGradoView: solicita editar grado existente
+activate EditarGradoView
+EditarGradoView -> GradosController: findOne(id)
+activate GradosController
+GradosController -> GradosService: findOne(id)
+activate GradosService
+GradosService -> Grado: consulta datos del grado
+activate Grado
+Grado --> GradosService: datos del grado
+deactivate Grado
+GradosService --> GradosController: grado con alumnos
+deactivate GradosService
+GradosController --> EditarGradoView: { grado, alumnos }
+deactivate GradosController
+EditarGradoView --> Docente: presenta formulario con datos precargados
+Docente -> EditarGradoView: modifica campos y pulsa "Guardar cambios"
+EditarGradoView -> GradosController: update(id, updateGradoDto)
+activate GradosController
+GradosController -> GradosService: update(id, data)
+activate GradosService
+GradosService -> Grado: actualiza atributos
+activate Grado
+Grado --> GradosService: grado actualizado
+deactivate Grado
+GradosService --> GradosController: grado actualizado
+deactivate GradosService
+GradosController --> EditarGradoView: { grado actualizado }
+deactivate GradosController
+EditarGradoView --> Docente: muestra resultado y navega a GRADO_ABIERTO2
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> EditarGradoView: modifica campos y pulsa "Guardar cambios"
+EditarGradoView -> GradosController: update(id, updateGradoDto)
+GradosController --> EditarGradoView: error de validación
+EditarGradoView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> EditarGradoView: pulsa "Cancelar"
+EditarGradoView --> Docente: vuelve al listado de grados
+
+== Flujo Alternativo - Eliminación ==
+
+Docente -> EditarGradoView: pulsa "Eliminar"
+EditarGradoView -> GradosController: remove(id)
+activate GradosController
+GradosController -> GradosService: remove(id)
+activate GradosService
+GradosService --> GradosController: grado eliminado
+deactivate GradosService
+GradosController --> EditarGradoView: { eliminado }
+deactivate GradosController
+EditarGradoView --> Docente: muestra resultado y navega a GRADOS_ABIERTO3
+deactivate EditarGradoView
+
+@enduml

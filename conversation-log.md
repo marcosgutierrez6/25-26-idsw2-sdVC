@@ -335,3 +335,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de creación simple que `crearGrado()`, con entrada única desde ASIGNATURAS_ABIERTO, salida dual (ASIGNATURA_ABIERTO con transición a editarAsignatura, o cancelación a ASIGNATURAS_ABIERTO2), y 2 estados internos (SolicitandoDatosAsignatura → CreandoAsignatura). Se documenta que la creación incluye la batería de preguntas según el state diagram. La trazabilidad apunta a `POST /asignaturas` con `CreateAsignaturaDto`, implementado en `AsignaturasService.create()`.
 
+---
+
+## [16:55] Análisis RUP de editarGrado()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `editarGrado()` (#19, Docente). Crear análisis RUP (BCE) siguiendo la misma estructura que `editarAlumno()`, con entrada dual desde vista de grado y listado de grados.
+
+**Resultado:**
+- Creado `documents/analisis/editarGrado/README.md` con análisis completo (BCE: EditarGradoView, GradosController, GradosService, Grado)
+- Creados `modelosUML/analisis/editarGrado/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/editarGrado/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de edición que `editarAlumno()`, con entrada dual (GRADO_ABIERTO, GRADOS_ABIERTO), salida triple (GRADO_ABIERTO2, GRADOS_ABIERTO2, GRADOS_ABIERTO3), y 2 estados internos (EditandoDatos → GuardandoDatos con loop de modificación). La trazabilidad apunta a `PATCH /grados/:id` con `UpdateGradoDto` y `DELETE /grados/:id`, implementados en `GradosService.update()` y `GradosService.remove()`.
+
