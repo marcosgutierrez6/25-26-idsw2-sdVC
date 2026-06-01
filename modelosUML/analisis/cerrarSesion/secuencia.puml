@@ -1,0 +1,29 @@
+@startuml secuencia-cerrarSesion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente / Admin. institucional" as a
+boundary CerrarSesionView
+entity AuthStore
+
+== Flujo Principal - Confirmar Cierre ==
+
+a -> CerrarSesionView: solicita cerrar sesión
+activate CerrarSesionView
+CerrarSesionView --> a: presenta confirmación con usuario actual
+
+a -> CerrarSesionView: confirma cierre
+CerrarSesionView -> AuthStore: logout()
+activate AuthStore
+AuthStore --> CerrarSesionView: ok
+deactivate AuthStore
+CerrarSesionView --> a: redirige a SESION_CERRADA
+deactivate CerrarSesionView
+
+== Flujo Alternativo - Cancelar ==
+
+a -> CerrarSesionView: cancela cierre
+CerrarSesionView --> a: vuelve a SISTEMA_DISPONIBLE
+
+@enduml

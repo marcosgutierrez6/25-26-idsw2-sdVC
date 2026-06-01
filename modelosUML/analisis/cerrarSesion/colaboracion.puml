@@ -1,0 +1,26 @@
+@startuml colaboracion-cerrarSesion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente /\nAdmin.\ninstitucional" as a
+boundary "CerrarSesionView" as v
+entity "AuthStore" as st
+
+a -> v : 1: solicita cerrar\nsesión
+v --> a : 2: presenta\nconfirmación\ncon usuario
+
+a -> v : 3: confirma\ncierre
+v -> st : 4: logout()
+st --> v : ok
+v --> a : 5: redirige a\nSESION_CERRADA
+
+note right of st
+  logout():
+  • limpia user
+  • limpia token
+  • removeItem
+  localStorage
+end note
+
+@enduml

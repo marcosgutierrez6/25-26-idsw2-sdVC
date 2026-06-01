@@ -503,3 +503,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Primer caso de uso de autenticación, con actor UsuarioNoRegistrado, entrada única desde SESION_CERRADA, 3 estados internos (SolicitandoAcceso → ProporcionandoCredenciales → ValidandoCredenciales con loop por credenciales inválidas), y salida única a SISTEMA_DISPONIBLE. Se incluye AuthStore (Pinia) como clase de análisis para persistencia del token. Trazabilidad: `POST /auth/login` con `AuthService.login()` (bcrypt + JWT).
 
+---
+
+## [21:01] Análisis RUP de cerrarSesion()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `cerrarSesion()` (#31, Docente y Administrador institucional). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/cerrarSesion/README.md` con análisis completo (BCE: CerrarSesionView, AuthStore)
+- Creados `modelosUML/analisis/cerrarSesion/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/cerrarSesion/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Caso de uso simple (solo vista + store, sin controller ni backend), con entrada única desde SISTEMA_DISPONIBLE, 2 estados internos (SolicitandoCierre → ConfirmandoCierre con choice confirmar/cancelar), y salida dual (SESION_CERRADA o SISTEMA_DISPONIBLE). Trazabilidad: `AuthStore.logout()` elimina token de localStorage. No requiere endpoint REST.
+
