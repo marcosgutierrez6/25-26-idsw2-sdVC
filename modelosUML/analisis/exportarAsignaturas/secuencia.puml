@@ -1,0 +1,21 @@
+@startuml secuencia-exportarAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "exportarConfiguracionGlobal" as parent
+entity AsignaturasService
+entity Asignatura
+
+== Flujo Principal - Exportar Asignaturas ==
+
+parent -> AsignaturasService: exportarAsignaturas()
+activate AsignaturasService
+AsignaturasService -> Asignatura: findAll() con grado y profesor
+activate Asignatura
+Asignatura --> AsignaturasService: lista de asignaturas
+deactivate Asignatura
+AsignaturasService --> parent: datos de asignaturas
+deactivate AsignaturasService
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml colaboracion-exportarAsignaturas
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+entity "AsignaturasService" as s
+entity "Asignatura" as e
+
+a -> s : 1: exportarConfiguracionGlobal\nsolicita exportar\nasignaturas
+s -> e : 1.1: consulta todas\nlas asignaturas\ncon grado y\nprofesor
+e --> s : lista de\nasignaturas
+s --> a : datos para\ncompilación
+
+note right of s
+  findAll() con
+  include:
+  grado, profesor
+end note
+
+note left of a
+  Sin Boundary
+  ni Controller:
+  caso abstracto
+end note
+
+@enduml

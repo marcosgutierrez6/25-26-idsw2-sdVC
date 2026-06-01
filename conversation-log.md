@@ -629,3 +629,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón que importarAsignaturas, con entrada única desde GRADOS_ABIERTO, 3 estados internos con loop de error/cancelación, y salida a GRADOS_ABIERTO2. Trazabilidad: `POST /grados` con `GradosService.create()`.
 
+---
+
+## [21:11] Análisis RUP de exportarAsignaturas()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `exportarAsignaturas()` (#40, Docente, Abstracto). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/exportarAsignaturas/README.md` con análisis completo (BCE: AsignaturasService, Asignatura — sin Boundary ni Controller por ser abstracto)
+- Creados `modelosUML/analisis/exportarAsignaturas/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/exportarAsignaturas/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón que exportarAlumnos/exportarPreguntas: sub-operación de exportarConfiguracionGlobal, 2 estados internos (RequiringExport → ProvidingAsignaturas), sin vista ni controlador. Trazabilidad: `AsignaturasService.findAll()` con include.
+
