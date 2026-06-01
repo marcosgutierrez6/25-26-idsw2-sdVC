@@ -405,3 +405,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el patrón de visualización con entrada dual (SISTEMA_DISPONIBLE, ALUMNO_ABIERTO), 2 estados internos (MostrandoAlumnos → FiltrandoAlumnos), y salida única a ALUMNOS_ABIERTO. Trazabilidad: `GET /alumnos` con `AlumnosService.findAll()`.
 
+---
+
+## [20:50] Análisis RUP de verDocentes()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verDocentes()` (#24, Administrador institucional). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/verDocentes/README.md` con análisis completo (BCE: VerDocentesView, ProfesoresController, ProfesoresService, Profesor)
+- Creados `modelosUML/analisis/verDocentes/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verDocentes/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón de visualización con entrada dual (SISTEMA_DISPONIBLE, DOCENTE_ABIERTO), 2 estados internos (MostrandoDocentes → FiltrandoDocentes), salida única a DOCENTES_ABIERTO. Trazabilidad: `GET /profesores` con `ProfesoresService.findAll()` (`omit: { password: true }`).
+

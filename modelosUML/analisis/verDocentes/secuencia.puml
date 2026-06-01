@@ -1,0 +1,45 @@
+@startuml secuencia-verDocentes
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador\ninstitucional" as a
+boundary VerDocentesView
+control ProfesoresController
+entity ProfesoresService
+entity Profesor
+
+== Flujo Principal - Carga Inicial ==
+
+a -> VerDocentesView: solicita ver docentes
+activate VerDocentesView
+VerDocentesView -> ProfesoresController: findAll()
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: findAll()
+activate ProfesoresService
+ProfesoresService -> Profesor: consulta docentes
+activate Profesor
+Profesor --> ProfesoresService: lista de docentes
+deactivate Profesor
+ProfesoresService --> ProfesoresController: docentes (sin password)
+deactivate ProfesoresService
+ProfesoresController --> VerDocentesView: { profesores }
+deactivate ProfesoresController
+VerDocentesView --> a: presenta tabla con acciones
+
+== Flujo Alternativo - Filtrado ==
+
+a -> VerDocentesView: aplica filtro de búsqueda
+activate VerDocentesView
+VerDocentesView -> ProfesoresController: findAll(filtro)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: findAll(filtro)
+activate ProfesoresService
+ProfesoresService --> ProfesoresController: lista filtrada
+deactivate ProfesoresService
+ProfesoresController --> VerDocentesView: { profesores filtrados }
+deactivate ProfesoresController
+VerDocentesView --> a: actualiza tabla
+deactivate VerDocentesView
+
+@enduml
