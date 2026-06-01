@@ -1,0 +1,35 @@
+@startuml colaboracion-eliminarAlumno
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EliminarAlumnoView" as v
+control "AlumnosController" as c
+entity "AlumnosService" as s
+entity "Alumno" as e
+
+a -> v : 1: solicita eliminar\nalumno
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\nalumno con\ngrado y\nasignaturas
+e --> s : datos\ncompletos
+s --> c : alumno con\nrelaciones
+c --> v : { alumno }
+v --> a : 4: presenta info\ny advertencia
+
+a -> v : 5: confirma\neliminación
+v -> c : 6: remove(id)
+c -> s : 7: remove(id)
+s -> e : 7.1: verifica\nexistencia\ny elimina
+e --> s : ok
+s --> c : alumno\neliminado
+c --> v : ok
+v --> a : 8: vuelve a\nlistado\nactualizado
+
+note right of c
+  GET /alumnos/:id
+  DELETE /alumnos/:id
+end note
+
+@enduml

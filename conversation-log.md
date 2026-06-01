@@ -461,3 +461,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón que eliminarAsignatura, con entrada dual (GRADOS_ABIERTO, GRADO_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoGrado), y salida triple (GRADOS_ABIERTO2 confirmado, GRADOS_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /grados/:id` con `GradosService.remove()`.
 
+---
+
+## [20:58] Análisis RUP de eliminarAlumno()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `eliminarAlumno()` (#28, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/eliminarAlumno/README.md` con análisis completo (BCE: EliminarAlumnoView, AlumnosController, AlumnosService, Alumno)
+- Creados `modelosUML/analisis/eliminarAlumno/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/eliminarAlumno/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón de eliminación, con entrada dual (ALUMNOS_ABIERTO, ALUMNO_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoAlumno), y salida triple (ALUMNOS_ABIERTO2 confirmado, ALUMNOS_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /alumnos/:id` con `AlumnosService.remove()`.
+
