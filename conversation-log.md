@@ -391,3 +391,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de visualización que `verAsignaturas()`, con entrada dual (SISTEMA_DISPONIBLE, GRADO_ABIERTO), 2 estados internos (MostrandoGrados → FiltrandoGrados con auto-loop), y salida única a GRADOS_ABIERTO. La trazabilidad apunta a `GET /grados` implementado en `GradosService.findAll()`.
 
+---
+
+## [17:25] Análisis RUP de verAlumnos()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verAlumnos()` (#23, Docente). Crear análisis RUP (BCE) siguiendo el patrón de visualización.
+
+**Resultado:**
+- Creado `documents/analisis/verAlumnos/README.md` con análisis completo (BCE: VerAlumnosView, AlumnosController, AlumnosService, Alumno)
+- Creados `modelosUML/analisis/verAlumnos/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verAlumnos/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el patrón de visualización con entrada dual (SISTEMA_DISPONIBLE, ALUMNO_ABIERTO), 2 estados internos (MostrandoAlumnos → FiltrandoAlumnos), y salida única a ALUMNOS_ABIERTO. Trazabilidad: `GET /alumnos` con `AlumnosService.findAll()`.
+

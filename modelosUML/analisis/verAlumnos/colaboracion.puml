@@ -1,0 +1,34 @@
+@startuml colaboracion-verAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "VerAlumnosView" as v
+control "AlumnosController" as c
+entity "AlumnosService" as s
+entity "Alumno" as e
+
+a -> v : 1: solicita ver\nalumnos
+v -> c : 2: findAll()
+c -> s : 3: findAll()
+s -> e : 3.1: consulta\nalumnos con grado
+e --> s : lista de\nalumnos
+s --> c : alumnos con\ngrado
+c --> v : { alumnos }
+v --> a : 4: presenta tabla\ncon acciones
+
+a -> v : 5: aplica filtro\nde búsqueda
+v -> c : 6: findAll(filtro)
+c -> s : 7: findAll(filtro)
+s --> c : lista\nfiltrada
+c --> v : { alumnos\nfiltrados }
+v --> a : 8: actualiza tabla
+
+note right of c
+  GET /alumnos
+  con include:
+  grado
+end note
+
+@enduml

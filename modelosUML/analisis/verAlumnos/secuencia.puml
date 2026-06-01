@@ -1,0 +1,45 @@
+@startuml secuencia-verAlumnos
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary VerAlumnosView
+control AlumnosController
+entity AlumnosService
+entity Alumno
+
+== Flujo Principal - Carga Inicial ==
+
+Docente -> VerAlumnosView: solicita ver alumnos
+activate VerAlumnosView
+VerAlumnosView -> AlumnosController: findAll()
+activate AlumnosController
+AlumnosController -> AlumnosService: findAll()
+activate AlumnosService
+AlumnosService -> Alumno: consulta alumnos con grado
+activate Alumno
+Alumno --> AlumnosService: lista de alumnos
+deactivate Alumno
+AlumnosService --> AlumnosController: alumnos con grado
+deactivate AlumnosService
+AlumnosController --> VerAlumnosView: { alumnos }
+deactivate AlumnosController
+VerAlumnosView --> Docente: presenta tabla con acciones
+
+== Flujo Alternativo - Filtrado ==
+
+Docente -> VerAlumnosView: aplica filtro de búsqueda
+activate VerAlumnosView
+VerAlumnosView -> AlumnosController: findAll(filtro)
+activate AlumnosController
+AlumnosController -> AlumnosService: findAll(filtro)
+activate AlumnosService
+AlumnosService --> AlumnosController: lista filtrada
+deactivate AlumnosService
+AlumnosController --> VerAlumnosView: { alumnos filtrados }
+deactivate AlumnosController
+VerAlumnosView --> Docente: actualiza tabla
+deactivate VerAlumnosView
+
+@enduml

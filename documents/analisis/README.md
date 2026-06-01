@@ -49,6 +49,7 @@ modelosUML/analisis/
 | verPreguntas | Completado |
 | verAsignaturas | Completado |
 | verGrados | Completado |
+| verAlumnos | Completado |
 
 ## Cómo crear un nuevo análisis
 
