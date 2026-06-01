@@ -1,0 +1,52 @@
+@startuml secuencia-eliminarRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EliminarRespuestaView
+control RespuestasController
+entity RespuestasService
+entity Respuesta
+
+== Flujo Principal - Confirmar Eliminación ==
+
+Docente -> EliminarRespuestaView: solicita eliminar respuesta
+activate EliminarRespuestaView
+EliminarRespuestaView -> RespuestasController: findOne(id)
+activate RespuestasController
+RespuestasController -> RespuestasService: findOne(id)
+activate RespuestasService
+RespuestasService -> Respuesta: consulta respuesta
+activate Respuesta
+Respuesta --> RespuestasService: datos de respuesta
+deactivate Respuesta
+RespuestasService --> RespuestasController: { respuesta }
+deactivate RespuestasService
+RespuestasController --> EliminarRespuestaView: { respuesta }
+deactivate RespuestasController
+EliminarRespuestaView --> Docente: presenta info y advertencia
+
+Docente -> EliminarRespuestaView: confirma eliminación
+activate EliminarRespuestaView
+EliminarRespuestaView -> RespuestasController: remove(id)
+activate RespuestasController
+RespuestasController -> RespuestasService: remove(id)
+activate RespuestasService
+RespuestasService -> Respuesta: verifica existencia y elimina
+activate Respuesta
+Respuesta --> RespuestasService: ok
+deactivate Respuesta
+RespuestasService --> RespuestasController: respuesta eliminada
+deactivate RespuestasService
+RespuestasController --> EliminarRespuestaView: ok
+deactivate RespuestasController
+EliminarRespuestaView --> Docente: vuelve a listado actualizado
+deactivate EliminarRespuestaView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> EliminarRespuestaView: cancela eliminación
+EliminarRespuestaView --> Docente: vuelve a listado anterior
+
+@enduml

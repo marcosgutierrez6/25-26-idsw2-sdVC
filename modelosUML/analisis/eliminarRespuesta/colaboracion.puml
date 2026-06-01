@@ -1,0 +1,35 @@
+@startuml colaboracion-eliminarRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "EliminarRespuestaView" as v
+control "RespuestasController" as c
+entity "RespuestasService" as s
+entity "Respuesta" as e
+
+a -> v : 1: solicita eliminar\nrespuesta
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\nrespuesta
+e --> s : datos de\nrespuesta
+s --> c : { respuesta }
+c --> v : { respuesta }
+v --> a : 4: presenta info\ny advertencia
+
+a -> v : 5: confirma\neliminación
+v -> c : 6: remove(id)
+c -> s : 7: remove(id)
+s -> e : 7.1: verifica\ny elimina
+e --> s : ok
+s --> c : respuesta\neliminada
+c --> v : ok
+v --> a : 8: vuelve a\nlistado\nactualizado
+
+note right of c
+  GET /respuestas/:id
+  DELETE /respuestas/:id
+end note
+
+@enduml

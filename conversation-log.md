@@ -573,3 +573,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Patrón de edición con 4 orígenes de entrada, 2 estados internos (EditandoDatos ⇄ GuardandoDatos con loop de modificación), y salida séxtuple (guardar, cancelar, eliminar desde contexto global o contextual). Trazabilidad: `PATCH /respuestas/:id` con `RespuestasService.update()` y `DELETE /respuestas/:id` con `RespuestasService.remove()`.
 
+---
+
+## [21:06] Análisis RUP de eliminarRespuesta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `eliminarRespuesta()` (#36, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/eliminarRespuesta/README.md` con análisis completo (BCE: EliminarRespuestaView, RespuestasController, RespuestasService, Respuesta)
+- Creados `modelosUML/analisis/eliminarRespuesta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/eliminarRespuesta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón de eliminación, con entrada dual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoRespuesta), y salida cuádruple (listados actualizados o cancelación). Trazabilidad: `DELETE /respuestas/:id` con `RespuestasService.remove()`.
+
