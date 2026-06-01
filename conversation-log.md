@@ -489,3 +489,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón de eliminación, con actor Administrador institucional, entrada dual (DOCENTES_ABIERTO, DOCENTE_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoDocente), y salida triple (DOCENTES_ABIERTO2 confirmado, DOCENTES_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /profesores/:id` con `ProfesoresService.remove()`.
 
+---
+
+## [21:00] Análisis RUP de iniciarSesion()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `iniciarSesion()` (#30, Docente y Administrador institucional). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/iniciarSesion/README.md` con análisis completo (BCE: LoginView, AuthController, AuthService, Profesor, AuthStore)
+- Creados `modelosUML/analisis/iniciarSesion/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/iniciarSesion/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Primer caso de uso de autenticación, con actor UsuarioNoRegistrado, entrada única desde SESION_CERRADA, 3 estados internos (SolicitandoAcceso → ProporcionandoCredenciales → ValidandoCredenciales con loop por credenciales inválidas), y salida única a SISTEMA_DISPONIBLE. Se incluye AuthStore (Pinia) como clase de análisis para persistencia del token. Trazabilidad: `POST /auth/login` con `AuthService.login()` (bcrypt + JWT).
+

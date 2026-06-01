@@ -1,0 +1,60 @@
+@startuml secuencia-iniciarSesion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "UsuarioNoRegistrado" as a
+boundary LoginView
+control AuthController
+entity AuthService
+entity Profesor
+entity AuthStore
+
+== Flujo Principal - Login Exitoso ==
+
+a -> LoginView: solicita acceder al sistema
+activate LoginView
+LoginView --> a: presenta formulario (email, contraseña)
+
+a -> LoginView: introduce email y contraseña
+LoginView -> AuthController: login(email, password)
+activate AuthController
+AuthController -> AuthService: login(email, password)
+activate AuthService
+AuthService -> Profesor: busca profesor por email
+activate Profesor
+Profesor --> AuthService: profesor o null
+deactivate Profesor
+AuthService -> Profesor: compara password con bcrypt
+activate Profesor
+Profesor --> AuthService: coincide / no coincide
+deactivate Profesor
+AuthService --> AuthController: { access_token, user }
+deactivate AuthService
+AuthController --> LoginView: { access_token, user }
+deactivate AuthController
+LoginView -> AuthStore: guarda token y usuario
+LoginView --> a: redirige a SISTEMA_DISPONIBLE
+deactivate LoginView
+
+== Flujo Alternativo - Credenciales Inválidas ==
+
+a -> LoginView: introduce email y contraseña erróneos
+activate LoginView
+LoginView -> AuthController: login(email, password)
+activate AuthController
+AuthController -> AuthService: login(email, password)
+activate AuthService
+AuthService -> Profesor: busca profesor por email
+activate Profesor
+Profesor --> AuthService: null
+deactivate Profesor
+AuthService --> AuthController: UnauthorizedException
+deactivate AuthService
+AuthController --> LoginView: error
+deactivate AuthController
+LoginView --> a: muestra "Credenciales inválidas"
+a -> LoginView: reintenta con nuevas credenciales
+deactivate LoginView
+
+@enduml
