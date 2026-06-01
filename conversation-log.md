@@ -377,3 +377,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. El análisis sigue el mismo patrón de visualización que `verPreguntas()`, con entrada dual (SISTEMA_DISPONIBLE, ASIGNATURA_ABIERTO), 2 estados internos (MostrandoAsignaturas → FiltrandoAsignaturas con auto-loop), y salida única a ASIGNATURAS_ABIERTO. La trazabilidad apunta a `GET /asignaturas` implementado en `AsignaturasService.findAll()`.
 
+---
+
+## [17:20] Análisis RUP de verGrados()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `verGrados()` (#22, Docente). Crear análisis RUP (BCE) siguiendo el mismo patrón de visualización que `verAsignaturas()`.
+
+**Resultado:**
+- Creado `documents/analisis/verGrados/README.md` con análisis completo (BCE: VerGradosView, GradosController, GradosService, Grado)
+- Creados `modelosUML/analisis/verGrados/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/verGrados/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. El análisis sigue el mismo patrón de visualización que `verAsignaturas()`, con entrada dual (SISTEMA_DISPONIBLE, GRADO_ABIERTO), 2 estados internos (MostrandoGrados → FiltrandoGrados con auto-loop), y salida única a GRADOS_ABIERTO. La trazabilidad apunta a `GET /grados` implementado en `GradosService.findAll()`.
+

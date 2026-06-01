@@ -1,0 +1,32 @@
+@startuml colaboracion-verGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "VerGradosView" as v
+control "GradosController" as c
+entity "GradosService" as s
+entity "Grado" as e
+
+a -> v : 1: solicita ver\ngrados
+v -> c : 2: findAll()
+c -> s : 3: findAll()
+s -> e : 3.1: consulta\ntodos los grados
+e --> s : lista de\ngrados
+s --> c : grados
+c --> v : { grados }
+v --> a : 4: presenta tabla\ncon acciones
+
+a -> v : 5: aplica filtro\nde búsqueda
+v -> c : 6: findAll(filtro)
+c -> s : 7: findAll(filtro)
+s --> c : lista\nfiltrada
+c --> v : { grados\nfiltrados }
+v --> a : 8: actualiza tabla
+
+note right of c
+  GET /grados
+end note
+
+@enduml

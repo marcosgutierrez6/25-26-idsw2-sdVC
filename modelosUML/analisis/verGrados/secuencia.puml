@@ -1,0 +1,54 @@
+@startuml secuencia-verGrados
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary VerGradosView
+control GradosController
+entity GradosService
+entity Grado
+
+== Flujo Principal - Carga Inicial ==
+
+Docente -> VerGradosView: solicita ver grados
+activate VerGradosView
+VerGradosView -> GradosController: findAll()
+activate GradosController
+GradosController -> GradosService: findAll()
+activate GradosService
+GradosService -> Grado: consulta todos los grados
+activate Grado
+Grado --> GradosService: lista de grados
+deactivate Grado
+GradosService --> GradosController: grados
+deactivate GradosService
+GradosController --> VerGradosView: { grados }
+deactivate GradosController
+VerGradosView --> Docente: presenta tabla con acciones
+
+== Flujo Alternativo - Filtrado ==
+
+Docente -> VerGradosView: aplica filtro de búsqueda
+activate VerGradosView
+VerGradosView -> GradosController: findAll(filtro)
+activate GradosController
+GradosController -> GradosService: findAll(filtro)
+activate GradosService
+GradosService --> GradosController: lista filtrada
+deactivate GradosService
+GradosController --> VerGradosView: { grados filtrados }
+deactivate GradosController
+VerGradosView --> Docente: actualiza tabla
+deactivate VerGradosView
+
+== Flujo Alternativo - Error de Consulta ==
+
+Docente -> VerGradosView: solicita ver grados
+VerGradosView -> GradosController: findAll()
+GradosController -> GradosService: findAll()
+GradosService --> GradosController: error
+GradosController --> VerGradosView: error
+VerGradosView --> Docente: muestra mensaje de error
+
+@enduml
