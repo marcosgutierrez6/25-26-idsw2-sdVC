@@ -1,0 +1,26 @@
+@startuml secuencia-completarGestion
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente / Admin. institucional" as a
+boundary DashboardView
+entity AuthStore
+
+== Flujo Principal - Presentar Menú ==
+
+a -> DashboardView: solicita disponibilizar sistema
+activate DashboardView
+DashboardView -> AuthStore: obtiene rol y opciones
+activate AuthStore
+AuthStore --> DashboardView: { rol, opciones }
+deactivate AuthStore
+DashboardView --> a: presenta menú principal según rol
+
+== Flujo Alternativo - Navegación ==
+
+a -> DashboardView: selecciona opción del menú
+DashboardView --> a: navega a funcionalidad específica
+deactivate DashboardView
+
+@enduml

@@ -58,6 +58,7 @@ modelosUML/analisis/
 | eliminarDocente | Completado |
 | iniciarSesion | Completado |
 | cerrarSesion | Completado |
+| completarGestion | Completado |
 
 ## Cómo crear un nuevo análisis
 

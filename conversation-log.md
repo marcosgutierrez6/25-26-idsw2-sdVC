@@ -517,3 +517,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Caso de uso simple (solo vista + store, sin controller ni backend), con entrada única desde SISTEMA_DISPONIBLE, 2 estados internos (SolicitandoCierre → ConfirmandoCierre con choice confirmar/cancelar), y salida dual (SESION_CERRADA o SISTEMA_DISPONIBLE). Trazabilidad: `AuthStore.logout()` elimina token de localStorage. No requiere endpoint REST.
 
+---
+
+## [21:02] Análisis RUP de completarGestion()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `completarGestion()` (#32, Docente y Administrador institucional). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/completarGestion/README.md` con análisis completo (BCE: DashboardView, AuthStore)
+- Creados `modelosUML/analisis/completarGestion/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/completarGestion/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Caso de uso central (dashboard/menú principal), con 7 orígenes de entrada (todos los listados del sistema), 1 estado interno (PresentandoOpciones), y salida única a SISTEMA_DISPONIBLE. El menú se adapta según el rol (AuthStore). Trazabilidad: `DashboardView.vue` y router.
+
