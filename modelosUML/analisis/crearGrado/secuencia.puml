@@ -1,0 +1,45 @@
+@startuml secuencia-crearGrado
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CrearGradoView
+control GradosController
+entity GradosService
+entity Grado
+
+== Flujo Principal - Creación Exitosa ==
+
+Docente -> CrearGradoView: solicita crear grado nuevo
+activate CrearGradoView
+CrearGradoView --> Docente: presenta formulario con campos
+Docente -> CrearGradoView: rellena datos y pulsa "Crear Grado"
+CrearGradoView -> GradosController: create(createGradoDto)
+activate GradosController
+GradosController -> GradosService: create(createGradoDto)
+activate GradosService
+GradosService -> Grado: crea el grado
+activate Grado
+Grado --> GradosService: grado creado
+deactivate Grado
+GradosService --> GradosController: grado creado
+deactivate GradosService
+GradosController --> CrearGradoView: { grado }
+deactivate GradosController
+CrearGradoView --> Docente: muestra resultado y transiciona a editarGrado()
+
+== Flujo Alternativo - Error de Validación ==
+
+Docente -> CrearGradoView: rellena datos y pulsa "Crear Grado"
+CrearGradoView -> GradosController: create(createGradoDto)
+GradosController --> CrearGradoView: error de validación
+CrearGradoView --> Docente: muestra mensaje de error
+
+== Flujo Alternativo - Cancelación ==
+
+Docente -> CrearGradoView: pulsa "Cancelar"
+CrearGradoView --> Docente: vuelve al listado de grados
+deactivate CrearGradoView
+
+@enduml

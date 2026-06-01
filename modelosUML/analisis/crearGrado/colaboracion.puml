@@ -1,0 +1,27 @@
+@startuml colaboracion-crearGrado
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CrearGradoView" as v
+control "GradosController" as c
+entity "GradosService" as s
+entity "Grado" as e
+
+a -> v : 1: solicita crear\ngrado nuevo
+v -> c : 2: create(\ncreateGradoDto)
+c -> s : 3: create(\ncreateGradoDto)
+s -> e : 3.1: crea el grado
+e --> s : grado creado
+s --> c : grado creado
+c --> v : { grado }
+v --> a : 4: muestra resultado\ny transiciona a\neditarGrado()
+
+note right of c
+  Valida DTO y
+  verifica unicidad
+  del codigo
+end note
+
+@enduml
