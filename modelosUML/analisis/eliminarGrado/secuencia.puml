@@ -1,0 +1,52 @@
+@startuml secuencia-eliminarGrado
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary EliminarGradoView
+control GradosController
+entity GradosService
+entity Grado
+
+== Flujo Principal - Confirmar Eliminación ==
+
+Docente -> EliminarGradoView: solicita eliminar grado
+activate EliminarGradoView
+EliminarGradoView -> GradosController: findOne(id)
+activate GradosController
+GradosController -> GradosService: findOne(id)
+activate GradosService
+GradosService -> Grado: consulta con relaciones
+activate Grado
+Grado --> GradosService: datos completos
+deactivate Grado
+GradosService --> GradosController: grado con relaciones
+deactivate GradosService
+GradosController --> EliminarGradoView: { grado }
+deactivate GradosController
+EliminarGradoView --> Docente: presenta info y advertencia
+
+Docente -> EliminarGradoView: confirma eliminación
+activate EliminarGradoView
+EliminarGradoView -> GradosController: remove(id)
+activate GradosController
+GradosController -> GradosService: remove(id)
+activate GradosService
+GradosService -> Grado: verifica existencia y elimina
+activate Grado
+Grado --> GradosService: ok
+deactivate Grado
+GradosService --> GradosController: grado eliminado
+deactivate GradosService
+GradosController --> EliminarGradoView: ok
+deactivate GradosController
+EliminarGradoView --> Docente: vuelve a listado actualizado
+deactivate EliminarGradoView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> EliminarGradoView: cancela eliminación
+EliminarGradoView --> Docente: vuelve a listado anterior
+
+@enduml
