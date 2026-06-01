@@ -475,3 +475,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Mismo patrón de eliminación, con entrada dual (ALUMNOS_ABIERTO, ALUMNO_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoAlumno), y salida triple (ALUMNOS_ABIERTO2 confirmado, ALUMNOS_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /alumnos/:id` con `AlumnosService.remove()`.
 
+---
+
+## [20:59] Análisis RUP de eliminarDocente()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `eliminarDocente()` (#29, Administrador institucional). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/eliminarDocente/README.md` con análisis completo (BCE: EliminarDocenteView, ProfesoresController, ProfesoresService, Profesor)
+- Creados `modelosUML/analisis/eliminarDocente/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/eliminarDocente/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Mismo patrón de eliminación, con actor Administrador institucional, entrada dual (DOCENTES_ABIERTO, DOCENTE_ABIERTO), 2 estados internos (ConfirmandoEliminacion → EliminandoDocente), y salida triple (DOCENTES_ABIERTO2 confirmado, DOCENTES_ABIERTO3/4 cancelación). Trazabilidad: `DELETE /profesores/:id` con `ProfesoresService.remove()`.
+

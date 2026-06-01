@@ -1,0 +1,35 @@
+@startuml colaboracion-eliminarDocente
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador\ninstitucional" as a
+boundary "EliminarDocenteView" as v
+control "ProfesoresController" as c
+entity "ProfesoresService" as s
+entity "Profesor" as e
+
+a -> v : 1: solicita eliminar\ndocente
+v -> c : 2: findOne(id)
+c -> s : 3: findOne(id)
+s -> e : 3.1: consulta\ndocente con\nasignaturas
+e --> s : datos\ncompletos
+s --> c : docente con\nrelaciones
+c --> v : { profesor }
+v --> a : 4: presenta info\ny advertencia
+
+a -> v : 5: confirma\neliminación
+v -> c : 6: remove(id)
+c -> s : 7: remove(id)
+s -> e : 7.1: verifica\nexistencia\ny elimina
+e --> s : ok
+s --> c : docente\neliminado
+c --> v : ok
+v --> a : 8: vuelve a\nlistado\nactualizado
+
+note right of c
+  GET /profesores/:id
+  DELETE /profesores/:id
+end note
+
+@enduml

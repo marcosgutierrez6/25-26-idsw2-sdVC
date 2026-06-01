@@ -1,0 +1,52 @@
+@startuml secuencia-eliminarDocente
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Administrador\ninstitucional" as a
+boundary EliminarDocenteView
+control ProfesoresController
+entity ProfesoresService
+entity Profesor
+
+== Flujo Principal - Confirmar Eliminación ==
+
+a -> EliminarDocenteView: solicita eliminar docente
+activate EliminarDocenteView
+EliminarDocenteView -> ProfesoresController: findOne(id)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: findOne(id)
+activate ProfesoresService
+ProfesoresService -> Profesor: consulta con asignaturas
+activate Profesor
+Profesor --> ProfesoresService: datos completos
+deactivate Profesor
+ProfesoresService --> ProfesoresController: docente con relaciones
+deactivate ProfesoresService
+ProfesoresController --> EliminarDocenteView: { profesor }
+deactivate ProfesoresController
+EliminarDocenteView --> a: presenta info y advertencia
+
+a -> EliminarDocenteView: confirma eliminación
+activate EliminarDocenteView
+EliminarDocenteView -> ProfesoresController: remove(id)
+activate ProfesoresController
+ProfesoresController -> ProfesoresService: remove(id)
+activate ProfesoresService
+ProfesoresService -> Profesor: verifica existencia y elimina
+activate Profesor
+Profesor --> ProfesoresService: ok
+deactivate Profesor
+ProfesoresService --> ProfesoresController: docente eliminado
+deactivate ProfesoresService
+ProfesoresController --> EliminarDocenteView: ok
+deactivate ProfesoresController
+EliminarDocenteView --> a: vuelve a listado actualizado
+deactivate EliminarDocenteView
+
+== Flujo Alternativo - Cancelar ==
+
+a -> EliminarDocenteView: cancela eliminación
+EliminarDocenteView --> a: vuelve a listado anterior
+
+@enduml
