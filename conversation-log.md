@@ -351,7 +351,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ---
 
-## [17:05] Análisis RUP de verPreguntas()
+## [20:05] Análisis RUP de verPreguntas()
 
 **Prompt:** Analizar el siguiente caso de uso según la priorización: `verPreguntas()` (#20, Docente). Es el primer caso de uso de tipo "visualización" (ver/listar). Crear análisis RUP (BCE) adaptado a un flujo de solo lectura con filtros.
 
@@ -365,7 +365,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ---
 
-## [17:15] Análisis RUP de verAsignaturas()
+## [20:15] Análisis RUP de verAsignaturas()
 
 **Prompt:** Analizar el siguiente caso de uso según la priorización: `verAsignaturas()` (#21, Docente). Crear análisis RUP (BCE) siguiendo el mismo patrón de visualización que `verPreguntas()`, adaptado para asignaturas.
 
@@ -379,7 +379,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ---
 
-## [17:20] Análisis RUP de verGrados()
+## [20:20] Análisis RUP de verGrados()
 
 **Prompt:** Analizar el siguiente caso de uso según la priorización: `verGrados()` (#22, Docente). Crear análisis RUP (BCE) siguiendo el mismo patrón de visualización que `verAsignaturas()`.
 
@@ -393,7 +393,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ---
 
-## [17:25] Análisis RUP de verAlumnos()
+## [20:25] Análisis RUP de verAlumnos()
 
 **Prompt:** Analizar el siguiente caso de uso según la priorización: `verAlumnos()` (#23, Docente). Crear análisis RUP (BCE) siguiendo el patrón de visualización.
 
