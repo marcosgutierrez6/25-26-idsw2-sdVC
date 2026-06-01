@@ -60,6 +60,7 @@ modelosUML/analisis/
 | cerrarSesion | Completado |
 | completarGestion | Completado |
 | verRespuestas | Completado |
+| crearRespuesta | Completado |
 
 ## Cómo crear un nuevo análisis
 

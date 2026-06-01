@@ -1,0 +1,56 @@
+@startuml secuencia-crearRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor Docente
+boundary CrearRespuestaView
+control RespuestasController
+entity RespuestasService
+entity Respuesta
+
+== Flujo Principal - Creación Exitosa ==
+
+Docente -> CrearRespuestaView: solicita crear respuesta
+activate CrearRespuestaView
+CrearRespuestaView --> Docente: presenta formulario
+
+Docente -> CrearRespuestaView: introduce contenido y correcta
+CrearRespuestaView -> RespuestasController: create(dto)
+activate RespuestasController
+RespuestasController -> RespuestasService: create(dto)
+activate RespuestasService
+RespuestasService -> Respuesta: cuenta respuestas por preguntaId
+activate Respuesta
+Respuesta --> RespuestasService: count
+deactivate Respuesta
+group regla [count < 5]
+RespuestasService -> Respuesta: crea respuesta
+activate Respuesta
+Respuesta --> RespuestasService: respuesta creada
+deactivate Respuesta
+end
+RespuestasService --> RespuestasController: { respuesta }
+deactivate RespuestasService
+RespuestasController --> CrearRespuestaView: { respuesta }
+deactivate RespuestasController
+CrearRespuestaView --> Docente: transiciona a editarRespuesta(nuevaRespuesta)
+deactivate CrearRespuestaView
+
+== Flujo Alternativo - Cancelar ==
+
+Docente -> CrearRespuestaView: cancela creación
+CrearRespuestaView --> Docente: vuelve a listado
+
+== Flujo Alternativo - Máximo Alcanzado ==
+
+Docente -> CrearRespuestaView: introduce datos
+CrearRespuestaView -> RespuestasController: create(dto)
+RespuestasController -> RespuestasService: create(dto)
+RespuestasService -> Respuesta: cuenta respuestas
+Respuesta --> RespuestasService: 5 o más
+RespuestasService --> RespuestasController: BadRequestException
+RespuestasController --> CrearRespuestaView: error
+CrearRespuestaView --> Docente: muestra "Máximo 5 respuestas"
+
+@enduml

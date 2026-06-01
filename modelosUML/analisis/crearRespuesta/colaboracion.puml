@@ -1,0 +1,35 @@
+@startuml colaboracion-crearRespuesta
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Docente" as a
+boundary "CrearRespuestaView" as v
+control "RespuestasController" as c
+entity "RespuestasService" as s
+entity "Respuesta" as e
+
+a -> v : 1: solicita crear\nrespuesta
+v --> a : 2: presenta\nformulario
+
+a -> v : 3: introduce\ncontenido y\ncorrecta
+v -> c : 4: create(dto)
+c -> s : 5: create(dto)
+s -> e : 5.1: cuenta\nrespuestas por\npreguntaId
+e --> s : count
+s -> e : 5.2: crea\nrespuesta
+note right of s
+  Regla: máx. 5
+  respuestas por
+  pregunta
+end note
+e --> s : respuesta\ncreada
+s --> c : { respuesta }
+c --> v : { respuesta }
+v --> a : 6: transiciona a\neditarRespuesta\n(nuevaRespuesta)
+
+note right of c
+  POST /respuestas
+end note
+
+@enduml

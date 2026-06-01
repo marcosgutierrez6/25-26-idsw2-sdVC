@@ -545,3 +545,17 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Patrón de visualización con 4 orígenes de entrada (PREGUNTA_ABIERTO, RESPUESTA_ABIERTO, PREGUNTA_CONTEXTUAL_ABIERTO, RESPUESTA_CONTEXTUAL_ABIERTO), 2 estados internos (MostrandoRespuestas → FiltrandoRespuestas), y salida dual contextual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO). Trazabilidad: `GET /respuestas/pregunta/:preguntaId` con `RespuestasService.findByPregunta()`.
 
+---
+
+## [21:04] Análisis RUP de crearRespuesta()
+
+**Prompt:** Analizar el siguiente caso de uso según la priorización: `crearRespuesta()` (#34, Docente). Crear análisis RUP (BCE).
+
+**Resultado:**
+- Creado `documents/analisis/crearRespuesta/README.md` con análisis completo (BCE: CrearRespuestaView, RespuestasController, RespuestasService, Respuesta)
+- Creados `modelosUML/analisis/crearRespuesta/colaboracion.puml` y `secuencia.puml`
+- Generados SVGs via kroki.io (`images/analisis/crearRespuesta/`)
+- Actualizado `documents/analisis/README.md` (índice)
+
+**Decisión:** Se aceptó. Patrón de creación simple con entrada dual (RESPUESTAS_ABIERTO, RESPUESTAS_CONTEXTUALES_ABIERTO), 2 estados internos (SolicitandoDatosRespuesta → ProcesandoCreacion), y salida cuádruple (a editar o cancelación). Incluye regla de negocio: máximo 5 respuestas por pregunta. Trazabilidad: `POST /respuestas` con `RespuestasService.create()`.
+
