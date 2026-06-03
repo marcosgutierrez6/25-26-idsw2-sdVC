@@ -1,0 +1,78 @@
+@startuml
+title Diagrama de Secuencia - Importar Configuración Global (NestJS + Vue 3)
+
+actor "Usuario (Docente/Admin)" as User
+participant "Frontend (Vue 3)\nImportarConfigView" as FE
+participant "ConfiguracionController" as Controller
+participant "ConfiguracionService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a "Importar\nConfiguración Global"
+activate FE
+FE --> User: Muestra formulario\ncarga de archivo
+
+User -> FE: Selecciona archivo\nde configuración (.json/.csv)
+FE -> FE: Lee y previsualiza\ndatos del archivo
+FE --> User: Muestra resumen\nde datos a importar\n(Grados, Asigs, Alumnos, Pregs)
+
+User -> FE: Confirma importación
+FE -> Controller: POST /api/configuracion/importar\nbody: { archivo }
+activate Controller
+Controller -> Service: importarConfiguracion(datos)
+activate Service
+
+Service -> Service: Valida estructura\ndel archivo JSON\n(integridad referencial)
+
+alt Datos inválidos
+  Service --> Controller: lanza BadRequestException
+  Controller --> FE: 400 Bad Request
+  FE --> User: Muestra "Datos de\nconfiguración inválidos"
+else Datos válidos
+  Service -> Prisma: grado.createMany({ data: grados, skipDuplicates: true })
+  activate Prisma
+  Prisma -> DB: INSERT INTO Grado (batch)
+  activate DB
+  DB --> Prisma: grados creados
+  deactivate DB
+  Prisma --> Service: resultado grados
+  deactivate Prisma
+
+  Service -> Prisma: asignatura.createMany({ data: asignaturas, skipDuplicates: true })
+  activate Prisma
+  Prisma -> DB: INSERT INTO Asignatura (batch)
+  activate DB
+  DB --> Prisma: asignaturas creadas
+  deactivate DB
+  Prisma --> Service: resultado asignaturas
+  deactivate Prisma
+
+  Service -> Prisma: alumno.createMany({ data: alumnos, skipDuplicates: true })
+  activate Prisma
+  Prisma -> DB: INSERT INTO Alumno (batch)
+  activate DB
+  DB --> Prisma: alumnos creados
+  deactivate DB
+  Prisma --> Service: resultado alumnos
+  deactivate Prisma
+
+  Service -> Prisma: bateriaDePreguntas.createMany()\ny pregunta.createMany()
+  activate Prisma
+  Prisma -> DB: INSERT INTO BateriaDePreguntas\nINSERT INTO Pregunta (batch)
+  activate DB
+  DB --> Prisma: preguntas creadas
+  deactivate DB
+  Prisma --> Service: resultado preguntas
+  deactivate Prisma
+
+  Service --> Controller: { grados, asignaturas, alumnos, preguntas }
+end
+
+deactivate Service
+Controller --> FE: 201 Created\n{ resumen importación }
+deactivate Controller
+FE --> User: Muestra resultado\ndetallado por entidad
+FE -> FE: Redirige a Dashboard
+deactivate FE
+
+@enduml

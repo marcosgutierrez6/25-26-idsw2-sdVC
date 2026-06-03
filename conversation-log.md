@@ -666,34 +666,91 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 ## [21:15] Diseño de corregirExamenes() — primer artefacto de diseño (RUP)
 
 **Prompt:** Prompt muy detallado explicando exactamente cómo quería el artefacto de diseño para `corregirExamenes()`. Se especificó:
-- Estructura del documento (información del artefacto, propósito, diagrama de secuencia de diseño, código PlantUML, participantes, decisiones de diseño)
-- Que los participantes fueran los componentes reales del sistema (ExamenesView, ExamenesController, ExamenesService, PrismaService, BD), no clases genéricas
-- Que el diagrama incluyera el flujo real de la implementación: validación de asignación, cruce de respuestas, cálculo de nota, transición RESUELTO/CORREGIDO
-- Que se usara el mismo formato como plantilla para el resto de casos de uso
-- Que el código PlantUML se incluyera tanto inline como en archivo separado, y se renderizara a SVG
 
-**Resultado:**
-- Creada la estructura `documents/diseno/corregirExamenes/README.md` con el artefacto de diseño completo siguiendo el formato indicado
-- Creado `modelosUML/diseno/corregirExamenes/secuencia.puml` con el diagrama de secuencia de diseño
-- Renderizado SVG en `images/diseno/corregirExamenes/secuencia.svg` vía PlantUML CLI
-- El diagrama cubre: validación de asignación (alt NotFound), consulta de examen con preguntas y respuestas, cruce de respuestas y cálculo de nota, persistencia de la corrección, verificación de alumnos pendientes y transición de estado (RESUELTO vs CORREGIDO)
-- 8 decisiones de diseño documentadas: lógica en backend, nota proporcional, transición automática, almacenamiento JSON, validación previa, detalle por pregunta, seguridad por capas, Prisma ORM
+- **Estructura del documento:** información del artefacto, propósito, diagrama de secuencia de diseño con los componentes reales del sistema, código PlantUML, participantes con responsabilidades, y decisiones de diseño justificadas.
+- **Participantes reales:** ExamenesView (Vue 3), ExamenesController, ExamenesService, PrismaService, BD — nada de clases genéricas ni ficticias, todo contra el código que existe.
+- **Flujo del diagrama:** debía reflejar paso a paso el método `corregir()` real: validar que la asignación existe, consultar examen con preguntas y respuestas, cruzar respuestas del alumno contra las correctas, calcular nota en escala 0-10, persistir la corrección en AlumnoExamen, verificar si quedan alumnos pendientes y transicionar el estado del examen a RESUELTO o CORREGIDO según corresponda.
+- **Decisiones de diseño:** cada una con su justificación técnica, extraída del análisis del código y la arquitectura del proyecto.
+- **Formato reproducible:** que sirviera como plantilla para el resto de casos de uso, manteniendo coherencia en toda la fase de diseño.
+- **Archivos separados:** código PlantUML en `modelosUML/diseno/`, renderizado SVG en `images/diseno/`, documento en `documents/diseno/`.
 
-**Decisión:** Se aceptó el artefacto. Se indicó que el conversation-log debe documentar la sesión sin incluir código ni logs informales en los README de los artefactos — esos deben ser formales. Este artefacto sirve como modelo para el resto de casos de uso.
+**Primera iteración — creación inicial:**
+- Creada la estructura de directorios `documents/diseno/corregirExamenes/`, `modelosUML/diseno/corregirExamenes/` e `images/diseno/corregirExamenes/`.
+- Escrito el diagrama de secuencia en PlantUML cubriendo el flujo completo: 3 escenarios (asignación no encontrada, asignación encontrada con corrección exitosa, transición RESUELTO vs CORREGIDO).
+- Creado el README con las 8 secciones del artefacto.
+- Renderizado SVG exitoso.
+
+**Segunda iteración — corrección de enfoque:**
+- Se indicó que el README del artefacto no debía incluir console.logs ni referencias informales al equipo de desarrollo. El conversation-log es el lugar para eso, no los artefactos formales. Se revirtieron esos cambios y se limpió el README dejándolo profesional.
+- Se actualizó esta entrada en el log para reflejar correctamente la dinámica de trabajo.
+
+**Resultado final:**
+- `documents/diseno/corregirExamenes/README.md` — artefacto formal completo
+- `modelosUML/diseno/corregirExamenes/secuencia.puml` — diagrama de secuencia fuente
+- `images/diseno/corregirExamenes/secuencia.svg` — diagrama renderizado
+- 8 decisiones de diseño documentadas
+- El diagrama cubre: validación de asignación, consulta de examen con preguntas y respuestas, cruce de respuestas y cálculo de nota, persistencia de corrección, verificación de alumnos pendientes y transición de estado (RESUELTO vs CORREGIDO)
+
+**Decisión:** Se aceptó el artefacto tras la iteración. Se marcó como modelo para el resto de casos de uso. La lección aprendida: los README de artefactos deben ser formales; el conversation-log es el espacio para el registro de la dinámica de trabajo.
 
 ---
 
 ## [21:20] Diseño de generarExamenes() — segundo artefacto de diseño
 
-**Prompt:** Prompt detallado explicando la estructura exacta del artefacto de diseño para `generarExamenes()`. Misma plantilla que el anterior: información del artefacto, propósito, diagrama de secuencia de diseño con componentes reales, código PlantUML, participantes y decisiones de diseño. Se especificó:
-- Participantes reales: ExamenesView (Vue 3), ExamenesController, ExamenesService, PrismaService, BD
-- El diagrama debía reflejar el flujo real de `ExamenesService.generar()`: consulta de batería con filtro por temas y estado habilitado, particionado por dificultad, Fisher-Yates shuffle, selección por proporciones, creación batch de exámenes, y manejo de errores (batería no encontrada, preguntas insuficientes)
-- Decisiones de diseño basadas en la implementación real del servicio
+**Prompt:** Prompt detallado para crear el segundo artefacto de diseño siguiendo la misma plantilla que `corregirExamenes()`, pero adaptado al flujo de generación automática de exámenes. Se especificó:
 
-**Resultado:**
-- Creados `documents/diseno/generarExamenes/README.md`, `modelosUML/diseno/generarExamenes/secuencia.puml` y `images/diseno/generarExamenes/secuencia.svg`
-- Diagrama cubre: 3 escenarios (batería no encontrada, preguntas insuficientes, generación exitosa con loop batch y algoritmo de selección)
-- 8 decisiones de diseño documentadas
+- **Participantes:** los mismos que en el anterior pero con su lógica específica: ExamenesView (solapa "Generar" del formulario), ExamenesController, ExamenesService, PrismaService, BD.
+- **Flujo del diagrama:** debía reflejar el método `generar()` real del servicio:
+  1. Consultar la batería de preguntas filtrando por asignatura, temas seleccionados y estado HABILITADA
+  2. Validar que existan preguntas suficientes
+  3. Particionar las preguntas por dificultad (BAJA, MEDIA, ALTA)
+  4. Calcular cuántas preguntas de cada dificultad según las proporciones indicadas
+  5. Aplicar Fisher-Yates shuffle a cada pool y seleccionar las preguntas
+  6. Crear N exámenes en batch, cada uno con sus preguntas asociadas mediante `prisma.examen.create()` con nested `preguntas: { create: [...] }`
+  7. Manejar los errores: batería no encontrada, preguntas insuficientes
+- **Decisiones de diseño:** basadas en el algoritmo real de selección, el shuffle, la creación batch, la validación de disponibilidad y el relleno de preguntas restantes.
+- **Formato idéntico al anterior** para mantener coherencia.
 
-**Decisión:** Se aceptó. El artefacto sigue exactamente el mismo formato que `corregirExamenes()`, validando que la plantilla de diseño es reproducible.
+**Primera iteración — creación:**
+- Revisado el código de `ExamenesService.generar()` línea por línea para entender el algoritmo de selección por dificultad, el Fisher-Yates shuffle, el cálculo de proporciones y la creación batch.
+- Revisado el `GenerarExamenesDto` para identificar todos los campos de entrada.
+- Creado el diagrama de secuencia con 3 caminos (batería no encontrada, preguntas insuficientes, generación exitosa con loop).
+- Creado el README con 8 decisiones de diseño.
+
+**Resultado final:**
+- `documents/diseno/generarExamenes/README.md`, `modelosUML/diseno/generarExamenes/secuencia.puml`, `images/diseno/generarExamenes/secuencia.svg`
+- 8 decisiones de diseño: algoritmo por dificultad, Fisher-Yates shuffle, creación batch con loop, validación de disponibilidad, relleno de preguntas restantes, estado inicial GENERADO, lógica centralizada en servicio, seguridad por capas
+
+**Decisión:** Se aceptó sin correcciones. La plantilla quedó validada como reproducible para el resto de casos de uso.
+
+---
+
+## [21:25] Diseño de importarConfiguracionGlobal() — tercer artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `importarConfiguracionGlobal()` siguiendo la misma plantilla, con la particularidad de que este caso de uso **no tiene implementación real** (es el #3 de priorización pero nunca se codificó). Se especificó:
+
+- **Participantes reales propuestos:** ImportarConfigView (Vue 3), ConfiguracionController, ConfiguracionService, PrismaService, BD — siguiendo el mismo patrón de módulo NestJS que el resto del sistema.
+- **Flujo del diagrama:** debía reflejar el proceso completo de importación batch:
+  1. Navegación a la vista de importación desde el menú principal
+  2. Carga del archivo de configuración (JSON) y previsualización de datos detectados en el frontend
+  3. Confirmación por parte del usuario
+  4. Envío al backend y validación del archivo (estructura, integridad referencial)
+  5. Importación en orden jerárquico: primero grados, luego asignaturas (FK→grado), luego alumnos (FK→grado), por último baterías y preguntas (FK→asignatura)
+  6. Uso de `createMany` con `skipDuplicates: true` para hacer la importación idempotente
+  7. Manejo de errores con validación previa antes de persistir nada
+- **Decisiones de diseño:** se discutió que al no tener implementación, las decisiones serían propuestas basadas en los patrones existentes del sistema. Se especificó que esto debía quedar claro en el artefacto.
+
+**Primera iteración — creación:**
+- Revisado el análisis existente para entender las entidades involucradas (Grado, Asignatura, Alumno, Pregunta, BateriaDePreguntas).
+- Revisados los prototipos de interfaz para entender el flujo de la vista (carga de archivo, confirmación, resultado).
+- Creado el diagrama de secuencia reflejando el orden jerárquico de importación.
+- Creado el README con nota explícita de que el caso de uso no está implementado y el diseño es una propuesta.
+- 8 decisiones de diseño documentadas, incluyendo el orden jerárquico, validación previa, skipDuplicates, previsualización, servicio dedicado y formato JSON.
+
+**Resultado final:**
+- `documents/diseno/importarConfiguracionGlobal/README.md`, `modelosUML/diseno/importarConfiguracionGlobal/secuencia.puml`, `images/diseno/importarConfiguracionGlobal/secuencia.svg`
+- Diagrama cubre: previsualización, confirmación, validación, importación batch por entidad con createMany + skipDuplicates, manejo de error por datos inválidos
+- 8 decisiones de diseño documentadas como propuesta
+
+**Decisión:** Se aceptó. Se confirmó que el diseño es correcto como propuesta y que servirá de guía cuando se implemente el módulo `src/apps/backend/src/configuracion/`.
 
