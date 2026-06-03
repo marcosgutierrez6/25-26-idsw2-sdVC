@@ -679,5 +679,21 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - El diagrama cubre: validación de asignación (alt NotFound), consulta de examen con preguntas y respuestas, cruce de respuestas y cálculo de nota, persistencia de la corrección, verificación de alumnos pendientes y transición de estado (RESUELTO vs CORREGIDO)
 - 8 decisiones de diseño documentadas: lógica en backend, nota proporcional, transición automática, almacenamiento JSON, validación previa, detalle por pregunta, seguridad por capas, Prisma ORM
 
-**Decisión:** Se aceptó el artefacto. Se indicó que el conversation-log debe documentar la sesión sin incluir código ni logs informales en los README de los artefactos — esos deben ser formales. Este artefacto sirve como modelo para el resto de casos de uso. Pendiente: continuar con `generarExamenes()`.
+**Decisión:** Se aceptó el artefacto. Se indicó que el conversation-log debe documentar la sesión sin incluir código ni logs informales en los README de los artefactos — esos deben ser formales. Este artefacto sirve como modelo para el resto de casos de uso.
+
+---
+
+## [21:20] Diseño de generarExamenes() — segundo artefacto de diseño
+
+**Prompt:** Prompt detallado explicando la estructura exacta del artefacto de diseño para `generarExamenes()`. Misma plantilla que el anterior: información del artefacto, propósito, diagrama de secuencia de diseño con componentes reales, código PlantUML, participantes y decisiones de diseño. Se especificó:
+- Participantes reales: ExamenesView (Vue 3), ExamenesController, ExamenesService, PrismaService, BD
+- El diagrama debía reflejar el flujo real de `ExamenesService.generar()`: consulta de batería con filtro por temas y estado habilitado, particionado por dificultad, Fisher-Yates shuffle, selección por proporciones, creación batch de exámenes, y manejo de errores (batería no encontrada, preguntas insuficientes)
+- Decisiones de diseño basadas en la implementación real del servicio
+
+**Resultado:**
+- Creados `documents/diseno/generarExamenes/README.md`, `modelosUML/diseno/generarExamenes/secuencia.puml` y `images/diseno/generarExamenes/secuencia.svg`
+- Diagrama cubre: 3 escenarios (batería no encontrada, preguntas insuficientes, generación exitosa con loop batch y algoritmo de selección)
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Se aceptó. El artefacto sigue exactamente el mismo formato que `corregirExamenes()`, validando que la plantilla de diseño es reproducible.
 
