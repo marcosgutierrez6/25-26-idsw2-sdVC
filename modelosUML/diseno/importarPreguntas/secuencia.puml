@@ -1,0 +1,76 @@
+@startuml
+title Diagrama de Secuencia - Importar Preguntas (NestJS + Vue 3)
+
+actor "Usuario (Docente/Admin)" as User
+participant "Frontend (Vue 3)\nPreguntasView" as FE
+participant "PreguntasController" as Controller
+participant "PreguntasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a "Importar\nPreguntas" desde el listado
+activate FE
+FE --> User: Muestra formulario\ncarga de archivo JSON
+
+User -> FE: Selecciona archivo\ncon preguntas y respuestas
+FE -> FE: Lee y previsualiza\nnúmero de preguntas\ny respuestas detectadas
+FE --> User: Muestra resumen\ny solicita confirmación
+
+User -> FE: Confirma importación
+FE -> Controller: POST /api/preguntas/importar\nbody: { bateriaId, preguntas: [...] }
+activate Controller
+Controller -> Service: importarPreguntas(bateriaId, preguntas)
+activate Service
+
+Service -> Service: Valida sintaxis\nde cada pregunta\n(campos obligatorios, tipos)
+
+alt Datos inválidos
+  Service --> Controller: lanza BadRequestException
+  Controller --> FE: 400 Bad Request
+  FE --> User: Muestra errores\nde validación
+else Datos válidos
+  Service -> Prisma: bateriaDePreguntas.findUnique({ where: { id: bateriaId } })
+  activate Prisma
+  Prisma -> DB: SELECT FROM BateriaDePreguntas WHERE id=?
+  activate DB
+  DB --> Prisma: bateria | null
+  deactivate DB
+  Prisma --> Service: validación batería
+  deactivate Prisma
+
+  alt Batería inexistente
+    Service --> Controller: lanza BadRequestException
+    Controller --> FE: 400 Bad Request
+    FE --> User: Muestra "Batería\nno encontrada"
+  else Batería existe
+    Service -> Service: Valida reglas de negocio:\n• 2-5 respuestas por pregunta\n• al menos 1 respuesta correcta\n• máximo 5 respuestas
+
+    alt Reglas incumplidas
+      Service --> Controller: lanza BadRequestException
+      Controller --> FE: 400 Bad Request
+      FE --> User: Muestra detalles\nde validación
+    else Reglas cumplidas
+      loop por cada pregunta
+        Service -> Prisma: pregunta.create({\n  data: { ..., bateriaId,\n    respuestas: { create: [...] } }\n})
+        activate Prisma
+        Prisma -> DB: INSERT INTO Pregunta\nINSERT INTO Respuesta (batch)
+        activate DB
+        DB --> Prisma: pregunta con respuestas
+        deactivate DB
+        Prisma --> Service: pregunta creada
+        deactivate Prisma
+      end
+
+      Service --> Controller: { importadas, errores }
+    end
+  end
+end
+
+deactivate Service
+Controller --> FE: 201 Created\n{ resumen importación }
+deactivate Controller
+FE --> User: Muestra resultado\ndetallado
+FE -> FE: Recarga listado\nde preguntas
+deactivate FE
+
+@enduml

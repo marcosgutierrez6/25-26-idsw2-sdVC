@@ -800,3 +800,19 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Se discutió si el nuevo endpoint de importación masiva debía ir en `AlumnosController` existente o en un controlador separado. Se decidió mantenerlo en el mismo controlador para no multiplicar los módulos sin necesidad. También se debatió el formato del archivo: CSV vs JSON. Se optó por CSV por ser más universal para datos tabulares y más fácil de generar desde Excel. Se dejó constancia de que este diseño, a diferencia de los dos anteriores (import/export configuración global), sí podría implementarse sobre el código existente sin crear un módulo nuevo, simplemente añadiendo un método `importarAlumnos()` al `AlumnosService` actual.
 
+---
+
+## [21:34] Diseño de importarPreguntas() — sexto artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `importarPreguntas()` siguiendo la misma plantilla. Se especificó:
+- **Participantes:** PreguntasView, PreguntasController, PreguntasService, PrismaService, BD
+- **Flujo del diagrama:** carga de archivo JSON, previsualización, validación trifásica (sintaxis, batería, reglas de negocio), creación por pregunta con respuestas anidadas via nested create
+- **Decisiones de diseño:** nested create para atomicidad, validación en tres capas, formato JSON por jerarquía pregunta→respuestas, loop transaccional por pregunta
+
+**Resultado:**
+- `documents/diseno/importarPreguntas/README.md`, `modelosUML/diseno/importarPreguntas/secuencia.puml`, `images/diseno/importarPreguntas/secuencia.svg`
+- Diagrama cubre: previsualización, validación trifásica (sintaxis, batería, reglas 2-5 respuestas + 1 correcta), loop de creación con nested create
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Se aceptó. Se comentó que la validación en tres capas es más estricta que en `importarAlumnos` (que solo tenía dos fases), y que esto es correcto porque las preguntas tienen más reglas de negocio que los alumnos. Se validó que el diagrama reflejara correctamente el loop y la creación anidada.
+
