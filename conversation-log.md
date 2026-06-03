@@ -661,3 +661,23 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Todos los 41 casos de uso priorizados han sido analizados.**
 
+---
+
+## [21:15] Diseño de corregirExamenes() — primer artefacto de diseño (RUP)
+
+**Prompt:** Prompt muy detallado explicando exactamente cómo quería el artefacto de diseño para `corregirExamenes()`. Se especificó:
+- Estructura del documento (información del artefacto, propósito, diagrama de secuencia de diseño, código PlantUML, participantes, decisiones de diseño)
+- Que los participantes fueran los componentes reales del sistema (ExamenesView, ExamenesController, ExamenesService, PrismaService, BD), no clases genéricas
+- Que el diagrama incluyera el flujo real de la implementación: validación de asignación, cruce de respuestas, cálculo de nota, transición RESUELTO/CORREGIDO
+- Que se usara el mismo formato como plantilla para el resto de casos de uso
+- Que el código PlantUML se incluyera tanto inline como en archivo separado, y se renderizara a SVG
+
+**Resultado:**
+- Creada la estructura `documents/diseno/corregirExamenes/README.md` con el artefacto de diseño completo siguiendo el formato indicado
+- Creado `modelosUML/diseno/corregirExamenes/secuencia.puml` con el diagrama de secuencia de diseño
+- Renderizado SVG en `images/diseno/corregirExamenes/secuencia.svg` vía PlantUML CLI
+- El diagrama cubre: validación de asignación (alt NotFound), consulta de examen con preguntas y respuestas, cruce de respuestas y cálculo de nota, persistencia de la corrección, verificación de alumnos pendientes y transición de estado (RESUELTO vs CORREGIDO)
+- 8 decisiones de diseño documentadas: lógica en backend, nota proporcional, transición automática, almacenamiento JSON, validación previa, detalle por pregunta, seguridad por capas, Prisma ORM
+
+**Decisión:** Se aceptó el artefacto. Se indicó que el conversation-log debe documentar la sesión sin incluir código ni logs informales en los README de los artefactos — esos deben ser formales. Este artefacto sirve como modelo para el resto de casos de uso. Pendiente: continuar con `generarExamenes()`.
+

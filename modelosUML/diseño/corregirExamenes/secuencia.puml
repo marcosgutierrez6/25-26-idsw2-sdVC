@@ -1,0 +1,94 @@
+@startuml
+title Diagrama de Secuencia - Corregir Exámenes (NestJS + Vue 3)
+
+actor "Usuario (Docente/Admin)" as User
+participant "Frontend (Vue 3)\nExamenesView" as FE
+participant "ExamenesController" as Controller
+participant "ExamenesService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Selecciona examen y\nhace clic en "Corregir"
+activate FE
+FE -> FE: Muestra formulario\ncon preguntas del examen
+FE --> User: Capturar respuestas\ndel alumno
+
+User -> FE: Ingresa respuestas\ny confirma corrección
+FE -> Controller: POST /examenes/{examenId}/corregir/{alumnoId}\nbody: { respuestas }
+activate Controller
+Controller -> Service: corregir(examenId, alumnoId, respuestas)
+activate Service
+Service -> Prisma: alumnoExamen.findUnique({ where: { alumnoId_examenId } })
+activate Prisma
+Prisma -> DB: SELECT * FROM AlumnoExamen\nWHERE alumnoId=? AND examenId=?
+activate DB
+DB --> Prisma: AlumnoExamen | null
+deactivate DB
+Prisma --> Service: ae
+deactivate Prisma
+
+alt Asignación no encontrada
+  Service --> Controller: lanza NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Asignación no encontrada"
+else Asignación encontrada
+  Service -> Prisma: examen.findUnique({ where: { id: examenId }, include: { preguntas: { include: { pregunta: { include: { respuestas: true } } } } } })
+  activate Prisma
+  Prisma -> DB: SELECT FROM Examen\nJOIN ExamenPregunta\nJOIN Pregunta\nJOIN Respuesta
+  activate DB
+  DB --> Prisma: examen con preguntas y respuestas
+  deactivate DB
+  Prisma --> Service: examen
+  deactivate Prisma
+
+  Service -> Service: Cruza respuestas del alumno\nvs respuestas correctas\nCalcula nota = (aciertos/total)*10\nGenera detalle por pregunta
+
+  Service -> Prisma: alumnoExamen.update({ where: { alumnoId_examenId }, data: { respuestas, nota } })
+  activate Prisma
+  Prisma -> DB: UPDATE AlumnoExamen\nSET respuestas=?, nota=?
+  activate DB
+  DB --> Prisma: ok
+  deactivate DB
+  Prisma --> Service: updatedAE
+  deactivate Prisma
+
+  Service -> Prisma: alumnoExamen.count({ where: { examenId, nota: null } })
+  activate Prisma
+  Prisma -> DB: SELECT COUNT(*) FROM AlumnoExamen\nWHERE examenId=? AND nota IS NULL
+  activate DB
+  DB --> Prisma: count
+  deactivate DB
+  Prisma --> Service: pendientes
+  deactivate Prisma
+
+  alt Todos corregidos (pendientes === 0)
+    Service -> Prisma: examen.update({ where: { id: examenId }, data: { estado: 'CORREGIDO' } })
+    activate Prisma
+    Prisma -> DB: UPDATE Examen SET estado='CORREGIDO'
+    activate DB
+    DB --> Prisma: ok
+    deactivate DB
+    Prisma --> Service: examen actualizado
+    deactivate Prisma
+  else Quedan alumnos sin corregir
+    Service -> Prisma: examen.update({ where: { id: examenId }, data: { estado: 'RESUELTO' } })
+    activate Prisma
+    Prisma -> DB: UPDATE Examen SET estado='RESUELTO'
+    activate DB
+    DB --> Prisma: ok
+    deactivate DB
+    Prisma --> Service: examen actualizado
+    deactivate Prisma
+  end
+
+  Service --> Controller: { nota, aciertos, total, detalles }
+end
+
+deactivate Service
+Controller --> FE: 200 OK\n{ nota, aciertos, total, detalles }
+deactivate Controller
+FE --> User: Muestra resultado\nde la corrección
+FE -> FE: Redirige a listado\nde exámenes
+deactivate FE
+
+@enduml
