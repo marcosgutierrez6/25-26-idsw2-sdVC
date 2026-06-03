@@ -754,3 +754,33 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Se confirmó que el diseño es correcto como propuesta y que servirá de guía cuando se implemente el módulo `src/apps/backend/src/configuracion/`.
 
+---
+
+## [21:28] Diseño de exportarConfiguracionGlobal() — cuarto artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `exportarConfiguracionGlobal()` siguiendo la misma plantilla. Es el caso complementario a `importarConfiguracionGlobal()` — ambos sin implementar, ambos usando el mismo módulo `ConfiguracionService`. Se especificó:
+
+- **Participantes:** los mismos que en importación: ExportarConfigView, ConfiguracionController, ConfiguracionService, PrismaService, BD.
+- **Flujo del diagrama:** operación inversa a la importación:
+  1. Navegación a la vista de exportación desde el menú principal
+  2. Confirmación por parte del usuario antes de disparar consultas
+  3. Consultas independientes: grados con asignaturas, alumnos con grado, baterías con preguntas y respuestas
+  4. Compilación de todo en estructura JSON en el servicio
+  5. Devolución del JSON al frontend para descarga
+  6. Manejo de error de acceso a datos
+- **Decisiones de diseño:** debían reflejar que es la operación espejo de importación, con el mismo servicio pero flujo inverso.
+- **Nota de propuesta:** al no estar implementado, marcarlo igual que importación.
+
+**Primera iteración — creación:**
+- Revisado el análisis existente: misma estructura que importación pero con sub-operaciones `<<include>>` (exportarGrados, exportarAsignaturas, exportarAlumnos, exportarPreguntas).
+- Revisados los prototipos para confirmar el flujo de UI (pantalla de confirmación → descarga).
+- Creado el diagrama de secuencia con 3 consultas independientes en paralelo lógico.
+- Creado el README con nota de propuesta y 8 decisiones de diseño.
+
+**Resultado final:**
+- `documents/diseno/exportarConfiguracionGlobal/README.md`, `modelosUML/diseno/exportarConfiguracionGlobal/secuencia.puml`, `images/diseno/exportarConfiguracionGlobal/secuencia.svg`
+- Diagrama cubre: confirmación, consultas independientes por entidad, compilación JSON, descarga y manejo de error
+- 8 decisiones de diseño documentadas como propuesta
+
+**Decisión:** Se aceptó. La simetría con importarConfiguracionGlobal quedó validada.
+
