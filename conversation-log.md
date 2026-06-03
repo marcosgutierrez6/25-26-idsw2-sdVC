@@ -784,3 +784,19 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. La simetría con importarConfiguracionGlobal quedó validada.
 
+---
+
+## [21:32] Diseño de importarAlumnos() — quinto artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `importarAlumnos()` siguiendo la misma plantilla. Se especificó:
+- **Participantes:** AlumnosView, AlumnosController, AlumnosService, PrismaService, BD — los mismos del CRUD existente pero con lógica batch adicional.
+- **Flujo del diagrama:** carga de archivo CSV, previsualización en frontend, validación en dos fases (sintáctica en servicio, semántica contra BD), verificación de existencia del grado, `createMany` con `skipDuplicates`
+- **Decisiones de diseño:** validación en dos fases, skipDuplicates para idempotencia, verificación de grado, formato CSV, extensión del servicio existente
+
+**Resultado:**
+- `documents/diseno/importarAlumnos/README.md`, `modelosUML/diseno/importarAlumnos/secuencia.puml`, `images/diseno/importarAlumnos/secuencia.svg`
+- Diagrama cubre: previsualización, validación sintáctica, verificación de grado, importación batch con skipDuplicates, errores (datos inválidos, grado inexistente)
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Se aceptó. Se discutió si el nuevo endpoint de importación masiva debía ir en `AlumnosController` existente o en un controlador separado. Se decidió mantenerlo en el mismo controlador para no multiplicar los módulos sin necesidad. También se debatió el formato del archivo: CSV vs JSON. Se optó por CSV por ser más universal para datos tabulares y más fácil de generar desde Excel. Se dejó constancia de que este diseño, a diferencia de los dos anteriores (import/export configuración global), sí podría implementarse sobre el código existente sin crear un módulo nuevo, simplemente añadiendo un método `importarAlumnos()` al `AlumnosService` actual.
+
