@@ -1,0 +1,53 @@
+@startuml
+title Diagrama de Secuencia - Crear Pregunta (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "PreguntasController" as Controller
+participant "PreguntasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Nueva\nPregunta"
+activate FE
+
+FE --> User: Muestra diálogo con\ncampos: enunciado, tema,\ndificultad, batería
+
+User -> FE: Rellena campos\ny pulsa "Crear"
+FE -> FE: Validación visual\nde campos obligatorios
+
+FE -> Controller: POST /api/preguntas\nbody: { enunciado, tema, dificultad, bateriaId }
+activate Controller
+
+Controller -> Service: create(createPreguntaDto)
+activate Service
+
+Service -> Prisma: pregunta.create({\n  data: { enunciado, tema, dificultad, bateriaId }\n})
+activate Prisma
+Prisma -> DB: INSERT INTO Pregunta\n(enunciado, tema, dificultad, bateriaId)
+activate DB
+
+alt FK inválido (bateriaId no existe)
+  DB --> Prisma: Error FK constraint
+  deactivate DB
+  Prisma --> Service: lanza error
+  deactivate Prisma
+  Service --> Controller: lanza excepción
+  Controller --> FE: 400/500 Error
+  FE --> User: Muestra "Batería\nno encontrada"
+else Creación exitosa
+  DB --> Prisma: pregunta creada (id, estado: EN_CONSTRUCCION)
+  deactivate DB
+  Prisma --> Service: pregunta
+  deactivate Prisma
+
+  Service --> Controller: pregunta
+  deactivate Service
+  Controller --> FE: 201 Created\n{ pregunta }
+  deactivate Controller
+  FE --> User: Muestra pregunta\ncreada y navega a\neditarPregunta()
+end
+
+deactivate FE
+
+@enduml

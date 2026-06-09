@@ -866,3 +866,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1 rejected. Iteration 2: issues: (1) el diagrama mostraba "crearAsignaciones()" como método del servicio pero la implementación real itera sobre cada alumno y llama a `alumnoExamen.create()` individualmente, no usa un método batch; (2) faltaba la actualización del estado del examen a ASIGNADO en el diagrama, que sí está en la implementación real. Se actualizó el diagrama para reflejar el loop de creación individual y la actualización de estado. Iteration 3: validado contra `ExamenesService.asignar()` líneas 114-155 — ahora coincide exactamente con la implementación (hash SHA-256 con timestamp, loop de creación, JSON en claveCorreccion).
+
+---
+
+## [20:02] Diseño de crearPregunta() — décimo artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `crearPregunta()` siguiendo la misma plantilla. Es un caso implementado (ya existe en el backend).
+
+- **Participantes:** PreguntasView, PreguntasController, PreguntasService, PrismaService, BD — refleja el flujo POST de creación.
+- **Flujo del diagrama:** el usuario rellena el formulario en el diálogo de PreguntasView, se envía POST /api/preguntas, el servicio persiste mediante Prisma, y se retorna la pregunta creada con estado EN_CONSTRUCCION.
+- **Decisiones de diseño:** validación visual en frontend, creación sin validación explícita de batería (FK de BD la garantiza), estado por defecto EN_CONSTRUCCION, transición automática a editarPregunta.
+
+**Resultado:**
+- `documents/diseno/crearPregunta/README.md`, `modelosUML/diseno/crearPregunta/secuencia.puml`, `images/diseno/crearPregunta/secuencia.svg`
+- Diagrama cubre: carga de formulario, validación visual, petición POST, creación en BD con FK check, retorno y transición a edición
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero señalé que no reflejaba que el método `create()` es trivial — solo llama a `prisma.pregunta.create()` sin validación explícita de batería (el FK de BD es quien valida). Iteration 2: se corrigió el diagrama eliminando la validación explícita de batería en el servicio y reflejando el manejo de error FK a nivel de BD. Iteration 3: se validó contra `PreguntasService.create()` línea 10 y el controller línea 17 — ahora coincide exactamente.
