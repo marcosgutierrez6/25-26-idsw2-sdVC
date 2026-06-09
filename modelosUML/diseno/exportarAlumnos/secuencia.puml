@@ -1,0 +1,45 @@
+@startuml
+title Diagrama de Secuencia - Exportar Alumnos (NestJS + Vue 3)
+
+actor "Usuario (Docente/Admin)" as User
+participant "ExportarConfigView" as FE
+participant "AlumnosController" as Controller
+participant "AlumnosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Selecciona "Exportar\nAlumnos" en el menú
+activate FE
+
+FE -> Controller: GET /api/alumnos\n(query: include=grado)
+activate Controller
+
+Controller -> Service: findAll(options?)
+activate Service
+
+Service -> Prisma: alumno.findMany({\n  include: { grado: true }\n})
+activate Prisma
+Prisma -> DB: SELECT Alumno.*, Grado.*\nFROM Alumno LEFT JOIN Grado
+activate DB
+DB --> Prisma: alumnos con grado
+deactivate DB
+Prisma --> Service: array de alumnos
+deactivate Prisma
+
+Service --> Controller: { id, nombre, apellidos, dni, email, grado: {...} }[]
+deactivate Service
+
+Controller --> FE: 200 OK\n{ alumnos: [...] }
+deactivate Controller
+
+alt Error de base de datos
+  Controller --> FE: 500 Internal Server Error
+  FE --> User: Muestra mensaje de error
+else Exportación exitosa
+  FE -> FE: Compila datos en\nformato JSON/CSV
+  FE --> User: Inicia descarga\ndel archivo exportado
+end
+
+deactivate FE
+
+@enduml

@@ -816,3 +816,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Se aceptó. Se comentó que la validación en tres capas es más estricta que en `importarAlumnos` (que solo tenía dos fases), y que esto es correcto porque las preguntas tienen más reglas de negocio que los alumnos. Se validó que el diagrama reflejara correctamente el loop y la creación anidada.
 
+---
+
+## [19:54] Diseño de exportarAlumnos() — séptimo artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `exportarAlumnos()` siguiendo la misma plantilla. Es un caso abstracto (sub-operación de `exportarConfiguracionGlobal()`), sin interacción directa con el actor.
+
+- **Participantes:** ExportarConfigView, AlumnosController, AlumnosService, PrismaService, BD — reutilizando el endpoint `GET /alumnos` existente con `include: { grado: true }`.
+- **Flujo del diagrama:** el caso padre invoca la exportación, se consulta Alumno con relación a Grado, se devuelve el array para compilación en el frontend.
+- **Decisiones de diseño:** caso abstracto sin vista propia, reutilización de endpoint existente, include con JOIN automático, compilación en frontend.
+
+**Resultado:**
+- `documents/diseno/exportarAlumnos/README.md`, `modelosUML/diseno/exportarAlumnos/secuencia.puml`, `images/diseno/exportarAlumnos/secuencia.svg`
+- Diagrama cubre: navegación desde caso padre, consulta con include, retorno de datos, compilación y descarga
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Al ser caso abstracto, se validó que no requiere endpoint nuevo (reutiliza `GET /alumnos` existente) y que el flujo refleja la colaboración interna cuando el caso padre solicita los datos de alumnos.
+
