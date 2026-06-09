@@ -831,7 +831,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Diagrama cubre: navegación desde caso padre, consulta con include, retorno de datos, compilación y descarga
 - 8 decisiones de diseño documentadas
 
-**Decisión:** Al ser caso abstracto, se validó que no requiere endpoint nuevo (reutiliza `GET /alumnos` existente) y que el flujo refleja la colaboración interna cuando el caso padre solicita los datos de alumnos.
+**Decisión:** Iteration 1 accepted. Iteration 2:纠正了 1 个问题: (1) diagrama mostraba "AlumnosController" como participante pero el análisis indica que es "ConfiguracionController" porque el caso padrecoordina la exportación. Se actualizo el diagrama para usar ExportarConfigView en lugar de un controlador específico, reflejando que la vista del caso padre es quien invoca la operación. Todo validado contra el análisis existente.
 
 ---
 
@@ -850,3 +850,19 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Al ser caso abstracto, se validó que no requiere endpoint nuevo (reutiliza `GET /preguntas` existente) y que el flujo refleja la colaboración interna cuando el caso padre solicita los datos de preguntas con sus respuestas y batería.
 
+---
+
+## [20:02] Diseño de asignarExamenes() — noveno artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `asignarExamenes()` siguiendo la misma plantilla. Es un caso implementado (ya existe en el backend).
+
+- **Participantes:** ExamenesView, ExamenesController, ExamenesService, PrismaService, BD — refleja el método `asignar()` real del servicio.
+- **Flujo del diagrama:** POST con examenId y alumnoIds, búsqueda de examen con preguntas y respuestas, cálculo de orden de respuestas correctas, loop de creación de hash SHA-256 por alumno, creación de AlumnoExamen, actualización de estado a ASIGNADO y almacenamiento de claveCorreccion.
+- **Decisiones de diseño:** hash con timestamp para unicidad, clave de corrección como JSON, loop de creación individual, validación de examen existente, DTO con pipes de validación.
+
+**Resultado:**
+- `documents/diseno/asignarExamenes/README.md`, `modelosUML/diseno/asignarExamenes/secuencia.puml`, `images/diseno/asignarExamenes/secuencia.svg`
+- Diagrama cubre: validación de examen, cálculo de respuestas correctas, hash por alumno, batch de asignaciones, actualización de estado
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1 rejected. Iteration 2: issues: (1) el diagrama mostraba "crearAsignaciones()" como método del servicio pero la implementación real itera sobre cada alumno y llama a `alumnoExamen.create()` individualmente, no usa un método batch; (2) faltaba la actualización del estado del examen a ASIGNADO en el diagrama, que sí está en la implementación real. Se actualizó el diagrama para reflejar el loop de creación individual y la actualización de estado. Iteration 3: validado contra `ExamenesService.asignar()` líneas 114-155 — ahora coincide exactamente con la implementación (hash SHA-256 con timestamp, loop de creación, JSON en claveCorreccion).
