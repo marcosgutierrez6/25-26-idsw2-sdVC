@@ -833,3 +833,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Al ser caso abstracto, se validó que no requiere endpoint nuevo (reutiliza `GET /alumnos` existente) y que el flujo refleja la colaboración interna cuando el caso padre solicita los datos de alumnos.
 
+---
+
+## [19:59] Diseño de exportarPreguntas() — octavo artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `exportarPreguntas()` siguiendo la misma plantilla. Es un caso abstracto (sub-operación de `exportarConfiguracionGlobal()`), sin interacción directa con el actor.
+
+- **Participantes:** ExportarConfigView, PreguntasController, PreguntasService, PrismaService, BD — reutilizando el endpoint `GET /preguntas` existente con `include: { respuestas: true, bateria: { include: { asignatura: true } } }`.
+- **Flujo del diagrama:** el caso padre invoca la exportación, se consulta Pregunta con relaciones anidadas (respuestas, batería, asignatura), se devuelve el array para compilación en el frontend.
+- **Decisiones de diseño:** caso abstracto sin vista propia, reutilización de endpoint existente, include anidado para evitar N+1, compilación en frontend, jerarquía de datos preservada.
+
+**Resultado:**
+- `documents/diseno/exportarPreguntas/README.md`, `modelosUML/diseno/exportarPreguntas/secuencia.puml`, `images/diseno/exportarPreguntas/secuencia.svg`
+- Diagrama cubre: navegación desde caso padre, consulta con múltiples JOINs, retorno de datos jerárquicos, compilación y descarga
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Al ser caso abstracto, se validó que no requiere endpoint nuevo (reutiliza `GET /preguntas` existente) y que el flujo refleja la colaboración interna cuando el caso padre solicita los datos de preguntas con sus respuestas y batería.
+
