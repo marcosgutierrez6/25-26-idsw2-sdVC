@@ -1256,3 +1256,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/exportarAsignaturas/README.md`, `modelosUML/diseno/exportarAsignaturas/secuencia.puml`, `images/diseno/exportarAsignaturas/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Sin vista separada, conversión a CSV/JSON en frontend.
+
+---
+
+## [18:33] Diseño de exportarGrados() — cuadragésimo primer (último) artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `exportarGrados()` (#41, Docente, abstracto, reusa GET /api/grados).
+
+**Resultado:**
+- `documents/diseno/exportarGrados/README.md`, `modelosUML/diseno/exportarGrados/secuencia.puml`, `images/diseno/exportarGrados/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Completa los 41 casos de uso priorizados.

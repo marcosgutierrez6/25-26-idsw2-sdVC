@@ -1,0 +1,39 @@
+@startuml
+title Diagrama de Secuencia - Exportar Grados (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "GradosView" as FE
+participant "GradosController" as Controller
+participant "GradosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en\n"Exportar Grados"
+activate FE
+
+FE -> Controller: GET /api/grados
+activate Controller
+
+Controller -> Service: findAll()
+activate Service
+
+Service -> Prisma: grado.findMany()
+activate Prisma
+Prisma -> DB: SELECT * FROM Grado
+activate DB
+DB --> Prisma: grados[]
+deactivate DB
+Prisma --> Service: grados[]
+deactivate Prisma
+
+Service --> Controller: grados[]
+deactivate Service
+Controller --> FE: 200 OK\n grados[]
+deactivate Controller
+
+FE -> FE: Convierte datos a\nformato CSV/JSON\ny descarga archivo
+
+FE --> User: Archivo descargado\n(CSV o JSON)
+deactivate FE
+
+@enduml
