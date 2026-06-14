@@ -964,3 +964,19 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño: carga previa, verificación de existencia, hashing condicional de bcrypt, omisión de password en respuestas, validación visual, DTO parcial, confirmación de eliminación, seguridad por capas
 
 **Decisión:** Iteration 1: se creó el diseño pero faltaba reflejar que bcrypt solo se aplica si hay password nueva (condicional). Iteration 2: se corrigió el diagrama y se añadió la decisión de diseño correspondiente. Validado contra `ProfesoresService.update()` — ahora coincide exactamente.
+
+---
+
+## [17:16] Diseño de editarAlumno() — decimosexto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `editarAlumno()` (#16, Docente, implementado). Participantes: AlumnosView, AlumnosController, AlumnosService, PrismaService, BD. Flujo: GET /:id (carga con include grado + asignaturas), PATCH /:id (update con findOne previo), DELETE /:id (remove con findOne previo).
+
+**Resultado:**
+- `documents/diseno/editarAlumno/README.md`, `modelosUML/diseno/editarAlumno/secuencia.puml`, `images/diseno/editarAlumno/secuencia.svg`
+- Diagrama cubre: carga de datos, modificación, guardado y eliminación
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero faltaba include de grado en la carga findOne. Iteration 2: corregido.
+
+---
+

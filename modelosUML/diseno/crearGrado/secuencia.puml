@@ -1,0 +1,53 @@
+@startuml
+title Diagrama de Secuencia - Crear Grado (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "GradosView" as FE
+participant "GradosController" as Controller
+participant "GradosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Nuevo Grado"
+activate FE
+
+FE --> User: Muestra diálogo con\ncampos: título, código
+
+User -> FE: Rellena campos\ny pulsa "Crear"
+FE -> FE: Validación visual\nde campos obligatorios
+
+FE -> Controller: POST /api/grados\nbody: { titulo, codigo }
+activate Controller
+
+Controller -> Service: create(createGradoDto)
+activate Service
+
+Service -> Prisma: grado.create({\n  data: { titulo, codigo }\n})
+activate Prisma
+Prisma -> DB: INSERT INTO Grado\n(titulo, codigo)
+activate DB
+
+alt Código duplicado (unique constraint)
+  DB --> Prisma: Error unique constraint
+  deactivate DB
+  Prisma --> Service: lanza error
+  deactivate Prisma
+  Service --> Controller: lanza excepción
+  Controller --> FE: 409 Conflict
+  FE --> User: Muestra "Código\nya existe"
+else Creación exitosa
+  DB --> Prisma: grado creado (id)
+  deactivate DB
+  Prisma --> Service: grado
+  deactivate Prisma
+
+  Service --> Controller: grado
+  deactivate Service
+  Controller --> FE: 201 Created\n{ grado }
+  deactivate Controller
+  FE --> User: Muestra grado\ncreado y navega a\neditarGrado()
+end
+
+deactivate FE
+
+@enduml
