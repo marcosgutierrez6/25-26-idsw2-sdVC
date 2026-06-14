@@ -1091,3 +1091,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto pero faltaba reflejar que el frontend muestra confirmación antes de enviar DELETE. Iteration 2: corregido. Validado contra `PreguntasService.remove()`.
 
+---
+
+## [17:37] Diseño de eliminarAsignatura() — vigésimo sexto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarAsignatura()` (#26, Docente, implementado). Mismo patrón que eliminarPregunta. Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD.
+
+**Resultado:**
+- `documents/diseno/eliminarAsignatura/README.md`, `modelosUML/diseno/eliminarAsignatura/secuencia.puml`, `images/diseno/eliminarAsignatura/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `AsignaturasService.remove()`.
+

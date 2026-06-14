@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Secuencia - Eliminar Asignatura (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AsignaturasView" as FE
+participant "AsignaturasController" as Controller
+participant "AsignaturasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Eliminar"\nsobre una asignatura
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma eliminación
+FE -> Controller: DELETE /api/asignaturas/:id
+activate Controller
+
+Controller -> Service: remove(id)
+activate Service
+
+Service -> Prisma: asignatura.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Asignatura WHERE id=?
+activate DB
+DB --> Prisma: asignatura | null
+deactivate DB
+Prisma --> Service: asignatura
+deactivate Prisma
+
+alt Asignatura no encontrada
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Asignatura\nno encontrada"
+else Asignatura existe
+  Service -> Prisma: asignatura.delete({ where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Asignatura WHERE id=?
+  activate DB
+  DB --> Prisma: asignatura eliminada
+  deactivate DB
+  Prisma --> Service: asignatura eliminada
+  deactivate Prisma
+
+  Service --> Controller: asignatura eliminada
+  deactivate Service
+  Controller --> FE: 200 OK\n{ asignatura }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nrecarga listado
+end
+
+deactivate FE
+
+@enduml
