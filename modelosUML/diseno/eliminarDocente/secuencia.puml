@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Secuencia - Eliminar Docente (NestJS + Vue 3)
+
+actor "Usuario (ADMIN)" as User
+participant "DocentesView" as FE
+participant "ProfesoresController" as Controller
+participant "ProfesoresService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Eliminar"\nsobre un docente
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma eliminación
+FE -> Controller: DELETE /api/profesores/:id
+activate Controller
+
+Controller -> Service: remove(id)
+activate Service
+
+Service -> Prisma: profesor.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Profesor WHERE id=?
+activate DB
+DB --> Prisma: profesor | null
+deactivate DB
+Prisma --> Service: profesor
+deactivate Prisma
+
+alt Docente no encontrado
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Docente\nno encontrado"
+else Docente existe
+  Service -> Prisma: profesor.delete({ where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Profesor WHERE id=?
+  activate DB
+  DB --> Prisma: profesor eliminado
+  deactivate DB
+  Prisma --> Service: profesor eliminado
+  deactivate Prisma
+
+  Service --> Controller: profesor eliminado
+  deactivate Service
+  Controller --> FE: 200 OK\n{ profesor }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nrecarga listado
+end
+
+deactivate FE
+
+@enduml

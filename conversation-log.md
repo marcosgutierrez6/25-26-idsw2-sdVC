@@ -1124,3 +1124,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/eliminarAlumno/README.md`, `modelosUML/diseno/eliminarAlumno/secuencia.puml`, `images/diseno/eliminarAlumno/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.remove()`.
+
+---
+
+## [17:44] Diseño de eliminarDocente() — vigésimo noveno artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarDocente()` (#29, ADMIN, implementado). Mismo patrón.
+
+**Resultado:**
+- `documents/diseno/eliminarDocente/README.md`, `modelosUML/diseno/eliminarDocente/secuencia.puml`, `images/diseno/eliminarDocente/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `ProfesoresService.remove()`.
