@@ -1,0 +1,51 @@
+@startuml
+title Diagrama de Secuencia - Importar Grados (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "GradosView" as FE
+participant "GradosController" as Controller
+participant "GradosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a "Importar\nGrados"
+activate FE
+FE --> User: Muestra formulario\ncarga de archivo CSV
+
+User -> FE: Selecciona archivo\ncon datos de grados
+FE -> FE: Lee y previsualiza\nregistros
+FE --> User: Muestra resumen\ny solicita confirmación
+
+User -> FE: Confirma importación
+FE -> Controller: POST /api/grados/importar\nbody: { grados: [...] }
+activate Controller
+Controller -> Service: importarGrados(grados)
+activate Service
+
+Service -> Service: Valida sintaxis\nde cada registro
+
+alt Datos inválidos
+  Service --> Controller: BadRequestException
+  Controller --> FE: 400 Bad Request
+  FE --> User: Muestra errores
+else Datos válidos
+  Service -> Prisma: grado.createMany({ data, skipDuplicates: true })
+  activate Prisma
+  Prisma -> DB: INSERT INTO Grado (batch)
+  activate DB
+  DB --> Prisma: grados creados
+  deactivate DB
+  Prisma --> Service: resultado
+  deactivate Prisma
+
+  Service --> Controller: { importados, omitidos, errores }
+end
+
+deactivate Service
+Controller --> FE: 201 Created\n{ resumen }
+deactivate Controller
+FE --> User: Muestra resultado
+FE -> FE: Recarga listado
+deactivate FE
+
+@enduml

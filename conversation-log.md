@@ -1234,3 +1234,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/importarAsignaturas/README.md`, `modelosUML/diseno/importarAsignaturas/secuencia.puml`, `images/diseno/importarAsignaturas/secuencia.svg`
 
 **Decisión:** Diseño propuesto: carga CSV + createMany.
+
+---
+
+## [18:29] Diseño de importarGrados() — trigésimo noveno artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `importarGrados()` (#39, Docente, conceptual).
+
+**Resultado:**
+- `documents/diseno/importarGrados/README.md`, `modelosUML/diseno/importarGrados/secuencia.puml`, `images/diseno/importarGrados/secuencia.svg`
+
+**Decisión:** Diseño propuesto: carga CSV + createMany.
