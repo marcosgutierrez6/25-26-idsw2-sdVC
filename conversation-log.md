@@ -1004,3 +1004,16 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Nota: el análisis documenta que la creación debería incluir la batería de preguntas, pero la implementación actual solo crea la asignatura. Se dejó constancia en las decisiones de diseño. Validado contra `AsignaturasService.create()`.
 
+---
+
+## [17:23] Diseño de editarGrado() — decimonoveno artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `editarGrado()` (#19, Docente, implementado). Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: GET /:id con include (asignaturas, alumnos), PATCH /:id con verificación de existencia, DELETE /:id.
+
+**Resultado:**
+- `documents/diseno/editarGrado/README.md`, `modelosUML/diseno/editarGrado/secuencia.puml`, `images/diseno/editarGrado/secuencia.svg`
+- Diagrama cubre: carga de datos, modificación, guardado y verificación de existencia
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero faltaba el include de asignaturas y alumnos en findOne. Iteration 2: corregido. Validado contra `GradosService.update()`.
+

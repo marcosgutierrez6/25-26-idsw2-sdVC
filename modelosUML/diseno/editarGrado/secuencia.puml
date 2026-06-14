@@ -1,0 +1,73 @@
+@startuml
+title Diagrama de Secuencia - Editar Grado (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "GradosView" as FE
+participant "GradosController" as Controller
+participant "GradosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en editar\nun grado
+activate FE
+
+FE -> Controller: GET /api/grados/:id
+activate Controller
+Controller -> Service: findOne(id)
+activate Service
+Service -> Prisma: grado.findUnique({\n  where: { id },\n  include: { asignaturas: true, alumnos: true }\n})
+activate Prisma
+Prisma -> DB: SELECT Grado.*, Asignatura.*, Alumno.*
+activate DB
+DB --> Prisma: grado con relaciones
+deactivate DB
+Prisma --> Service: grado
+deactivate Prisma
+Service --> Controller: grado
+deactivate Service
+Controller --> FE: 200 OK\n{ grado }
+deactivate Controller
+
+FE --> User: Muestra formulario\ncon datos precargados
+
+User -> FE: Modifica campos\ny pulsa "Guardar"
+FE -> FE: Validación visual
+
+FE -> Controller: PATCH /api/grados/:id\nbody: { titulo, codigo }
+activate Controller
+Controller -> Service: update(id, updateGradoDto)
+activate Service
+
+Service -> Prisma: grado.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Grado WHERE id=?
+activate DB
+DB --> Prisma: grado | null
+deactivate DB
+Prisma --> Service: grado
+deactivate Prisma
+
+alt Grado no encontrado
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Grado\nno encontrado"
+else Grado existe
+  Service -> Prisma: grado.update({\n  where: { id },\n  data: { titulo, codigo }\n})
+  activate Prisma
+  Prisma -> DB: UPDATE Grado SET titulo=..., codigo=...
+  activate DB
+  DB --> Prisma: grado actualizado
+  deactivate DB
+  Prisma --> Service: grado
+  deactivate Prisma
+
+  Service --> Controller: grado
+  deactivate Service
+  Controller --> FE: 200 OK\n{ grado }
+  deactivate Controller
+  FE --> User: Muestra grado\nactualizado
+end
+
+deactivate FE
+
+@enduml
