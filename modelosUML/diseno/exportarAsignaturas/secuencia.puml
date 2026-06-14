@@ -1,0 +1,39 @@
+@startuml
+title Diagrama de Secuencia - Exportar Asignaturas (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AsignaturasView" as FE
+participant "AsignaturasController" as Controller
+participant "AsignaturasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en\n"Exportar Asignaturas"
+activate FE
+
+FE -> Controller: GET /api/asignaturas
+activate Controller
+
+Controller -> Service: findAll()
+activate Service
+
+Service -> Prisma: asignatura.findMany()
+activate Prisma
+Prisma -> DB: SELECT * FROM Asignatura
+activate DB
+DB --> Prisma: asignaturas[]
+deactivate DB
+Prisma --> Service: asignaturas[]
+deactivate Prisma
+
+Service --> Controller: asignaturas[]
+deactivate Service
+Controller --> FE: 200 OK\nasignaturas[]
+deactivate Controller
+
+FE -> FE: Convierte datos a\nformato CSV/JSON\ny descarga archivo
+
+FE --> User: Archivo descargado\n(CSV o JSON)
+deactivate FE
+
+@enduml

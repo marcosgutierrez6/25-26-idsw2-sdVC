@@ -1245,3 +1245,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/importarGrados/README.md`, `modelosUML/diseno/importarGrados/secuencia.puml`, `images/diseno/importarGrados/secuencia.svg`
 
 **Decisión:** Diseño propuesto: carga CSV + createMany.
+
+---
+
+## [18:31] Diseño de exportarAsignaturas() — cuadragésimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `exportarAsignaturas()` (#40, Docente, abstracto, reusa GET /api/asignaturas).
+
+**Resultado:**
+- `documents/diseno/exportarAsignaturas/README.md`, `modelosUML/diseno/exportarAsignaturas/secuencia.puml`, `images/diseno/exportarAsignaturas/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Sin vista separada, conversión a CSV/JSON en frontend.
