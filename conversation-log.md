@@ -991,3 +991,16 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto a la primera. Validado contra `GradosService.create()` — coincide exactamente. El método es directo (`prisma.grado.create()`) sin lógica adicional.
 
+---
+
+## [17:21] Diseño de crearAsignatura() — decimoctavo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `crearAsignatura()` (#18, Docente, implementado). Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD. Flujo: POST /asignaturas con titulo, codigo, cursoAcademico, gradoId; validación de unique constraint; persistencia simple; retorno con transición a editarAsignatura.
+
+**Resultado:**
+- `documents/diseno/crearAsignatura/README.md`, `modelosUML/diseno/crearAsignatura/secuencia.puml`, `images/diseno/crearAsignatura/secuencia.svg`
+- Diagrama cubre: formulario, creación en BD, manejo de error unique, retorno
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Nota: el análisis documenta que la creación debería incluir la batería de preguntas, pero la implementación actual solo crea la asignatura. Se dejó constancia en las decisiones de diseño. Validado contra `AsignaturasService.create()`.
+

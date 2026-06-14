@@ -1,0 +1,53 @@
+@startuml
+title Diagrama de Secuencia - Crear Asignatura (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AsignaturasView" as FE
+participant "AsignaturasController" as Controller
+participant "AsignaturasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Nueva\nAsignatura"
+activate FE
+
+FE --> User: Muestra diálogo con\ncampos: titulo, codigo,\ncursoAcademico, gradoId
+
+User -> FE: Rellena campos\ny pulsa "Crear"
+FE -> FE: Validación visual\nde campos obligatorios
+
+FE -> Controller: POST /api/asignaturas\nbody: { titulo, codigo, cursoAcademico, gradoId }
+activate Controller
+
+Controller -> Service: create(createAsignaturaDto)
+activate Service
+
+Service -> Prisma: asignatura.create({\n  data: { titulo, codigo, cursoAcademico, gradoId }\n})
+activate Prisma
+Prisma -> DB: INSERT INTO Asignatura
+activate DB
+
+alt Unique constraint (código duplicado)
+  DB --> Prisma: Error unique constraint
+  deactivate DB
+  Prisma --> Service: lanza error
+  deactivate Prisma
+  Service --> Controller: lanza excepción
+  Controller --> FE: 409 Conflict
+  FE --> User: Muestra "Código\nduplicado"
+else Creación exitosa
+  DB --> Prisma: asignatura creada (id)
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+
+  Service --> Controller: asignatura
+  deactivate Service
+  Controller --> FE: 201 Created\n{ asignatura }
+  deactivate Controller
+  FE --> User: Muestra asignatura\ncreada y navega a\neditarAsignatura()
+end
+
+deactivate FE
+
+@enduml
