@@ -1043,3 +1043,15 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Caso simple de solo lectura con include. Validado contra `AsignaturasService.findAll()`.
 
+---
+
+## [17:28] Diseño de verGrados() — vigésimo segundo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verGrados()` (#22, Docente, implementado). Caso de solo lectura simple. Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: GET /grados, findAll() sin includes.
+
+**Resultado:**
+- `documents/diseno/verGrados/README.md`, `modelosUML/diseno/verGrados/secuencia.puml`, `images/diseno/verGrados/secuencia.svg`
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Caso más simple del sistema — solo `prisma.grado.findMany()`. Validado contra `GradosService.findAll()`.
+
