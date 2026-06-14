@@ -1030,3 +1030,16 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Caso de solo lectura sin persistencia. El diagrama refleja correctamente el auto-loop de filtrado y el include anidado. Validado contra `PreguntasService.findAll()`.
 
+---
+
+## [17:26] Diseño de verAsignaturas() — vigésimo primer artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verAsignaturas()` (#21, Docente, implementado). Caso de solo lectura. Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD. Flujo: GET /asignaturas con include de grado y profesor.
+
+**Resultado:**
+- `documents/diseno/verAsignaturas/README.md`, `modelosUML/diseno/verAsignaturas/secuencia.puml`, `images/diseno/verAsignaturas/secuencia.svg`
+- Diagrama cubre: carga del listado con relaciones
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Caso simple de solo lectura con include. Validado contra `AsignaturasService.findAll()`.
+

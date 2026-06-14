@@ -1,0 +1,37 @@
+@startuml
+title Diagrama de Secuencia - Ver Asignaturas (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AsignaturasView" as FE
+participant "AsignaturasController" as Controller
+participant "AsignaturasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a "Asignaturas"
+activate FE
+
+FE -> Controller: GET /api/asignaturas
+activate Controller
+
+Controller -> Service: findAll()
+activate Service
+
+Service -> Prisma: asignatura.findMany({\n  include: { grado: true, profesor: true }\n})
+activate Prisma
+Prisma -> DB: SELECT Asignatura.* LEFT JOIN\nGrado LEFT JOIN Profesor
+activate DB
+DB --> Prisma: asignaturas con relaciones
+deactivate DB
+Prisma --> Service: array de asignaturas
+deactivate Prisma
+
+Service --> Controller: asignaturas[]
+deactivate Service
+Controller --> FE: 200 OK\n{ asignaturas: [...] }
+deactivate Controller
+
+FE --> User: Muestra tabla con\nasignaturas y relaciones
+deactivate FE
+
+@enduml
