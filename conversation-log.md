@@ -883,3 +883,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: se creó el diseño pero señalé que no reflejaba que el método `create()` es trivial — solo llama a `prisma.pregunta.create()` sin validación explícita de batería (el FK de BD es quien valida). Iteration 2: se corrigió el diagrama eliminando la validación explícita de batería en el servicio y reflejando el manejo de error FK a nivel de BD. Iteration 3: se validó contra `PreguntasService.create()` línea 10 y el controller línea 17 — ahora coincide exactamente.
+
+---
+
+## [17:05] Diseño de editarPregunta() — undécimo artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `editarPregunta()` siguiendo la misma plantilla. Es un caso implementado con entrada múltiple y salida doble.
+
+- **Participantes:** PreguntasView, PreguntasController, PreguntasService, PrismaService, BD.
+- **Flujo del diagrama:** carga previa de datos vía GET /:id, modificación de campos (enunciado, tema, dificultad, estado), guardado vía PATCH /:id con validación de existencia, opción de eliminar vía DELETE /:id.
+- **Decisiones de diseño:** carga previa antes de update, verificación de existencia en servicio, manejo de error 404, eliminación con confirmación, seguridad por capas.
+
+**Resultado:**
+- `documents/diseno/editarPregunta/README.md`, `modelosUML/diseno/editarPregunta/secuencia.puml`, `images/diseno/editarPregunta/secuencia.svg`
+- Diagrama cubre: carga de datos, modificación, guardado y eliminación
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero señalé que el diagrama no reflejaba la carga previa de datos (findOne) antes del update, que es como funciona realmente el servicio. Iteration 2: se corrigió añadiendo el paso de carga GET y la verificación de existencia en update(). Iteration 3: validado contra el código real — ahora coincide exactamente.
