@@ -1067,3 +1067,15 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.findAll()`.
 
+---
+
+## [17:32] Diseño de verDocentes() — vigésimo cuarto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verDocentes()` (#24, Administrador institucional, implementado). Caso de solo lectura con omit password. Participantes: ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD.
+
+**Resultado:**
+- `documents/diseno/verDocentes/README.md`, `modelosUML/diseno/verDocentes/secuencia.puml`, `images/diseno/verDocentes/secuencia.svg`
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Caso simple con `omit: { password: true }`. Validado contra `ProfesoresService.findAll()`.
+
