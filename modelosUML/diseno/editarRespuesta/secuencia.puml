@@ -1,0 +1,67 @@
+@startuml
+title Diagrama de Secuencia - Editar Respuesta (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "RespuestasController" as Controller
+participant "RespuestasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Editar"\nsobre una respuesta
+activate FE
+
+FE -> Controller: GET /api/respuestas/:id
+activate Controller
+
+Controller -> Service: findOne(id)
+activate Service
+
+Service -> Prisma: respuesta.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Respuesta WHERE id=?
+activate DB
+DB --> Prisma: respuesta | null
+deactivate DB
+Prisma --> Service: respuesta
+deactivate Prisma
+
+alt No encontrada
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: "Respuesta\nno encontrada"
+else Encontrada
+  Service --> Controller: respuesta
+  deactivate Service
+  Controller --> FE: 200 OK\n{ respuesta }
+  deactivate Controller
+
+  FE --> User: Muestra formulario\ncon datos actuales
+
+  User -> FE: Modifica campos\ny confirma
+  FE -> Controller: PATCH /api/respuestas/:id\n{ texto, esCorrecta }
+  activate Controller
+
+  Controller -> Service: update(id, updateDto)
+  activate Service
+
+  Service -> Prisma: respuesta.update({ where: { id }, data })
+  activate Prisma
+  Prisma -> DB: UPDATE Respuesta WHERE id=?
+  activate DB
+  DB --> Prisma: respuesta actualizada
+  deactivate DB
+  Prisma --> Service: respuesta
+  deactivate Prisma
+
+  Service --> Controller: respuesta actualizada
+  deactivate Service
+  Controller --> FE: 200 OK\n{ respuesta }
+  deactivate Controller
+
+  FE --> User: Muestra éxito y\nactualiza listado
+end
+
+deactivate FE
+
+@enduml

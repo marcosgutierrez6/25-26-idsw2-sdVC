@@ -1190,3 +1190,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/crearRespuesta/README.md`, `modelosUML/diseno/crearRespuesta/secuencia.puml`, `images/diseno/crearRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.create()`.
+
+---
+
+## [17:55] Diseño de editarRespuesta() — trigésimo quinto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `editarRespuesta()` (#35, Docente, implementado). Precarga + PATCH.
+
+**Resultado:**
+- `documents/diseno/editarRespuesta/README.md`, `modelosUML/diseno/editarRespuesta/secuencia.puml`, `images/diseno/editarRespuesta/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.update()`.
