@@ -1223,3 +1223,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/cancelarGeneracion/README.md`, `modelosUML/diseno/cancelarGeneracion/secuencia.puml`, `images/diseno/cancelarGeneracion/secuencia.svg`
 
 **Decisión:** Diseño propuesto: elimina exámenes/baterías y restaura estado del sistema.
+
+---
+
+## [18:27] Diseño de importarAsignaturas() — trigésimo octavo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `importarAsignaturas()` (#38, Docente, conceptual).
+
+**Resultado:**
+- `documents/diseno/importarAsignaturas/README.md`, `modelosUML/diseno/importarAsignaturas/secuencia.puml`, `images/diseno/importarAsignaturas/secuencia.svg`
+
+**Decisión:** Diseño propuesto: carga CSV + createMany.
