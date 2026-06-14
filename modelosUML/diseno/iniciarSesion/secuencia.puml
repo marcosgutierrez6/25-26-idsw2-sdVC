@@ -1,0 +1,71 @@
+@startuml
+title Diagrama de Secuencia - Iniciar Sesión (NestJS + Vue 3)
+
+actor "Usuario (Docente/ADMIN)" as User
+participant "LoginView" as FE
+participant "AuthStore\n(Pinia)" as Store
+participant "AuthController" as Controller
+participant "AuthService" as Service
+participant "JwtService" as JWT
+participant "PrismaService" as Prisma
+participant "Base de Datos" as DB
+
+User -> FE: Introduce email\ny contraseña
+activate FE
+
+FE -> FE: handleLogin()
+FE -> Store: login(email, password)
+activate Store
+
+Store -> Controller: POST /auth/login\n{ email, password }
+activate Controller
+
+Controller -> Service: login(email, password)
+activate Service
+
+Service -> Prisma: profesor.findUnique({ where: { email } })
+activate Prisma
+Prisma -> DB: SELECT Profesor WHERE email=?
+activate DB
+DB --> Prisma: profesor | null
+deactivate DB
+Prisma --> Service: profesor | null
+deactivate Prisma
+
+alt Credenciales inválidas
+  Service --> Controller: throw UnauthorizedException
+  Controller --> Store: 401 "Credenciales inválidas"
+  Store --> FE: Error
+  FE --> User: Muestra "Credenciales\ninválidas"
+else Usuario existe
+  Service -> Service: bcrypt.compare(password, hash)
+
+  alt Password incorrecto
+    Service --> Controller: throw UnauthorizedException
+    Controller --> Store: 401 "Credenciales inválidas"
+    Store --> FE: Error
+    FE --> User: Muestra "Credenciales\ninválidas"
+  else Password correcto
+    Service -> JWT: sign({ sub, email, rol })
+    activate JWT
+    JWT --> Service: access_token
+    deactivate JWT
+
+    Service --> Controller: { access_token, user }
+    deactivate Service
+    Controller --> Store: { access_token, user }
+    deactivate Controller
+
+    Store -> Store: Guarda token en\nlocalStorage y Pinia
+    Store -> Store: Guarda user en Pinia
+    Store --> FE: login exitoso
+    deactivate Store
+
+    FE -> FE: router.push('/')
+    FE --> User: Redirige al dashboard
+  end
+end
+
+deactivate FE
+
+@enduml

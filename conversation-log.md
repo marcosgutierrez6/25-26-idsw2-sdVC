@@ -1135,3 +1135,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/eliminarDocente/README.md`, `modelosUML/diseno/eliminarDocente/secuencia.puml`, `images/diseno/eliminarDocente/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `ProfesoresService.remove()`.
+
+---
+
+## [17:46] Diseño de iniciarSesion() — trigésimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `iniciarSesion()` (#30, login, implementado con JWT + Passport + bcrypt).
+
+**Resultado:**
+- `documents/diseno/iniciarSesion/README.md`, `modelosUML/diseno/iniciarSesion/secuencia.puml`, `images/diseno/iniciarSesion/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto con doble validación (usuario + password). Validado contra `AuthService.login()` y `LoginView.vue`/`auth store`.
