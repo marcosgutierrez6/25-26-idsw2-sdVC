@@ -1267,3 +1267,28 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseño/exportarGrados/README.md`, `modelosUML/diseño/exportarGrados/secuencia.puml`, `images/diseño/exportarGrados/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Completa los 41 casos de uso priorizados.
+
+
+---
+
+## [18:41] Correcciones post-diseño — revisión de calidad
+
+**Prompt:** El usuario revisó los artefactos y señaló varios problemas:
+1. Faltaba documents/diseño/README.md (índice navegable)
+2. Los SVGs de diseño eran placeholders falsos (< 5KB con texto "Generar con: PlantUML")
+3. "Equipo de desarrollo" como autor genérico en todos los READMEs
+4. El README principal seguía siendo la plantilla del profesor
+5. src/README.md tenía solo una línea
+6. Posible inconsistencia de carpeta (diseno vs diseño)
+
+**Correcciones aplicadas:**
+- Creado documents/diseño/README.md con índice organizado por actor y módulo
+- Regenerados 35 SVGs placeholder vía kroki.io (POST /plantuml/svg con el .puml como body)
+- Reparados 4 .puml que fallaban (stop dentro de alt block) y re-renderizados
+- "Equipo de desarrollo" → "Marcos Gutierrez" en 63 READMEs de análisis y diseño
+- README.md principal reescrito: presentación del sistema, stack tecnológico, arquitectura monorepo, navegación a artefactos, cómo ejecutar
+- src/README.md reescrito: árbol de directorios, entidades Prisma, comandos
+- Verificada consistencia: todas las carpetas usan diseño (con ñ), todos los enlaces coinciden
+- Añadida referencia al conversation-log.md en src/README.md
+
+**Resultado:** 41 casos de diseño completos con SVGs reales, READMEs con autor propio, documentación principal y src renovadas, índices navegables.
