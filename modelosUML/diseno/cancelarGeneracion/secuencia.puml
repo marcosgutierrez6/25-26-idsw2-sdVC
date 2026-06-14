@@ -1,0 +1,62 @@
+@startuml
+title Diagrama de Secuencia - Cancelar Generación (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "ExamenesView" as FE
+participant "SistemaController" as Controller
+participant "SistemaService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos" as DB
+
+User -> FE: Solicita cancelar\ngeneración de exámenes
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma cancelación
+
+FE -> Controller: POST /api/sistema/cancelar-generacion
+activate Controller
+
+Controller -> Service: cancelarGeneracion()
+activate Service
+
+== Eliminar exámenes generados ==
+Service -> Prisma: examen.deleteMany()
+activate Prisma
+Prisma -> DB: DELETE FROM Examen
+activate DB
+DB --> Prisma: { count }
+deactivate DB
+Prisma --> Service: { count }
+deactivate Prisma
+
+== Eliminar baterías ==
+Service -> Prisma: bateria.deleteMany()
+activate Prisma
+Prisma -> DB: DELETE FROM Bateria
+activate DB
+DB --> Prisma: { count }
+deactivate DB
+Prisma --> Service: { count }
+deactivate Prisma
+
+== Restaurar estado del sistema ==
+Service -> Prisma: sistemaConfig.upsert({\n  estado: "ASIGNATURA_ABIERTO" })
+activate Prisma
+Prisma -> DB: UPDATE sistema_estado
+activate DB
+DB --> Prisma: ok
+deactivate DB
+Prisma --> Service: config
+deactivate Prisma
+
+Service --> Controller: { exámenesEliminados, estado }
+deactivate Service
+Controller --> FE: 200 OK
+deactivate Controller
+
+FE --> User: Muestra "Generación\ncancelada con éxito"
+deactivate FE
+
+@enduml

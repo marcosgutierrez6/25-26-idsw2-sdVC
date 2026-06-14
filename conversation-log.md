@@ -1212,3 +1212,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/eliminarRespuesta/README.md`, `modelosUML/diseno/eliminarRespuesta/secuencia.puml`, `images/diseno/eliminarRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.remove()`.
+
+---
+
+## [17:58] Diseño de cancelarGeneracion() — trigésimo séptimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `cancelarGeneracion()` (#37, Docente, conceptual, sin endpoint implementado).
+
+**Resultado:**
+- `documents/diseno/cancelarGeneracion/README.md`, `modelosUML/diseno/cancelarGeneracion/secuencia.puml`, `images/diseno/cancelarGeneracion/secuencia.svg`
+
+**Decisión:** Diseño propuesto: elimina exámenes/baterías y restaura estado del sistema.
