@@ -1055,3 +1055,15 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Caso más simple del sistema — solo `prisma.grado.findMany()`. Validado contra `GradosService.findAll()`.
 
+---
+
+## [17:30] Diseño de verAlumnos() — vigésimo tercer artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verAlumnos()` (#23, Docente, implementado). Caso de solo lectura con include de grado. Participantes: AlumnosView, AlumnosController, AlumnosService, PrismaService, BD.
+
+**Resultado:**
+- `documents/diseno/verAlumnos/README.md`, `modelosUML/diseno/verAlumnos/secuencia.puml`, `images/diseno/verAlumnos/secuencia.svg`
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.findAll()`.
+
