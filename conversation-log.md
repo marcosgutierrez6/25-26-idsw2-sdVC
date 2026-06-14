@@ -980,3 +980,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ---
 
+## [17:19] Diseño de crearGrado() — decimoséptimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `crearGrado()` (#17, Docente, implementado). Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: POST /grados con título y código, validación de unique constraint en código, persistencia simple, retorno con transición a editarGrado.
+
+**Resultado:**
+- `documents/diseno/crearGrado/README.md`, `modelosUML/diseno/crearGrado/secuencia.puml`, `images/diseno/crearGrado/secuencia.svg`
+- Diagrama cubre: formulario, creación en BD, manejo de error unique, retorno
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto a la primera. Validado contra `GradosService.create()` — coincide exactamente. El método es directo (`prisma.grado.create()`) sin lógica adicional.
+
