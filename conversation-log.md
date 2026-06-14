@@ -1079,3 +1079,15 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Caso simple con `omit: { password: true }`. Validado contra `ProfesoresService.findAll()`.
 
+---
+
+## [17:35] Diseño de eliminarPregunta() — vigésimo quinto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarPregunta()` (#25, Docente, implementado). Participantes: PreguntasView, PreguntasController, PreguntasService, PrismaService, BD. Flujo: confirmación, DELETE /:id, verificación de existencia, eliminación.
+
+**Resultado:**
+- `documents/diseno/eliminarPregunta/README.md`, `modelosUML/diseno/eliminarPregunta/secuencia.puml`, `images/diseno/eliminarPregunta/secuencia.svg`
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto pero faltaba reflejar que el frontend muestra confirmación antes de enviar DELETE. Iteration 2: corregido. Validado contra `PreguntasService.remove()`.
+
