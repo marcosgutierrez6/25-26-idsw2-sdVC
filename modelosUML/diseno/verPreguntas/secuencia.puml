@@ -1,0 +1,56 @@
+@startuml
+title Diagrama de Secuencia - Ver Preguntas (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "PreguntasController" as Controller
+participant "PreguntasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a "Preguntas"
+activate FE
+
+FE -> Controller: GET /api/preguntas\n(query: tema?, dificultad?, bateriaId?)
+activate Controller
+
+Controller -> Service: findAll(filters?)
+activate Service
+
+Service -> Prisma: pregunta.findMany({\n  where: { tema?, dificultad?, bateriaId? },\n  include: {\n    respuestas: true,\n    bateria: { include: { asignatura: true } }\n  }\n})
+activate Prisma
+Prisma -> DB: SELECT Pregunta.* LEFT JOIN\nRespuesta LEFT JOIN Bateria\nLEFT JOIN Asignatura [WHERE ...]
+activate DB
+DB --> Prisma: preguntas con relaciones
+deactivate DB
+Prisma --> Service: array de preguntas
+deactivate Prisma
+
+Service --> Controller: preguntas[]
+deactivate Service
+Controller --> FE: 200 OK\n{ preguntas: [...] }
+deactivate Controller
+
+FE --> User: Muestra tabla con\npreguntas y filtros
+
+User -> FE: Aplica filtro (tema,\ndificultad, batería)
+FE -> Controller: GET /api/preguntas\n(query con filtros)
+activate Controller
+Controller -> Service: findAll(filters)
+activate Service
+Service -> Prisma: pregunta.findMany({ where..., include... })
+activate Prisma
+Prisma -> DB: SELECT con filtros
+activate DB
+DB --> Prisma: preguntas filtradas
+deactivate DB
+Prisma --> Service: preguntas filtradas
+deactivate Prisma
+Service --> Controller: preguntas[]
+deactivate Service
+Controller --> FE: 200 OK\n{ preguntas: [...] }
+deactivate Controller
+FE --> User: Muestra preguntas\nfiltradas
+deactivate FE
+
+@enduml

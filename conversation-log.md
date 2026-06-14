@@ -1017,3 +1017,16 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: se creó el diseño pero faltaba el include de asignaturas y alumnos en findOne. Iteration 2: corregido. Validado contra `GradosService.update()`.
 
+---
+
+## [17:25] Diseño de verPreguntas() — vigésimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verPreguntas()` (#20, Docente, implementado). Caso de solo lectura con filtros opcionales. Participantes: PreguntasView, PreguntasController, PreguntasService, PrismaService, BD. Flujo: GET /preguntas con query params (tema, dificultad, bateriaId), consulta con include, retorno de datos.
+
+**Resultado:**
+- `documents/diseno/verPreguntas/README.md`, `modelosUML/diseno/verPreguntas/secuencia.puml`, `images/diseno/verPreguntas/secuencia.svg`
+- Diagrama cubre: carga inicial, filtrado por tema/dificultad/batería, auto-loop de filtrado
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: diseño correcto. Caso de solo lectura sin persistencia. El diagrama refleja correctamente el auto-loop de filtrado y el include anidado. Validado contra `PreguntasService.findAll()`.
+
