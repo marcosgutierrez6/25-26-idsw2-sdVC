@@ -934,3 +934,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: se creó el diseño pero señalé que el hash bcrypt se hace en el servicio, no en el controlador. Iteration 2: se corrigió moviendo el paso de hashing al servicio. Iteration 3: validado contra `ProfesoresService.create()` — ahora coincide exactamente.
+
+---
+
+## [17:12] Diseño de crearAlumno() — decimocuarto artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `crearAlumno()` siguiendo la misma plantilla. Caso de creación simple con verificación de grado.
+
+- **Participantes:** AlumnosView, AlumnosController, AlumnosService, PrismaService, BD.
+- **Flujo del diagrama:** formulario de creación, POST /alumnos, verificación de gradoId (FK), persistencia, retorno.
+- **Decisiones de diseño:** validación de grado por FK de BD, DTO con validación, estado inicial, seguridad por capas.
+
+**Resultado:**
+- `documents/diseno/crearAlumno/README.md`, `modelosUML/diseno/crearAlumno/secuencia.puml`, `images/diseno/crearAlumno/secuencia.svg`
+- Diagrama cubre: formulario, verificación de FK, persistencia
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero señalé que no reflejaba la verificación de unicidad de dni/email (unique en schema). Iteration 2: se corrigió añadiendo manejo de error por unique constraint. Iteration 3: validado contra `AlumnosService.create()` — ahora coincide.
