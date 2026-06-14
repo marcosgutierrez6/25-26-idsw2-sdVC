@@ -900,3 +900,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: se creó el diseño pero señalé que el diagrama no reflejaba la carga previa de datos (findOne) antes del update, que es como funciona realmente el servicio. Iteration 2: se corrigió añadiendo el paso de carga GET y la verificación de existencia en update(). Iteration 3: validado contra el código real — ahora coincide exactamente.
+
+---
+
+## [17:08] Diseño de editarAsignatura() — duodécimo artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `editarAsignatura()` siguiendo la misma plantilla. Es un caso implementado con entrada múltiple (4 orígenes) y flujo de edición con carga previa.
+
+- **Participantes:** AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD.
+- **Flujo del diagrama:** carga previa de datos vía GET /:id con include (grado, bateria), modificación de campos, guardado vía PATCH /:id con verificación de existencia, opción de eliminar vía DELETE /:id.
+- **Decisiones de diseño:** include con relaciones en findOne, verificación de existencia en update/remove, manejo de error 404, seguridad por capas con roles.
+
+**Resultado:**
+- `documents/diseno/editarAsignatura/README.md`, `modelosUML/diseno/editarAsignatura/secuencia.puml`, `images/diseno/editarAsignatura/secuencia.svg`
+- Diagrama cubre: carga de datos con include, modificación, guardado y eliminación
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero señalé que faltaba reflejar el include de `bateria` en la consulta findOne. Iteration 2: se corrigió el diagrama añadiendo el include en la carga de datos. Iteration 3: validado contra el código real — ahora coincide exactamente.
