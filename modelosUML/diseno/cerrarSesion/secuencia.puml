@@ -1,0 +1,30 @@
+@startuml
+title Diagrama de Secuencia - Cerrar Sesión (NestJS + Vue 3)
+
+actor "Usuario (Docente/ADMIN)" as User
+participant "MainLayout\n(Toolbar)" as Layout
+participant "AuthStore\n(Pinia)" as Store
+participant "Router" as Router
+
+User -> Layout: Hace clic en\n"Cerrar sesión"
+activate Layout
+
+Layout -> Store: logout()
+activate Store
+
+Store -> Store: user = null
+Store -> Store: token = null
+Store -> Store: localStorage.removeItem('access_token')
+
+Store --> Layout: sesión cerrada
+deactivate Store
+
+Layout -> Router: router.push('/login')
+activate Router
+Router --> Layout: redirigido
+deactivate Router
+
+Layout --> User: Muestra pantalla\nde login
+deactivate Layout
+
+@enduml

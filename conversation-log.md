@@ -1146,3 +1146,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/iniciarSesion/README.md`, `modelosUML/diseno/iniciarSesion/secuencia.puml`, `images/diseno/iniciarSesion/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto con doble validación (usuario + password). Validado contra `AuthService.login()` y `LoginView.vue`/`auth store`.
+
+---
+
+## [17:47] Diseño de cerrarSesion() — trigésimo primer artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `cerrarSesion()` (#31, logout, implementado).
+
+**Resultado:**
+- `documents/diseno/cerrarSesion/README.md`, `modelosUML/diseno/cerrarSesion/secuencia.puml`, `images/diseno/cerrarSesion/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Sin llamada al backend, solo limpieza local.
