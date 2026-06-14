@@ -1,0 +1,37 @@
+@startuml
+title Diagrama de Secuencia - Ver Respuestas (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "RespuestasController" as Controller
+participant "RespuestasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Navega a detalle de\nuna pregunta
+activate FE
+
+FE -> Controller: GET /api/respuestas/pregunta/:preguntaId
+activate Controller
+
+Controller -> Service: findByPregunta(preguntaId)
+activate Service
+
+Service -> Prisma: respuesta.findMany({ where: { preguntaId } })
+activate Prisma
+Prisma -> DB: SELECT Respuesta WHERE preguntaId=?
+activate DB
+DB --> Prisma: respuestas[]
+deactivate DB
+Prisma --> Service: respuestas[]
+deactivate Prisma
+
+Service --> Controller: respuestas[]
+deactivate Service
+Controller --> FE: 200 OK\nrespuestas[]
+deactivate Controller
+
+FE --> User: Muestra listado de\nrespuestas de la pregunta
+deactivate FE
+
+@enduml

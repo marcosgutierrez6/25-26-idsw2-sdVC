@@ -1168,3 +1168,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/completarGestion/README.md`, `modelosUML/diseno/completarGestion/secuencia.puml`, `images/diseno/completarGestion/secuencia.svg`
 
 **Decisión:** Sine cdiseño propuesto basado en estado del sistema con verificación de prerrequisitos. Sin implementación real en backend.
+
+---
+
+## [17:50] Diseño de verRespuestas() — trigésimo tercer artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `verRespuestas()` (#33, Docente, implementado). Read-only GET por preguntaId.
+
+**Resultado:**
+- `documents/diseno/verRespuestas/README.md`, `modelosUML/diseno/verRespuestas/secuencia.puml`, `images/diseno/verRespuestas/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasController.findByPregunta()` y `RespuestasService.findByPregunta()`.
