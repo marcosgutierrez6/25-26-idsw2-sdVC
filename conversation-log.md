@@ -1157,3 +1157,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/cerrarSesion/README.md`, `modelosUML/diseno/cerrarSesion/secuencia.puml`, `images/diseno/cerrarSesion/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Sin llamada al backend, solo limpieza local.
+
+---
+
+## [17:49] Diseño de completarGestion() — trigésimo segundo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `completarGestion()` (#32, Docente/ADMIN, conceptual, sin endpoint implementado).
+
+**Resultado:**
+- `documents/diseno/completarGestion/README.md`, `modelosUML/diseno/completarGestion/secuencia.puml`, `images/diseno/completarGestion/secuencia.svg`
+
+**Decisión:** Sine cdiseño propuesto basado en estado del sistema con verificación de prerrequisitos. Sin implementación real en backend.

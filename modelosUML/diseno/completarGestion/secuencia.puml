@@ -1,0 +1,103 @@
+@startuml
+title Diagrama de Secuencia - Completar Gestión (NestJS + Vue 3)
+
+actor "Usuario (Docente/ADMIN)" as User
+participant "ConfigView" as FE
+participant "SistemaController" as Controller
+participant "SistemaService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos" as DB
+
+User -> FE: Solicita completar\ngestión del sistema
+activate FE
+
+FE --> User: Muestra resumen de\nverificaciones pendientes
+
+User -> FE: Confirma completar\n(Disponibilizar sistema)
+FE -> Controller: POST /api/sistema/completar-gestion
+activate Controller
+
+Controller -> Service: completarGestion()
+activate Service
+
+== Verificación de prerrequisitos ==
+
+Service -> Prisma: grado.count()
+activate Prisma
+Prisma -> DB: COUNT Grados
+activate DB
+DB --> Prisma: n
+deactivate DB
+Prisma --> Service: n
+deactivate Prisma
+
+Service -> Prisma: asignatura.count()
+activate Prisma
+Prisma -> DB: COUNT Asignaturas
+activate DB
+DB --> Prisma: n
+deactivate DB
+Prisma --> Service: n
+deactivate Prisma
+
+Service -> Prisma: alumno.count()
+activate Prisma
+Prisma -> DB: COUNT Alumnos
+activate DB
+DB --> Prisma: n
+deactivate DB
+Prisma --> Service: n
+deactivate Prisma
+
+Service -> Prisma: pregunta.count()
+activate Prisma
+Prisma -> DB: COUNT Preguntas
+activate DB
+DB --> Prisma: n
+deactivate DB
+Prisma --> Service: n
+deactivate Prisma
+
+Service -> Prisma: bateria.findMany (contar\nexámenes asignados)
+activate Prisma
+Prisma -> DB: SELECT Baterias
+activate DB
+DB --> Prisma: baterias
+deactivate DB
+Prisma --> Service: lista
+deactivate Prisma
+
+Service -> Prisma: examen.findMany (contar\nexámenes corregidos)
+activate Prisma
+Prisma -> DB: SELECT Examenes
+activate DB
+DB --> Prisma: examenes
+deactivate DB
+Prisma --> Service: lista
+deactivate Prisma
+
+alt Prerrequisitos no cumplidos
+  Service --> Controller: throw BadRequestException\n"Faltan datos por completar"
+  Controller --> FE: 400 "Faltan grados,\nasignaturas, alumnos,\npreguntas, exámenes\nasignados o corregidos"
+  FE --> User: Muestra detalles de\nlo que falta
+else Todo completo
+  == Actualizar estado del sistema ==
+  Service -> Prisma: sistemaConfig.upsert({\n  set: { estado: "DISPONIBLE" } })
+  activate Prisma
+  Prisma -> DB: UPDATE/INSERT\nEstado del sistema
+  activate DB
+  DB --> Prisma: ok
+  deactivate DB
+  Prisma --> Service: config actualizada
+  deactivate Prisma
+
+  Service --> Controller: { estado: "DISPONIBLE" }
+  deactivate Service
+  Controller --> FE: 200 OK\n{ estado: "DISPONIBLE" }
+  deactivate Controller
+  FE --> User: Muestra "Sistema\ndisponibilizado con éxito"
+end
+
+deactivate FE
+
+@enduml
