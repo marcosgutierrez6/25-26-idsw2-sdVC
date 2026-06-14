@@ -672,10 +672,10 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Flujo del diagrama:** debía reflejar paso a paso el método `corregir()` real: validar que la asignación existe, consultar examen con preguntas y respuestas, cruzar respuestas del alumno contra las correctas, calcular nota en escala 0-10, persistir la corrección en AlumnoExamen, verificar si quedan alumnos pendientes y transicionar el estado del examen a RESUELTO o CORREGIDO según corresponda.
 - **Decisiones de diseño:** cada una con su justificación técnica, extraída del análisis del código y la arquitectura del proyecto.
 - **Formato reproducible:** que sirviera como plantilla para el resto de casos de uso, manteniendo coherencia en toda la fase de diseño.
-- **Archivos separados:** código PlantUML en `modelosUML/diseno/`, renderizado SVG en `images/diseno/`, documento en `documents/diseno/`.
+- **Archivos separados:** código PlantUML en `modelosUML/diseño/`, renderizado SVG en `images/diseño/`, documento en `documents/diseño/`.
 
 **Primera iteración — creación inicial:**
-- Creada la estructura de directorios `documents/diseno/corregirExamenes/`, `modelosUML/diseno/corregirExamenes/` e `images/diseno/corregirExamenes/`.
+- Creada la estructura de directorios `documents/diseño/corregirExamenes/`, `modelosUML/diseño/corregirExamenes/` e `images/diseño/corregirExamenes/`.
 - Escrito el diagrama de secuencia en PlantUML cubriendo el flujo completo: 3 escenarios (asignación no encontrada, asignación encontrada con corrección exitosa, transición RESUELTO vs CORREGIDO).
 - Creado el README con las 8 secciones del artefacto.
 - Renderizado SVG exitoso.
@@ -685,9 +685,9 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Se actualizó esta entrada en el log para reflejar correctamente la dinámica de trabajo.
 
 **Resultado final:**
-- `documents/diseno/corregirExamenes/README.md` — artefacto formal completo
-- `modelosUML/diseno/corregirExamenes/secuencia.puml` — diagrama de secuencia fuente
-- `images/diseno/corregirExamenes/secuencia.svg` — diagrama renderizado
+- `documents/diseño/corregirExamenes/README.md` — artefacto formal completo
+- `modelosUML/diseño/corregirExamenes/secuencia.puml` — diagrama de secuencia fuente
+- `images/diseño/corregirExamenes/secuencia.svg` — diagrama renderizado
 - 8 decisiones de diseño documentadas
 - El diagrama cubre: validación de asignación, consulta de examen con preguntas y respuestas, cruce de respuestas y cálculo de nota, persistencia de corrección, verificación de alumnos pendientes y transición de estado (RESUELTO vs CORREGIDO)
 
@@ -718,7 +718,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Creado el README con 8 decisiones de diseño.
 
 **Resultado final:**
-- `documents/diseno/generarExamenes/README.md`, `modelosUML/diseno/generarExamenes/secuencia.puml`, `images/diseno/generarExamenes/secuencia.svg`
+- `documents/diseño/generarExamenes/README.md`, `modelosUML/diseño/generarExamenes/secuencia.puml`, `images/diseño/generarExamenes/secuencia.svg`
 - 8 decisiones de diseño: algoritmo por dificultad, Fisher-Yates shuffle, creación batch con loop, validación de disponibilidad, relleno de preguntas restantes, estado inicial GENERADO, lógica centralizada en servicio, seguridad por capas
 
 **Decisión:** Se aceptó sin correcciones. La plantilla quedó validada como reproducible para el resto de casos de uso.
@@ -748,7 +748,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas, incluyendo el orden jerárquico, validación previa, skipDuplicates, previsualización, servicio dedicado y formato JSON.
 
 **Resultado final:**
-- `documents/diseno/importarConfiguracionGlobal/README.md`, `modelosUML/diseno/importarConfiguracionGlobal/secuencia.puml`, `images/diseno/importarConfiguracionGlobal/secuencia.svg`
+- `documents/diseño/importarConfiguracionGlobal/README.md`, `modelosUML/diseño/importarConfiguracionGlobal/secuencia.puml`, `images/diseño/importarConfiguracionGlobal/secuencia.svg`
 - Diagrama cubre: previsualización, confirmación, validación, importación batch por entidad con createMany + skipDuplicates, manejo de error por datos inválidos
 - 8 decisiones de diseño documentadas como propuesta
 
@@ -778,7 +778,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Creado el README con nota de propuesta y 8 decisiones de diseño.
 
 **Resultado final:**
-- `documents/diseno/exportarConfiguracionGlobal/README.md`, `modelosUML/diseno/exportarConfiguracionGlobal/secuencia.puml`, `images/diseno/exportarConfiguracionGlobal/secuencia.svg`
+- `documents/diseño/exportarConfiguracionGlobal/README.md`, `modelosUML/diseño/exportarConfiguracionGlobal/secuencia.puml`, `images/diseño/exportarConfiguracionGlobal/secuencia.svg`
 - Diagrama cubre: confirmación, consultas independientes por entidad, compilación JSON, descarga y manejo de error
 - 8 decisiones de diseño documentadas como propuesta
 
@@ -794,7 +794,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** validación en dos fases, skipDuplicates para idempotencia, verificación de grado, formato CSV, extensión del servicio existente
 
 **Resultado:**
-- `documents/diseno/importarAlumnos/README.md`, `modelosUML/diseno/importarAlumnos/secuencia.puml`, `images/diseno/importarAlumnos/secuencia.svg`
+- `documents/diseño/importarAlumnos/README.md`, `modelosUML/diseño/importarAlumnos/secuencia.puml`, `images/diseño/importarAlumnos/secuencia.svg`
 - Diagrama cubre: previsualización, validación sintáctica, verificación de grado, importación batch con skipDuplicates, errores (datos inválidos, grado inexistente)
 - 8 decisiones de diseño documentadas
 
@@ -810,7 +810,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** nested create para atomicidad, validación en tres capas, formato JSON por jerarquía pregunta→respuestas, loop transaccional por pregunta
 
 **Resultado:**
-- `documents/diseno/importarPreguntas/README.md`, `modelosUML/diseno/importarPreguntas/secuencia.puml`, `images/diseno/importarPreguntas/secuencia.svg`
+- `documents/diseño/importarPreguntas/README.md`, `modelosUML/diseño/importarPreguntas/secuencia.puml`, `images/diseño/importarPreguntas/secuencia.svg`
 - Diagrama cubre: previsualización, validación trifásica (sintaxis, batería, reglas 2-5 respuestas + 1 correcta), loop de creación con nested create
 - 8 decisiones de diseño documentadas
 
@@ -827,7 +827,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** caso abstracto sin vista propia, reutilización de endpoint existente, include con JOIN automático, compilación en frontend.
 
 **Resultado:**
-- `documents/diseno/exportarAlumnos/README.md`, `modelosUML/diseno/exportarAlumnos/secuencia.puml`, `images/diseno/exportarAlumnos/secuencia.svg`
+- `documents/diseño/exportarAlumnos/README.md`, `modelosUML/diseño/exportarAlumnos/secuencia.puml`, `images/diseño/exportarAlumnos/secuencia.svg`
 - Diagrama cubre: navegación desde caso padre, consulta con include, retorno de datos, compilación y descarga
 - 8 decisiones de diseño documentadas
 
@@ -844,7 +844,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** caso abstracto sin vista propia, reutilización de endpoint existente, include anidado para evitar N+1, compilación en frontend, jerarquía de datos preservada.
 
 **Resultado:**
-- `documents/diseno/exportarPreguntas/README.md`, `modelosUML/diseno/exportarPreguntas/secuencia.puml`, `images/diseno/exportarPreguntas/secuencia.svg`
+- `documents/diseño/exportarPreguntas/README.md`, `modelosUML/diseño/exportarPreguntas/secuencia.puml`, `images/diseño/exportarPreguntas/secuencia.svg`
 - Diagrama cubre: navegación desde caso padre, consulta con múltiples JOINs, retorno de datos jerárquicos, compilación y descarga
 - 8 decisiones de diseño documentadas
 
@@ -861,7 +861,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** hash con timestamp para unicidad, clave de corrección como JSON, loop de creación individual, validación de examen existente, DTO con pipes de validación.
 
 **Resultado:**
-- `documents/diseno/asignarExamenes/README.md`, `modelosUML/diseno/asignarExamenes/secuencia.puml`, `images/diseno/asignarExamenes/secuencia.svg`
+- `documents/diseño/asignarExamenes/README.md`, `modelosUML/diseño/asignarExamenes/secuencia.puml`, `images/diseño/asignarExamenes/secuencia.svg`
 - Diagrama cubre: validación de examen, cálculo de respuestas correctas, hash por alumno, batch de asignaciones, actualización de estado
 - 8 decisiones de diseño documentadas
 
@@ -878,7 +878,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** validación visual en frontend, creación sin validación explícita de batería (FK de BD la garantiza), estado por defecto EN_CONSTRUCCION, transición automática a editarPregunta.
 
 **Resultado:**
-- `documents/diseno/crearPregunta/README.md`, `modelosUML/diseno/crearPregunta/secuencia.puml`, `images/diseno/crearPregunta/secuencia.svg`
+- `documents/diseño/crearPregunta/README.md`, `modelosUML/diseño/crearPregunta/secuencia.puml`, `images/diseño/crearPregunta/secuencia.svg`
 - Diagrama cubre: carga de formulario, validación visual, petición POST, creación en BD con FK check, retorno y transición a edición
 - 8 decisiones de diseño documentadas
 
@@ -895,7 +895,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** carga previa antes de update, verificación de existencia en servicio, manejo de error 404, eliminación con confirmación, seguridad por capas.
 
 **Resultado:**
-- `documents/diseno/editarPregunta/README.md`, `modelosUML/diseno/editarPregunta/secuencia.puml`, `images/diseno/editarPregunta/secuencia.svg`
+- `documents/diseño/editarPregunta/README.md`, `modelosUML/diseño/editarPregunta/secuencia.puml`, `images/diseño/editarPregunta/secuencia.svg`
 - Diagrama cubre: carga de datos, modificación, guardado y eliminación
 - 8 decisiones de diseño documentadas
 
@@ -912,7 +912,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** include con relaciones en findOne, verificación de existencia en update/remove, manejo de error 404, seguridad por capas con roles.
 
 **Resultado:**
-- `documents/diseno/editarAsignatura/README.md`, `modelosUML/diseno/editarAsignatura/secuencia.puml`, `images/diseno/editarAsignatura/secuencia.svg`
+- `documents/diseño/editarAsignatura/README.md`, `modelosUML/diseño/editarAsignatura/secuencia.puml`, `images/diseño/editarAsignatura/secuencia.svg`
 - Diagrama cubre: carga de datos con include, modificación, guardado y eliminación
 - 8 decisiones de diseño documentadas
 
@@ -929,7 +929,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** bcrypt para hash (salt rounds 10), DTO con class-validator, rol DOCENTE por defecto, endpoint solo ADMIN, seguridad por capas.
 
 **Resultado:**
-- `documents/diseno/crearDocente/README.md`, `modelosUML/diseno/crearDocente/secuencia.puml`, `images/diseno/crearDocente/secuencia.svg`
+- `documents/diseño/crearDocente/README.md`, `modelosUML/diseño/crearDocente/secuencia.puml`, `images/diseño/crearDocente/secuencia.svg`
 - Diagrama cubre: formulario, hashing, persistencia, retorno
 - 8 decisiones de diseño documentadas
 
@@ -946,7 +946,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - **Decisiones de diseño:** validación de grado por FK de BD, DTO con validación, estado inicial, seguridad por capas.
 
 **Resultado:**
-- `documents/diseno/crearAlumno/README.md`, `modelosUML/diseno/crearAlumno/secuencia.puml`, `images/diseno/crearAlumno/secuencia.svg`
+- `documents/diseño/crearAlumno/README.md`, `modelosUML/diseño/crearAlumno/secuencia.puml`, `images/diseño/crearAlumno/secuencia.svg`
 - Diagrama cubre: formulario, verificación de FK, persistencia
 - 8 decisiones de diseño documentadas
 
@@ -956,10 +956,10 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 ## [17:13] Diseño de editarDocente() — decimoquinto artefacto de diseño
 
-**Prompt:** Crear el artefacto de diseño RUP para `editarDocente()` (#15, Administrador institucional, implementado). Estructura: directorios `documents/diseno/editarDocente/`, `modelosUML/diseno/editarDocente/`, `images/diseno/editarDocente/`. Diagrama de secuencia con participantes: Usuario (Admin), ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD. Flujo: GET /:id (carga), PATCH /:id con bcrypt condicional si hay password, DELETE /:id. README con 8 decisiones de diseño. Placeholder SVG.
+**Prompt:** Crear el artefacto de diseño RUP para `editarDocente()` (#15, Administrador institucional, implementado). Estructura: directorios `documents/diseño/editarDocente/`, `modelosUML/diseño/editarDocente/`, `images/diseño/editarDocente/`. Diagrama de secuencia con participantes: Usuario (Admin), ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD. Flujo: GET /:id (carga), PATCH /:id con bcrypt condicional si hay password, DELETE /:id. README con 8 decisiones de diseño. Placeholder SVG.
 
 **Resultado:**
-- Creados `documents/diseno/editarDocente/README.md`, `modelosUML/diseno/editarDocente/secuencia.puml`, `images/diseno/editarDocente/secuencia.svg`
+- Creados `documents/diseño/editarDocente/README.md`, `modelosUML/diseño/editarDocente/secuencia.puml`, `images/diseño/editarDocente/secuencia.svg`
 - Diagrama cubre: carga de datos con `omit: { password: true }` e `include: { asignaturas: true }`, verificación de existencia, guardado con bcrypt condicional, eliminación con confirmación
 - 8 decisiones de diseño: carga previa, verificación de existencia, hashing condicional de bcrypt, omisión de password en respuestas, validación visual, DTO parcial, confirmación de eliminación, seguridad por capas
 
@@ -972,7 +972,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `editarAlumno()` (#16, Docente, implementado). Participantes: AlumnosView, AlumnosController, AlumnosService, PrismaService, BD. Flujo: GET /:id (carga con include grado + asignaturas), PATCH /:id (update con findOne previo), DELETE /:id (remove con findOne previo).
 
 **Resultado:**
-- `documents/diseno/editarAlumno/README.md`, `modelosUML/diseno/editarAlumno/secuencia.puml`, `images/diseno/editarAlumno/secuencia.svg`
+- `documents/diseño/editarAlumno/README.md`, `modelosUML/diseño/editarAlumno/secuencia.puml`, `images/diseño/editarAlumno/secuencia.svg`
 - Diagrama cubre: carga de datos, modificación, guardado y eliminación
 - 8 decisiones de diseño documentadas
 
@@ -985,7 +985,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `crearGrado()` (#17, Docente, implementado). Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: POST /grados con título y código, validación de unique constraint en código, persistencia simple, retorno con transición a editarGrado.
 
 **Resultado:**
-- `documents/diseno/crearGrado/README.md`, `modelosUML/diseno/crearGrado/secuencia.puml`, `images/diseno/crearGrado/secuencia.svg`
+- `documents/diseño/crearGrado/README.md`, `modelosUML/diseño/crearGrado/secuencia.puml`, `images/diseño/crearGrado/secuencia.svg`
 - Diagrama cubre: formulario, creación en BD, manejo de error unique, retorno
 - 8 decisiones de diseño documentadas
 
@@ -998,7 +998,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `crearAsignatura()` (#18, Docente, implementado). Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD. Flujo: POST /asignaturas con titulo, codigo, cursoAcademico, gradoId; validación de unique constraint; persistencia simple; retorno con transición a editarAsignatura.
 
 **Resultado:**
-- `documents/diseno/crearAsignatura/README.md`, `modelosUML/diseno/crearAsignatura/secuencia.puml`, `images/diseno/crearAsignatura/secuencia.svg`
+- `documents/diseño/crearAsignatura/README.md`, `modelosUML/diseño/crearAsignatura/secuencia.puml`, `images/diseño/crearAsignatura/secuencia.svg`
 - Diagrama cubre: formulario, creación en BD, manejo de error unique, retorno
 - 8 decisiones de diseño documentadas
 
@@ -1011,7 +1011,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `editarGrado()` (#19, Docente, implementado). Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: GET /:id con include (asignaturas, alumnos), PATCH /:id con verificación de existencia, DELETE /:id.
 
 **Resultado:**
-- `documents/diseno/editarGrado/README.md`, `modelosUML/diseno/editarGrado/secuencia.puml`, `images/diseno/editarGrado/secuencia.svg`
+- `documents/diseño/editarGrado/README.md`, `modelosUML/diseño/editarGrado/secuencia.puml`, `images/diseño/editarGrado/secuencia.svg`
 - Diagrama cubre: carga de datos, modificación, guardado y verificación de existencia
 - 8 decisiones de diseño documentadas
 
@@ -1024,7 +1024,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verPreguntas()` (#20, Docente, implementado). Caso de solo lectura con filtros opcionales. Participantes: PreguntasView, PreguntasController, PreguntasService, PrismaService, BD. Flujo: GET /preguntas con query params (tema, dificultad, bateriaId), consulta con include, retorno de datos.
 
 **Resultado:**
-- `documents/diseno/verPreguntas/README.md`, `modelosUML/diseno/verPreguntas/secuencia.puml`, `images/diseno/verPreguntas/secuencia.svg`
+- `documents/diseño/verPreguntas/README.md`, `modelosUML/diseño/verPreguntas/secuencia.puml`, `images/diseño/verPreguntas/secuencia.svg`
 - Diagrama cubre: carga inicial, filtrado por tema/dificultad/batería, auto-loop de filtrado
 - 8 decisiones de diseño documentadas
 
@@ -1037,7 +1037,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verAsignaturas()` (#21, Docente, implementado). Caso de solo lectura. Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD. Flujo: GET /asignaturas con include de grado y profesor.
 
 **Resultado:**
-- `documents/diseno/verAsignaturas/README.md`, `modelosUML/diseno/verAsignaturas/secuencia.puml`, `images/diseno/verAsignaturas/secuencia.svg`
+- `documents/diseño/verAsignaturas/README.md`, `modelosUML/diseño/verAsignaturas/secuencia.puml`, `images/diseño/verAsignaturas/secuencia.svg`
 - Diagrama cubre: carga del listado con relaciones
 - 8 decisiones de diseño documentadas
 
@@ -1050,7 +1050,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verGrados()` (#22, Docente, implementado). Caso de solo lectura simple. Participantes: GradosView, GradosController, GradosService, PrismaService, BD. Flujo: GET /grados, findAll() sin includes.
 
 **Resultado:**
-- `documents/diseno/verGrados/README.md`, `modelosUML/diseno/verGrados/secuencia.puml`, `images/diseno/verGrados/secuencia.svg`
+- `documents/diseño/verGrados/README.md`, `modelosUML/diseño/verGrados/secuencia.puml`, `images/diseño/verGrados/secuencia.svg`
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: diseño correcto. Caso más simple del sistema — solo `prisma.grado.findMany()`. Validado contra `GradosService.findAll()`.
@@ -1062,7 +1062,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verAlumnos()` (#23, Docente, implementado). Caso de solo lectura con include de grado. Participantes: AlumnosView, AlumnosController, AlumnosService, PrismaService, BD.
 
 **Resultado:**
-- `documents/diseno/verAlumnos/README.md`, `modelosUML/diseno/verAlumnos/secuencia.puml`, `images/diseno/verAlumnos/secuencia.svg`
+- `documents/diseño/verAlumnos/README.md`, `modelosUML/diseño/verAlumnos/secuencia.puml`, `images/diseño/verAlumnos/secuencia.svg`
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.findAll()`.
@@ -1074,7 +1074,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verDocentes()` (#24, Administrador institucional, implementado). Caso de solo lectura con omit password. Participantes: ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD.
 
 **Resultado:**
-- `documents/diseno/verDocentes/README.md`, `modelosUML/diseno/verDocentes/secuencia.puml`, `images/diseno/verDocentes/secuencia.svg`
+- `documents/diseño/verDocentes/README.md`, `modelosUML/diseño/verDocentes/secuencia.puml`, `images/diseño/verDocentes/secuencia.svg`
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: diseño correcto. Caso simple con `omit: { password: true }`. Validado contra `ProfesoresService.findAll()`.
@@ -1086,7 +1086,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarPregunta()` (#25, Docente, implementado). Participantes: PreguntasView, PreguntasController, PreguntasService, PrismaService, BD. Flujo: confirmación, DELETE /:id, verificación de existencia, eliminación.
 
 **Resultado:**
-- `documents/diseno/eliminarPregunta/README.md`, `modelosUML/diseno/eliminarPregunta/secuencia.puml`, `images/diseno/eliminarPregunta/secuencia.svg`
+- `documents/diseño/eliminarPregunta/README.md`, `modelosUML/diseño/eliminarPregunta/secuencia.puml`, `images/diseño/eliminarPregunta/secuencia.svg`
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: diseño correcto pero faltaba reflejar que el frontend muestra confirmación antes de enviar DELETE. Iteration 2: corregido. Validado contra `PreguntasService.remove()`.
@@ -1098,7 +1098,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarAsignatura()` (#26, Docente, implementado). Mismo patrón que eliminarPregunta. Participantes: AsignaturasView, AsignaturasController, AsignaturasService, PrismaService, BD.
 
 **Resultado:**
-- `documents/diseno/eliminarAsignatura/README.md`, `modelosUML/diseno/eliminarAsignatura/secuencia.puml`, `images/diseno/eliminarAsignatura/secuencia.svg`
+- `documents/diseño/eliminarAsignatura/README.md`, `modelosUML/diseño/eliminarAsignatura/secuencia.puml`, `images/diseño/eliminarAsignatura/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AsignaturasService.remove()`.
 
@@ -1110,7 +1110,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarGrado()` (#27, Docente, implementado). Mismo patrón que eliminarPregunta/eliminarAsignatura. Participantes: GradosView, GradosController, GradosService, PrismaService, BD.
 
 **Resultado:**
-- `documents/diseno/eliminarGrado/README.md`, `modelosUML/diseno/eliminarGrado/secuencia.puml`, `images/diseno/eliminarGrado/secuencia.svg`
+- `documents/diseño/eliminarGrado/README.md`, `modelosUML/diseño/eliminarGrado/secuencia.puml`, `images/diseño/eliminarGrado/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `GradosService.remove()`.
 
@@ -1121,7 +1121,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarAlumno()` (#28, Docente, implementado). Mismo patrón.
 
 **Resultado:**
-- `documents/diseno/eliminarAlumno/README.md`, `modelosUML/diseno/eliminarAlumno/secuencia.puml`, `images/diseno/eliminarAlumno/secuencia.svg`
+- `documents/diseño/eliminarAlumno/README.md`, `modelosUML/diseño/eliminarAlumno/secuencia.puml`, `images/diseño/eliminarAlumno/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.remove()`.
 
@@ -1132,7 +1132,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarDocente()` (#29, ADMIN, implementado). Mismo patrón.
 
 **Resultado:**
-- `documents/diseno/eliminarDocente/README.md`, `modelosUML/diseno/eliminarDocente/secuencia.puml`, `images/diseno/eliminarDocente/secuencia.svg`
+- `documents/diseño/eliminarDocente/README.md`, `modelosUML/diseño/eliminarDocente/secuencia.puml`, `images/diseño/eliminarDocente/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `ProfesoresService.remove()`.
 
@@ -1143,7 +1143,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `iniciarSesion()` (#30, login, implementado con JWT + Passport + bcrypt).
 
 **Resultado:**
-- `documents/diseno/iniciarSesion/README.md`, `modelosUML/diseno/iniciarSesion/secuencia.puml`, `images/diseno/iniciarSesion/secuencia.svg`
+- `documents/diseño/iniciarSesion/README.md`, `modelosUML/diseño/iniciarSesion/secuencia.puml`, `images/diseño/iniciarSesion/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto con doble validación (usuario + password). Validado contra `AuthService.login()` y `LoginView.vue`/`auth store`.
 
@@ -1154,7 +1154,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `cerrarSesion()` (#31, logout, implementado).
 
 **Resultado:**
-- `documents/diseno/cerrarSesion/README.md`, `modelosUML/diseno/cerrarSesion/secuencia.puml`, `images/diseno/cerrarSesion/secuencia.svg`
+- `documents/diseño/cerrarSesion/README.md`, `modelosUML/diseño/cerrarSesion/secuencia.puml`, `images/diseño/cerrarSesion/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Sin llamada al backend, solo limpieza local.
 
@@ -1165,7 +1165,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `completarGestion()` (#32, Docente/ADMIN, conceptual, sin endpoint implementado).
 
 **Resultado:**
-- `documents/diseno/completarGestion/README.md`, `modelosUML/diseno/completarGestion/secuencia.puml`, `images/diseno/completarGestion/secuencia.svg`
+- `documents/diseño/completarGestion/README.md`, `modelosUML/diseño/completarGestion/secuencia.puml`, `images/diseño/completarGestion/secuencia.svg`
 
 **Decisión:** Sine cdiseño propuesto basado en estado del sistema con verificación de prerrequisitos. Sin implementación real en backend.
 
@@ -1176,7 +1176,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `verRespuestas()` (#33, Docente, implementado). Read-only GET por preguntaId.
 
 **Resultado:**
-- `documents/diseno/verRespuestas/README.md`, `modelosUML/diseno/verRespuestas/secuencia.puml`, `images/diseno/verRespuestas/secuencia.svg`
+- `documents/diseño/verRespuestas/README.md`, `modelosUML/diseño/verRespuestas/secuencia.puml`, `images/diseño/verRespuestas/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasController.findByPregunta()` y `RespuestasService.findByPregunta()`.
 
@@ -1187,7 +1187,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `crearRespuesta()` (#34, Docente, implementado con límite 5 respuestas).
 
 **Resultado:**
-- `documents/diseno/crearRespuesta/README.md`, `modelosUML/diseno/crearRespuesta/secuencia.puml`, `images/diseno/crearRespuesta/secuencia.svg`
+- `documents/diseño/crearRespuesta/README.md`, `modelosUML/diseño/crearRespuesta/secuencia.puml`, `images/diseño/crearRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.create()`.
 
@@ -1198,7 +1198,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `editarRespuesta()` (#35, Docente, implementado). Precarga + PATCH.
 
 **Resultado:**
-- `documents/diseno/editarRespuesta/README.md`, `modelosUML/diseno/editarRespuesta/secuencia.puml`, `images/diseno/editarRespuesta/secuencia.svg`
+- `documents/diseño/editarRespuesta/README.md`, `modelosUML/diseño/editarRespuesta/secuencia.puml`, `images/diseño/editarRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.update()`.
 
@@ -1209,7 +1209,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `eliminarRespuesta()` (#36, Docente, implementado). Mismo patrón que otros delete.
 
 **Resultado:**
-- `documents/diseno/eliminarRespuesta/README.md`, `modelosUML/diseno/eliminarRespuesta/secuencia.puml`, `images/diseno/eliminarRespuesta/secuencia.svg`
+- `documents/diseño/eliminarRespuesta/README.md`, `modelosUML/diseño/eliminarRespuesta/secuencia.puml`, `images/diseño/eliminarRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.remove()`.
 
@@ -1220,7 +1220,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `cancelarGeneracion()` (#37, Docente, conceptual, sin endpoint implementado).
 
 **Resultado:**
-- `documents/diseno/cancelarGeneracion/README.md`, `modelosUML/diseno/cancelarGeneracion/secuencia.puml`, `images/diseno/cancelarGeneracion/secuencia.svg`
+- `documents/diseño/cancelarGeneracion/README.md`, `modelosUML/diseño/cancelarGeneracion/secuencia.puml`, `images/diseño/cancelarGeneracion/secuencia.svg`
 
 **Decisión:** Diseño propuesto: elimina exámenes/baterías y restaura estado del sistema.
 
@@ -1231,7 +1231,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `importarAsignaturas()` (#38, Docente, conceptual).
 
 **Resultado:**
-- `documents/diseno/importarAsignaturas/README.md`, `modelosUML/diseno/importarAsignaturas/secuencia.puml`, `images/diseno/importarAsignaturas/secuencia.svg`
+- `documents/diseño/importarAsignaturas/README.md`, `modelosUML/diseño/importarAsignaturas/secuencia.puml`, `images/diseño/importarAsignaturas/secuencia.svg`
 
 **Decisión:** Diseño propuesto: carga CSV + createMany.
 
@@ -1242,7 +1242,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `importarGrados()` (#39, Docente, conceptual).
 
 **Resultado:**
-- `documents/diseno/importarGrados/README.md`, `modelosUML/diseno/importarGrados/secuencia.puml`, `images/diseno/importarGrados/secuencia.svg`
+- `documents/diseño/importarGrados/README.md`, `modelosUML/diseño/importarGrados/secuencia.puml`, `images/diseño/importarGrados/secuencia.svg`
 
 **Decisión:** Diseño propuesto: carga CSV + createMany.
 
@@ -1253,7 +1253,7 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `exportarAsignaturas()` (#40, Docente, abstracto, reusa GET /api/asignaturas).
 
 **Resultado:**
-- `documents/diseno/exportarAsignaturas/README.md`, `modelosUML/diseno/exportarAsignaturas/secuencia.puml`, `images/diseno/exportarAsignaturas/secuencia.svg`
+- `documents/diseño/exportarAsignaturas/README.md`, `modelosUML/diseño/exportarAsignaturas/secuencia.puml`, `images/diseño/exportarAsignaturas/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Sin vista separada, conversión a CSV/JSON en frontend.
 
@@ -1264,6 +1264,6 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 **Prompt:** Crear el artefacto de diseño RUP para `exportarGrados()` (#41, Docente, abstracto, reusa GET /api/grados).
 
 **Resultado:**
-- `documents/diseno/exportarGrados/README.md`, `modelosUML/diseno/exportarGrados/secuencia.puml`, `images/diseno/exportarGrados/secuencia.svg`
+- `documents/diseño/exportarGrados/README.md`, `modelosUML/diseño/exportarGrados/secuencia.puml`, `images/diseño/exportarGrados/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Completa los 41 casos de uso priorizados.

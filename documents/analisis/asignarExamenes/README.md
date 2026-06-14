@@ -7,7 +7,7 @@
 - **Disciplina**: Análisis y Diseño
 - **Versión**: 1.0
 - **Fecha**: 2026-05-29
-- **Autor**: Equipo de desarrollo
+- **Autor**: Marcos Gutierrez
 
 ## propósito
 

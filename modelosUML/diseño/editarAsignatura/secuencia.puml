@@ -1,0 +1,118 @@
+@startuml
+title Diagrama de Secuencia - Editar Asignatura (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AsignaturasView" as FE
+participant "AsignaturasController" as Controller
+participant "AsignaturasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+== Carga de datos ==
+
+User -> FE: Hace clic en "Editar"\ndesde el listado
+activate FE
+
+FE -> Controller: GET /api/asignaturas/:id
+activate Controller
+
+Controller -> Service: findOne(id)
+activate Service
+
+Service -> Prisma: asignatura.findUnique({\n  where: { id },\n  include: { grado: true,\n    profesor: true,\n    examenes: true,\n    bateria: true }\n})
+activate Prisma
+Prisma -> DB: SELECT Asignatura\n+ grado + profesor +\néxamenes + batería
+activate DB
+
+alt Asignatura no encontrada
+  DB --> Prisma: Empty result
+  deactivate DB
+  Prisma --> Service: null
+  deactivate Prisma
+  Service --> Controller: lanza NotFoundException
+  deactivate Service
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Asignatura\nno encontrada"
+  deactivate FE
+else Carga exitosa
+  DB --> Prisma: asignatura con\nrelaciones
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+  Service --> Controller: asignatura
+  deactivate Service
+  Controller --> FE: 200 OK\n{ asignatura }
+  deactivate Controller
+  FE --> User: Muestra formulario\ncon datos precargados:\ntítulo, código, curso\ngrado, alumnos\nbatería
+end
+
+== Modificación o eliminación ==
+
+alt Guardar cambios
+  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
+  FE -> FE: Validación visual\nde campos obligatorios
+
+  FE -> Controller: PATCH /api/asignaturas/:id\nbody: { titulo, codigo,\ncursoAcademico, gradoId }
+  activate Controller
+  Controller -> Service: update(id, updateAsignaturaDto)
+  activate Service
+
+  Service -> Prisma: asignatura.findUnique({\n  where: { id } })
+  activate Prisma
+  Prisma -> DB: SELECT Asignatura\nWHERE id = :id
+  activate DB
+  DB --> Prisma: asignatura existente
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+
+  Service -> Prisma: asignatura.update({\n  where: { id },\n  data: updateAsignaturaDto })
+  activate Prisma
+  Prisma -> DB: UPDATE Asignatura\nSET titulo, codigo,\ncursoAcademico, gradoId
+  activate DB
+  DB --> Prisma: asignatura actualizada
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+
+  Service --> Controller: asignatura actualizada
+  deactivate Service
+  Controller --> FE: 200 OK\n{ asignatura }
+  deactivate Controller
+  FE --> User: Muestra confirmación\ny navega a vista\nde la asignatura
+
+else Eliminar asignatura
+  User -> FE: Pulsa "Eliminar"\ny confirma
+  FE -> Controller: DELETE /api/asignaturas/:id
+  activate Controller
+  Controller -> Service: remove(id)
+  activate Service
+
+  Service -> Prisma: asignatura.findUnique({\n  where: { id } })
+  activate Prisma
+  Prisma -> DB: SELECT Asignatura\nWHERE id = :id
+  activate DB
+  DB --> Prisma: asignatura existente
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+
+  Service -> Prisma: asignatura.delete({\n  where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Asignatura\nWHERE id = :id
+  activate DB
+  DB --> Prisma: asignatura eliminada
+  deactivate DB
+  Prisma --> Service: asignatura
+  deactivate Prisma
+
+  Service --> Controller: asignatura\n(eliminada)
+  deactivate Service
+  Controller --> FE: 200 OK\n{ asignatura }
+  deactivate Controller
+  FE --> User: Muestra confirmación\ny navega al listado
+end
+
+deactivate FE
+
+@enduml

@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
-  <rect width="800" height="600" fill="white" />
-  <text x="400" y="300" text-anchor="middle" font-family="monospace" font-size="16" fill="#666">
-    Placeholder — Diagrama de Secuencia editarAlumno
-  </text>
-  <text x="400" y="330" text-anchor="middle" font-family="monospace" font-size="12" fill="#999">
-    Generar desde modelosUML/diseno/editarAlumno/secuencia.puml
-  </text>
-</svg>
