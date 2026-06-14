@@ -1,0 +1,57 @@
+@startuml
+title Diagrama de Secuencia - Crear Respuesta (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "RespuestasController" as Controller
+participant "RespuestasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Abre formulario de\nnueva respuesta
+activate FE
+
+FE --> User: Muestra formulario\n(campo texto)
+User -> FE: Rellena respuesta\ny confirma
+FE -> FE: Valida campos
+
+FE -> Controller: POST /api/respuestas\n{ preguntaId, texto, esCorrecta }
+activate Controller
+
+Controller -> Service: create(createRespuestaDto)
+activate Service
+
+== Validar límite de 5 respuestas ==
+Service -> Prisma: respuesta.count({ where: { preguntaId } })
+activate Prisma
+Prisma -> DB: SELECT COUNT Respuesta WHERE preguntaId=?
+activate DB
+DB --> Prisma: count
+deactivate DB
+Prisma --> Service: count
+deactivate Prisma
+
+alt count >= 5
+  Service --> Controller: throw BadRequestException\n"Máximo 5 respuestas"
+  Controller --> FE: 400 Bad Request
+  FE --> User: Muestra "Máximo\n5 respuestas por pregunta"
+else count < 5
+  Service -> Prisma: respuesta.create({ data })
+  activate Prisma
+  Prisma -> DB: INSERT INTO Respuesta
+  activate DB
+  DB --> Prisma: respuesta creada
+  deactivate DB
+  Prisma --> Service: respuesta
+  deactivate Prisma
+
+  Service --> Controller: respuesta creada
+  deactivate Service
+  Controller --> FE: 201 Created\n{ respuesta }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nactualiza listado
+end
+
+deactivate FE
+
+@enduml

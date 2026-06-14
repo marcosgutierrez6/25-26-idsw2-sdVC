@@ -1179,3 +1179,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/verRespuestas/README.md`, `modelosUML/diseno/verRespuestas/secuencia.puml`, `images/diseno/verRespuestas/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasController.findByPregunta()` y `RespuestasService.findByPregunta()`.
+
+---
+
+## [17:52] Diseño de crearRespuesta() — trigésimo cuarto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `crearRespuesta()` (#34, Docente, implementado con límite 5 respuestas).
+
+**Resultado:**
+- `documents/diseno/crearRespuesta/README.md`, `modelosUML/diseno/crearRespuesta/secuencia.puml`, `images/diseno/crearRespuesta/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.create()`.
