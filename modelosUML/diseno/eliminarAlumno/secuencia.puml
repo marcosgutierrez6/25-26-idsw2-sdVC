@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Secuencia - Eliminar Alumno (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "AlumnosView" as FE
+participant "AlumnosController" as Controller
+participant "AlumnosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Eliminar"\nsobre un alumno
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma eliminación
+FE -> Controller: DELETE /api/alumnos/:id
+activate Controller
+
+Controller -> Service: remove(id)
+activate Service
+
+Service -> Prisma: alumno.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Alumno WHERE id=?
+activate DB
+DB --> Prisma: alumno | null
+deactivate DB
+Prisma --> Service: alumno
+deactivate Prisma
+
+alt Alumno no encontrado
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Alumno\nno encontrado"
+else Alumno existe
+  Service -> Prisma: alumno.delete({ where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Alumno WHERE id=?
+  activate DB
+  DB --> Prisma: alumno eliminado
+  deactivate DB
+  Prisma --> Service: alumno eliminado
+  deactivate Prisma
+
+  Service --> Controller: alumno eliminado
+  deactivate Service
+  Controller --> FE: 200 OK\n{ alumno }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nrecarga listado
+end
+
+deactivate FE
+
+@enduml

@@ -1113,3 +1113,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/eliminarGrado/README.md`, `modelosUML/diseno/eliminarGrado/secuencia.puml`, `images/diseno/eliminarGrado/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `GradosService.remove()`.
+
+---
+
+## [17:42] Diseño de eliminarAlumno() — vigésimo octavo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarAlumno()` (#28, Docente, implementado). Mismo patrón.
+
+**Resultado:**
+- `documents/diseno/eliminarAlumno/README.md`, `modelosUML/diseno/eliminarAlumno/secuencia.puml`, `images/diseno/eliminarAlumno/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `AlumnosService.remove()`.
