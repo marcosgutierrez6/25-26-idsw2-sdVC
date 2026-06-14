@@ -1102,3 +1102,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `AsignaturasService.remove()`.
 
+
+---
+
+## [17:40] Diseño de eliminarGrado() — vigésimo séptimo artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarGrado()` (#27, Docente, implementado). Mismo patrón que eliminarPregunta/eliminarAsignatura. Participantes: GradosView, GradosController, GradosService, PrismaService, BD.
+
+**Resultado:**
+- `documents/diseno/eliminarGrado/README.md`, `modelosUML/diseno/eliminarGrado/secuencia.puml`, `images/diseno/eliminarGrado/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `GradosService.remove()`.

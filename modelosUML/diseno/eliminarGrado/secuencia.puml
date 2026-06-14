@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Secuencia - Eliminar Grado (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "GradosView" as FE
+participant "GradosController" as Controller
+participant "GradosService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Eliminar"\nsobre un grado
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma eliminación
+FE -> Controller: DELETE /api/grados/:id
+activate Controller
+
+Controller -> Service: remove(id)
+activate Service
+
+Service -> Prisma: grado.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Grado WHERE id=?
+activate DB
+DB --> Prisma: grado | null
+deactivate DB
+Prisma --> Service: grado
+deactivate Prisma
+
+alt Grado no encontrado
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Grado\nno encontrado"
+else Grado existe
+  Service -> Prisma: grado.delete({ where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Grado WHERE id=?
+  activate DB
+  DB --> Prisma: grado eliminado
+  deactivate DB
+  Prisma --> Service: grado eliminado
+  deactivate Prisma
+
+  Service --> Controller: grado eliminado
+  deactivate Service
+  Controller --> FE: 200 OK\n{ grado }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nrecarga listado
+end
+
+deactivate FE
+
+@enduml
