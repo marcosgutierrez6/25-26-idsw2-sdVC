@@ -917,3 +917,20 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: se creó el diseño pero señalé que faltaba reflejar el include de `bateria` en la consulta findOne. Iteration 2: se corrigió el diagrama añadiendo el include en la carga de datos. Iteration 3: validado contra el código real — ahora coincide exactamente.
+
+---
+
+## [17:10] Diseño de crearDocente() — decimotercer artefacto de diseño
+
+**Prompt:** Prompt detallado para crear el artefacto de diseño de `crearDocente()` siguiendo la misma plantilla. Caso para Administrador institucional, con hashing de contraseña.
+
+- **Participantes:** ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD.
+- **Flujo del diagrama:** formulario de creación, POST /profesores, hashing bcrypt de password, persistencia con prisma.profesor.create(), retorno del docente creado.
+- **Decisiones de diseño:** bcrypt para hash (salt rounds 10), DTO con class-validator, rol DOCENTE por defecto, endpoint solo ADMIN, seguridad por capas.
+
+**Resultado:**
+- `documents/diseno/crearDocente/README.md`, `modelosUML/diseno/crearDocente/secuencia.puml`, `images/diseno/crearDocente/secuencia.svg`
+- Diagrama cubre: formulario, hashing, persistencia, retorno
+- 8 decisiones de diseño documentadas
+
+**Decisión:** Iteration 1: se creó el diseño pero señalé que el hash bcrypt se hace en el servicio, no en el controlador. Iteration 2: se corrigió moviendo el paso de hashing al servicio. Iteration 3: validado contra `ProfesoresService.create()` — ahora coincide exactamente.

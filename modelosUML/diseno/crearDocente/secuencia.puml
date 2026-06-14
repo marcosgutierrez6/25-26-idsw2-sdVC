@@ -1,0 +1,63 @@
+@startuml
+title Diagrama de Secuencia - Crear Docente (NestJS + Vue 3)
+
+actor "Usuario (Admin\nInstitucional)" as User
+participant "ProfesoresView" as FE
+participant "ProfesoresController" as Controller
+participant "ProfesoresService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Nuevo\nDocente"
+activate FE
+
+FE --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, password
+note right
+  El rol por defecto es DOCENTE
+  (no se muestra en formulario)
+end note
+
+User -> FE: Rellena campos\ny pulsa "Crear Docente"
+FE -> FE: Validación visual\nde campos obligatorios
+
+FE -> Controller: POST /api/profesores\nbody: { nombre, apellidos, dni, email, password }
+activate Controller
+
+Controller -> Service: create(createProfesorDto)
+activate Service
+
+Service -> Service: bcrypt.hash(password, 10)
+note right
+  Salt rounds: 10
+  (configuración estándar)
+end note
+
+Service -> Prisma: profesor.create({\n  data: { ...dto, password: hashed }\n})
+activate Prisma
+Prisma -> DB: INSERT INTO Profesor\n(nombre, apellidos, dni, email, password,\nrol: DOCENTE)
+activate DB
+
+alt Error de unicidad (dni o email duplicado)
+  DB --> Prisma: Error UNIQUE constraint
+  deactivate DB
+  Prisma --> Service: lanza error (P2002)
+  deactivate Prisma
+  Service --> Controller: lanza excepción
+  Controller --> FE: 409 Conflict\n{ message: "DNI o email\nya existe" }
+  FE --> User: Muestra mensaje\nde error
+else Creación exitosa
+  DB --> Prisma: profesor creado (id, rol: DOCENTE)
+  deactivate DB
+  Prisma --> Service: profesor
+  deactivate Prisma
+
+  Service --> Controller: profesor
+  deactivate Service
+  Controller --> FE: 201 Created\n{ profesor }
+  deactivate Controller
+  FE --> User: Muestra docente\ncreado y navega a\neditarDocente()
+end
+
+deactivate FE
+
+@enduml
