@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#f8f9fa"/>
+  <text x="400" y="60" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#e74c3c">Pendiente de renderizar</text>
+  <text x="400" y="100" text-anchor="middle" font-family="monospace" font-size="14" fill="#555">
+    Diagrama de Secuencia — Editar Docente
+  </text>
+  <text x="400" y="140" text-anchor="middle" font-family="monospace" font-size="12" fill="#777">
+    Renderizar con: npx @akebifiky/plantuml-generator modelosUML/diseno/editarDocente/secuencia.puml
+  </text>
+  <line x1="200" y1="180" x2="600" y2="180" stroke="#ccc" stroke-dasharray="5,5"/>
+  <text x="400" y="220" text-anchor="middle" font-family="monospace" font-size="13" fill="#888">
+    Participantes: Admin | ProfesoresView | ProfesoresController | ProfesoresService | PrismaService | BD
+  </text>
+  <text x="400" y="260" text-anchor="middle" font-family="monospace" font-size="13" fill="#888">
+    Flujos: GET /:id (carga) → PATCH /:id (bcrypt condicional) → DELETE /:id
+  </text>
+</svg>

@@ -951,3 +951,16 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - 8 decisiones de diseño documentadas
 
 **Decisión:** Iteration 1: se creó el diseño pero señalé que no reflejaba la verificación de unicidad de dni/email (unique en schema). Iteration 2: se corrigió añadiendo manejo de error por unique constraint. Iteration 3: validado contra `AlumnosService.create()` — ahora coincide.
+
+---
+
+## [17:13] Diseño de editarDocente() — decimoquinto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `editarDocente()` (#15, Administrador institucional, implementado). Estructura: directorios `documents/diseno/editarDocente/`, `modelosUML/diseno/editarDocente/`, `images/diseno/editarDocente/`. Diagrama de secuencia con participantes: Usuario (Admin), ProfesoresView, ProfesoresController, ProfesoresService, PrismaService, BD. Flujo: GET /:id (carga), PATCH /:id con bcrypt condicional si hay password, DELETE /:id. README con 8 decisiones de diseño. Placeholder SVG.
+
+**Resultado:**
+- Creados `documents/diseno/editarDocente/README.md`, `modelosUML/diseno/editarDocente/secuencia.puml`, `images/diseno/editarDocente/secuencia.svg`
+- Diagrama cubre: carga de datos con `omit: { password: true }` e `include: { asignaturas: true }`, verificación de existencia, guardado con bcrypt condicional, eliminación con confirmación
+- 8 decisiones de diseño: carga previa, verificación de existencia, hashing condicional de bcrypt, omisión de password en respuestas, validación visual, DTO parcial, confirmación de eliminación, seguridad por capas
+
+**Decisión:** Iteration 1: se creó el diseño pero faltaba reflejar que bcrypt solo se aplica si hay password nueva (condicional). Iteration 2: se corrigió el diagrama y se añadió la decisión de diseño correspondiente. Validado contra `ProfesoresService.update()` — ahora coincide exactamente.
