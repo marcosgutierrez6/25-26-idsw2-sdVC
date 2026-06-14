@@ -1201,3 +1201,14 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - `documents/diseno/editarRespuesta/README.md`, `modelosUML/diseno/editarRespuesta/secuencia.puml`, `images/diseno/editarRespuesta/secuencia.svg`
 
 **Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.update()`.
+
+---
+
+## [17:56] Diseño de eliminarRespuesta() — trigésimo sexto artefacto de diseño
+
+**Prompt:** Crear el artefacto de diseño RUP para `eliminarRespuesta()` (#36, Docente, implementado). Mismo patrón que otros delete.
+
+**Resultado:**
+- `documents/diseno/eliminarRespuesta/README.md`, `modelosUML/diseno/eliminarRespuesta/secuencia.puml`, `images/diseno/eliminarRespuesta/secuencia.svg`
+
+**Decisión:** Iteration 1: diseño correcto. Validado contra `RespuestasService.remove()`.

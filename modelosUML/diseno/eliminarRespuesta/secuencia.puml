@@ -1,0 +1,55 @@
+@startuml
+title Diagrama de Secuencia - Eliminar Respuesta (NestJS + Vue 3)
+
+actor "Usuario (Docente)" as User
+participant "PreguntasView" as FE
+participant "RespuestasController" as Controller
+participant "RespuestasService" as Service
+participant "PrismaService" as Prisma
+participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+User -> FE: Hace clic en "Eliminar"\nsobre una respuesta
+activate FE
+
+FE --> User: Muestra diálogo de\nconfirmación
+
+User -> FE: Confirma eliminación
+FE -> Controller: DELETE /api/respuestas/:id
+activate Controller
+
+Controller -> Service: remove(id)
+activate Service
+
+Service -> Prisma: respuesta.findUnique({ where: { id } })
+activate Prisma
+Prisma -> DB: SELECT Respuesta WHERE id=?
+activate DB
+DB --> Prisma: respuesta | null
+deactivate DB
+Prisma --> Service: respuesta
+deactivate Prisma
+
+alt Respuesta no encontrada
+  Service --> Controller: throw NotFoundException
+  Controller --> FE: 404 Not Found
+  FE --> User: Muestra "Respuesta\nno encontrada"
+else Respuesta existe
+  Service -> Prisma: respuesta.delete({ where: { id } })
+  activate Prisma
+  Prisma -> DB: DELETE FROM Respuesta WHERE id=?
+  activate DB
+  DB --> Prisma: respuesta eliminada
+  deactivate DB
+  Prisma --> Service: respuesta eliminada
+  deactivate Prisma
+
+  Service --> Controller: respuesta eliminada
+  deactivate Service
+  Controller --> FE: 200 OK\n{ respuesta }
+  deactivate Controller
+  FE --> User: Muestra éxito y\nrecarga listado
+end
+
+deactivate FE
+
+@enduml
