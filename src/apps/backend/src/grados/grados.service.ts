@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateGradoDto } from './dto/create-grado.dto';
 import { UpdateGradoDto } from './dto/update-grado.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 
 @Injectable()
 export class GradosService {
@@ -11,8 +12,21 @@ export class GradosService {
     return this.prisma.grado.create({ data: createGradoDto });
   }
 
-  findAll() {
-    return this.prisma.grado.findMany();
+  async findAll(pagination?: PaginationDto) {
+    const page = pagination?.page ?? 1;
+    const limit = pagination?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.grado.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.grado.count(),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: number) {

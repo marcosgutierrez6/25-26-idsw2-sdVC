@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { GradosService } from './grados.service';
 import { CreateGradoDto } from './dto/create-grado.dto';
 import { UpdateGradoDto } from './dto/update-grado.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 import { JwtAuthGuard } from '../Common/jwt-auth.guard';
 import { RolesGuard } from '../Common/roles.guard';
 import { Roles } from '../Common/roles.decorator';
@@ -12,22 +13,22 @@ import { Rol } from '@prisma/client';
 export class GradosController {
   constructor(private readonly gradosService: GradosService) {}
 
-  @Post()
-  @Roles(Rol.DOCENTE, Rol.ADMIN)
-  create(@Body() createGradoDto: CreateGradoDto) {
-    return this.gradosService.create(createGradoDto);
-  }
-
   @Get()
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  findAll() {
-    return this.gradosService.findAll();
+  index(@Query() pagination: PaginationDto) {
+    return this.gradosService.findAll(pagination);
   }
 
   @Get(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  findOne(@Param('id') id: string) {
+  show(@Param('id') id: string) {
     return this.gradosService.findOne(+id);
+  }
+
+  @Post()
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  create(@Body() createGradoDto: CreateGradoDto) {
+    return this.gradosService.create(createGradoDto);
   }
 
   @Patch(':id')
@@ -38,7 +39,7 @@ export class GradosController {
 
   @Delete(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  remove(@Param('id') id: string) {
+  delete(@Param('id') id: string) {
     return this.gradosService.remove(+id);
   }
 }

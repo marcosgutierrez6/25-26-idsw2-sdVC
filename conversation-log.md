@@ -1469,13 +1469,33 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 
 **Resultado:**
 
-*Controller:*
-- `findAll` → `index` con `@Query() pagination: PaginationDto`
-- `findOne` → `show`, `remove` → `delete`
-- Mismos guards y roles (`DOCENTE`, `ADMIN`)
+*Iteración 1 — controlador:*
+- `findAll` → `index` con `@Query() pagination: PaginationDto` (parámetro opcional, defaults 1 y 10 via decorators `@IsOptional` + `@Type` de `class-transformer`)
+- `findOne` → `show`, `remove` → `delete` (consistencia RESTful con el resto de módulos refactorizados)
+- Se mantienen `@UseGuards(JwtAuthGuard, RolesGuard)` y `@Roles(Rol.DOCENTE, Rol.ADMIN)` idénticos al original
 
-*Service:*
-- `findAll()` → paginación con `skip`/`take`, `Promise.all` con `count`, `orderBy: { createdAt: 'desc' }`
-- `findOne()`, `update()`, `remove()` se mantienen igual (sin lógica extra como bcrypt)
+*Iteración 2 — service:*
+- `findAll()`: se añadió paginación completa con `skip = (page - 1) * limit`, `take = limit`, `Promise.all` para ejecutar `findMany` y `count` en paralelo (mejora de performance frente a dos awaits secuenciales), devolviendo `{ data, total, page, limit, totalPages }`.
+- Se añadió `orderBy: { createdAt: 'desc' }` para que los alumnos más recientes aparezcan primero (consistencia con Asignaturas y Examenes).
+- `findOne()`, `update()`, `remove()` se mantienen igual — es un CRUD simple sin lógica extra como bcrypt o validaciones de reglas de negocio.
 
-**Decisión:** Compilación exitosa. Sin cambios en DTOs ni en el módulo (el `AlumnosModule` ya estaba bien). Es un CRUD simple sin lógica de negocio adicional.
+**Decisión:** Compilación exitosa (0 errores). Sin cambios en DTOs ni en el módulo (el `AlumnosModule` ya estaba bien configurado con sus imports de PrismaModule). Es un CRUD simple sin lógica de negocio adicional. El include en `findOne` (`grado`, `asignaturas`) se conserva del original.
+
+---
+
+## [16:43] Backend de Grados — refactor a patrón limpio
+
+**Prompt:** Refactorizar Grados al mismo patrón.
+
+**Resultado:**
+
+*Iteración 1 — controlador:*
+- Cambio de nombres: `findAll` → `index` (con `@Query() pagination: PaginationDto`, inyecta `{ page, limit }` automáticamente gracias a los defaults de `@IsOptional` en el DTO), `findOne` → `show`, `remove` → `delete`.
+- Se mantienen `@UseGuards(JwtAuthGuard, RolesGuard)` y `@Roles(Rol.DOCENTE, Rol.ADMIN)` idénticos.
+
+*Iteración 2 — service:*
+- `findAll()`: se añadió paginación completa con `skip`/`take`, `Promise.all` para ejecutar `findMany` y `count` en paralelo, y se devuelve `{ data, total, page, limit, totalPages }`.
+- Se añadió `orderBy: { createdAt: 'desc' }` para consistencia con el resto de módulos.
+- `findOne()`, `update()`, `remove()` se mantienen sin cambios (sin lógica adicional como hashing o validaciones extra).
+
+**Decisión:** Compilación exitosa (0 errores). Grados es un CRUD puro sin lógica de negocio compleja — ni contraseñas que hashear, ni relaciones anidadas que validar. El patrón queda idéntico a Alumnos y Asignaturas. El include en `findOne` (`asignaturas`, `alumnos`) ya venía de antes y se conserva.
