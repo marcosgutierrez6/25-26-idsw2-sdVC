@@ -1876,4 +1876,29 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Router actualizado: `/bateria/nueva`, `/bateria/:id/editar`
 - Estructura consistente con otras entidades (View/Form separados)
 
-**Decisión:** Aceptado. La batería ahora es un formulario intuitivo con selección visual de preguntas. El JSON en DB permite cambios futuros sin requerimientos de migración. El patrón View/Form es consistente con el resto de la aplicación.
+---
+
+## [21:52] Crear seed.sql con datos de prueba completos
+
+**Prompt:** El usuario pidió un archivo SQL con datos de prueba para hacer pruebas de generar examen, incluyendo grados, profesores, asignaturas, alumnos, baterías de preguntas, preguntas, respuestas, exámenes y relaciones intermedias.
+
+**Resultado:**
+- Creado `src/apps/backend/prisma/seed.sql` con datos de prueba completos:
+  - 2 Grados: Ingeniería Informática, Ingeniería Técnica
+  - 3 Profesores: Juan García, María Rodríguez, Carlos Martínez
+  - 3 Asignaturas: Matemáticas I, Programación en Python, Bases de Datos
+  - 4 Alumnos: Luis Sánchez, Ana López, Pedro González, Elena Díaz
+  - 10 matriculaciones alumno-asignatura
+  - 3 Baterías de Preguntas: una por asignatura
+  - 12 Preguntas totales: 4 por batería (dificultad mixta BAJA/MEDIA/ALTA)
+  - 48 Respuestas: 4 opciones por pregunta (1 correcta)
+  - 3 Exámenes: PARCIAL_1 por asignatura
+  - 6 relaciones ExamenPregunta: 2 preguntas por examen
+
+**Decisión:** Aceptado. El archivo es listo para cargar en la BD con:
+```bash
+mysql -u root -p'password' -h localhost jorgestor < prisma/seed.sql
+```
+Este dataset permite probar la generación, asignación y corrección de exámenes de forma realista.
+
+---
