@@ -2,19 +2,23 @@
 title Diagrama de Secuencia - Eliminar Respuesta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
+participant "PreguntasForm\n(Modal)" as ParentForm
+participant "RespuestasView\n(Listado)" as List
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Eliminar"\nsobre una respuesta
-activate FE
+User -> ParentForm: Hace clic en "Eliminar"\nsobre una respuesta
+activate ParentForm
 
-FE --> User: Muestra diálogo de\nconfirmación
+ParentForm -> List: Muestra diálogo de\nconfirmación
+activate List
 
-User -> FE: Confirma eliminación
-FE -> Controller: DELETE /api/respuestas/:id
+List --> User: Muestra diálogo de\nconfirmación
+
+User -> List: Confirma eliminación
+List -> Controller: DELETE /api/respuestas/:id
 activate Controller
 
 Controller -> Service: remove(id)
@@ -31,8 +35,8 @@ deactivate Prisma
 
 alt Respuesta no encontrada
   Service --> Controller: throw NotFoundException
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Respuesta\nno encontrada"
+  Controller --> List: 404 Not Found
+  List --> User: Muestra "Respuesta\nno encontrada"
 else Respuesta existe
   Service -> Prisma: respuesta.delete({ where: { id } })
   activate Prisma
@@ -45,11 +49,13 @@ else Respuesta existe
 
   Service --> Controller: respuesta eliminada
   deactivate Service
-  Controller --> FE: 200 OK\n{ respuesta }
+  Controller --> List: 200 OK\n{ respuesta }
   deactivate Controller
-  FE --> User: Muestra éxito y\nrecarga listado
+  List --> ParentForm: Notifica\neleminación exitosa
+  deactivate List
+  ParentForm --> User: Muestra éxito y\nrecarga listado
 end
 
-deactivate FE
+deactivate ParentForm
 
 @enduml

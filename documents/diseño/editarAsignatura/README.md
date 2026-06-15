@@ -32,7 +32,8 @@ Detallar la interacción entre los componentes del sistema para editar una asign
 title Diagrama de Secuencia - Editar Asignatura (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "AsignaturasView" as FE
+participant "AsignaturasView\n(Listado)" as List
+participant "AsignaturasForm\n(Modal)" as Form
 participant "AsignaturasController" as Controller
 participant "AsignaturasService" as Service
 participant "PrismaService" as Prisma
@@ -40,10 +41,13 @@ participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
 == Carga de datos ==
 
-User -> FE: Hace clic en "Editar"\ndesde el listado
-activate FE
+User -> List: Hace clic en "Editar"\ndesde el listado
+activate List
 
-FE -> Controller: GET /api/asignaturas/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/asignaturas/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -61,10 +65,9 @@ alt Asignatura no encontrada
   deactivate Prisma
   Service --> Controller: lanza NotFoundException
   deactivate Service
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Asignatura\nno encontrada"
-  deactivate FE
-  stop
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Asignatura\nno encontrada"
+  deactivate Form
 else Carga exitosa
   DB --> Prisma: asignatura con\nrelaciones
   deactivate DB
@@ -72,18 +75,18 @@ else Carga exitosa
   deactivate Prisma
   Service --> Controller: asignatura
   deactivate Service
-  Controller --> FE: 200 OK\n{ asignatura }
+  Controller --> Form: 200 OK\n{ asignatura }
   deactivate Controller
-  FE --> User: Muestra formulario\ncon datos precargados:\ntítulo, código, curso\ngrado, alumnos\nbatería
+  Form --> User: Muestra formulario\ncon datos precargados:\ntítulo, código, curso\ngrado, alumnos\nbatería
 end
 
 == Modificación o eliminación ==
 
 alt Guardar cambios
-  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
-  FE -> FE: Validación visual\nde campos obligatorios
+  User -> Form: Modifica campos\ny pulsa "Guardar cambios"
+  Form -> Form: Validación visual\nde campos obligatorios
 
-  FE -> Controller: PATCH /api/asignaturas/:id\nbody: { titulo, codigo,\ncursoAcademico, gradoId }
+  Form -> Controller: PATCH /api/asignaturas/:id\nbody: { titulo, codigo,\ncursoAcademico, gradoId }
   activate Controller
   Controller -> Service: update(id, updateAsignaturaDto)
   activate Service
@@ -108,13 +111,13 @@ alt Guardar cambios
 
   Service --> Controller: asignatura actualizada
   deactivate Service
-  Controller --> FE: 200 OK\n{ asignatura }
+  Controller --> Form: 200 OK\n{ asignatura }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a vista\nde la asignatura
+  Form --> User: Muestra confirmación
 
 else Eliminar asignatura
-  User -> FE: Pulsa "Eliminar"\ny confirma
-  FE -> Controller: DELETE /api/asignaturas/:id
+  User -> Form: Pulsa "Eliminar"\ny confirma
+  Form -> Controller: DELETE /api/asignaturas/:id
   activate Controller
   Controller -> Service: remove(id)
   activate Service
@@ -139,12 +142,13 @@ else Eliminar asignatura
 
   Service --> Controller: asignatura\n(eliminada)
   deactivate Service
-  Controller --> FE: 200 OK\n{ asignatura }
+  Controller --> Form: 200 OK\n{ asignatura }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega al listado
+  Form --> User: Muestra confirmación
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml
 ```
@@ -153,7 +157,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **AsignaturasView** | Vista que muestra el diálogo de edición con datos precargados (título, código, curso académico, grado), permite modificar campos, guardar cambios, cancelar o eliminar la asignatura. Validación visual antes de enviar. |
+| **AsignaturasView** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Editar" para abrir el modal de edición. |
+| **AsignaturasForm** | Modal de edición con datos precargados (título, código, curso académico, grado), permite modificar campos, guardar cambios, cancelar o eliminar la asignatura. Validación visual antes de enviar. |
 | **AsignaturasController** | Endpoints REST `GET /api/asignaturas/:id` (carga de datos), `PATCH /api/asignaturas/:id` (actualización) y `DELETE /api/asignaturas/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints. |
 | **AsignaturasService** | Métodos `findOne()` (busca con include de grado, profesor, exámenes y batería), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `asignatura.findUnique()`, `asignatura.update()` y `asignatura.delete()` sobre el modelo Asignatura. |

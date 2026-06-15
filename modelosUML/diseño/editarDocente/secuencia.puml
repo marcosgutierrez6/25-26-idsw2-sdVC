@@ -2,7 +2,8 @@
 title Diagrama de Secuencia - Editar Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin)" as User
-participant "ProfesoresView" as FE
+participant "DocentesView\n(Listado)" as List
+participant "DocentesForm\n(Modal)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
@@ -10,10 +11,13 @@ participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
 == Carga de datos ==
 
-User -> FE: Hace clic en "Editar"\ndesde listado o vista
-activate FE
+User -> List: Hace clic en "Editar"\ndesde el listado
+activate List
 
-FE -> Controller: GET /api/profesores/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/profesores/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -31,9 +35,9 @@ alt Profesor no encontrado
   deactivate Prisma
   Service --> Controller: lanza NotFoundException
   deactivate Service
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Profesor\nno encontrado"
-  deactivate FE
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Profesor\nno encontrado"
+  deactivate Form
 else Carga exitosa
   DB --> Prisma: profesor (sin password)\ncon asignaturas
   deactivate DB
@@ -41,18 +45,18 @@ else Carga exitosa
   deactivate Prisma
   Service --> Controller: profesor
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra formulario\ncon datos precargados:\nnombre, apellidos,\ndni, email, username
+  Form --> User: Muestra formulario\ncon datos precargados:\nnombre, apellidos,\ndni, email, username
 end
 
 == Modificación o eliminación ==
 
 alt Guardar cambios
-  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
-  FE -> FE: Validación visual\nde campos obligatorios
+  User -> Form: Modifica campos\ny pulsa "Guardar cambios"
+  Form -> Form: Validación visual\nde campos obligatorios
 
-  FE -> Controller: PATCH /api/profesores/:id\nbody: { nombre, apellidos,\nemail, password? }
+  Form -> Controller: PATCH /api/profesores/:id\nbody: { nombre, apellidos,\nemail, password? }
   activate Controller
   Controller -> Service: update(id, updateProfesorDto)
   activate Service
@@ -81,13 +85,13 @@ alt Guardar cambios
 
   Service --> Controller: profesor actualizado
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a vista\ndel docente
+  Form --> User: Muestra confirmación
 
 else Eliminar docente
-  User -> FE: Pulsa "Eliminar"\ny confirma
-  FE -> Controller: DELETE /api/profesores/:id
+  User -> Form: Pulsa "Eliminar"\ny confirma
+  Form -> Controller: DELETE /api/profesores/:id
   activate Controller
   Controller -> Service: remove(id)
   activate Service
@@ -112,11 +116,12 @@ else Eliminar docente
 
   Service --> Controller: profesor\n(eliminado)
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega al listado
+  Form --> User: Muestra confirmación
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml

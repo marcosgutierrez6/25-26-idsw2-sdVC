@@ -32,21 +32,24 @@ Detallar la interacción entre los componentes del sistema para crear un nuevo g
 title Diagrama de Secuencia - Crear Grado (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "GradosView" as FE
+participant "GradosView\n(Listado)" as List
+participant "GradosForm\n(Modal)" as Form
 participant "GradosController" as Controller
 participant "GradosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nuevo Grado"
-activate FE
+User -> List: Hace clic en "Nuevo Grado"
+activate List
 
-FE --> User: Muestra diálogo con\ncampos: título, código
+List -> Form: Abre modal de\ncreación
+activate Form
+Form --> User: Muestra diálogo con\ncampos: título, código
 
-User -> FE: Rellena campos\ny pulsa "Crear"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> Form: Rellena campos\ny pulsa "Crear"
+Form -> Form: Validación visual\nde campos obligatorios
 
-FE -> Controller: POST /api/grados\nbody: { titulo, codigo }
+Form -> Controller: POST /api/grados\nbody: { titulo, codigo }
 activate Controller
 
 Controller -> Service: create(createGradoDto)
@@ -63,8 +66,8 @@ alt Código duplicado (unique constraint)
   Prisma --> Service: lanza error
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 409 Conflict
-  FE --> User: Muestra "Código\nya existe"
+  Controller --> Form: 409 Conflict
+  Form --> User: Muestra "Código\nya existe"
 else Creación exitosa
   DB --> Prisma: grado creado (id)
   deactivate DB
@@ -73,12 +76,15 @@ else Creación exitosa
 
   Service --> Controller: grado
   deactivate Service
-  Controller --> FE: 201 Created\n{ grado }
+  Controller --> Form: 201 Created\n{ grado }
   deactivate Controller
-  FE --> User: Muestra grado\ncreado y navega a\neditarGrado()
+
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra grado\ncreado y navega a\neditarGrado()
 end
 
-deactivate FE
+deactivate List
 
 @enduml
 ```
@@ -87,7 +93,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **GradosView** | Vista que muestra el diálogo de creación con campos título y código, validación visual antes de enviar. |
+| **GradosView** | Vista que muestra el listado de grados. El usuario hace clic en "Nuevo Grado" para abrir el modal de creación. |
+| **GradosForm** | Modal de creación con campos título y código, validación visual antes de enviar. |
 | **GradosController** | Endpoint REST `POST /api/grados` protegido por `JwtAuthGuard` + `RolesGuard`. |
 | **GradosService** | Método `create()` que persiste el grado mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `grado.create()`. |

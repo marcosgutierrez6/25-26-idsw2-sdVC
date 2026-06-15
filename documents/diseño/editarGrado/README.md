@@ -32,16 +32,20 @@ Detallar la interacción entre los componentes del sistema para editar un grado 
 title Diagrama de Secuencia - Editar Grado (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "GradosView" as FE
+participant "GradosView\n(Listado)" as List
+participant "GradosForm\n(Modal)" as Form
 participant "GradosController" as Controller
 participant "GradosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en editar\nun grado
-activate FE
+User -> List: Hace clic en editar\nun grado
+activate List
 
-FE -> Controller: GET /api/grados/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/grados/:id
 activate Controller
 Controller -> Service: findOne(id)
 activate Service
@@ -55,15 +59,15 @@ Prisma --> Service: grado
 deactivate Prisma
 Service --> Controller: grado
 deactivate Service
-Controller --> FE: 200 OK\n{ grado }
+Controller --> Form: 200 OK\n{ grado }
 deactivate Controller
 
-FE --> User: Muestra formulario\ncon datos precargados
+Form --> User: Muestra formulario\ncon datos precargados
 
-User -> FE: Modifica campos\ny pulsa "Guardar"
-FE -> FE: Validación visual
+User -> Form: Modifica campos\ny pulsa "Guardar"
+Form -> Form: Validación visual
 
-FE -> Controller: PATCH /api/grados/:id\nbody: { titulo, codigo }
+Form -> Controller: PATCH /api/grados/:id\nbody: { titulo, codigo }
 activate Controller
 Controller -> Service: update(id, updateGradoDto)
 activate Service
@@ -79,8 +83,8 @@ deactivate Prisma
 
 alt Grado no encontrado
   Service --> Controller: throw NotFoundException
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Grado\nno encontrado"
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Grado\nno encontrado"
 else Grado existe
   Service -> Prisma: grado.update({\n  where: { id },\n  data: { titulo, codigo }\n})
   activate Prisma
@@ -93,12 +97,13 @@ else Grado existe
 
   Service --> Controller: grado
   deactivate Service
-  Controller --> FE: 200 OK\n{ grado }
+  Controller --> Form: 200 OK\n{ grado }
   deactivate Controller
-  FE --> User: Muestra grado\nactualizado
+  Form --> User: Muestra grado\nactualizado
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml
 ```
@@ -107,7 +112,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **GradosView** | Vista que muestra formulario de edición con datos precargados del grado. |
+| **GradosView** | Vista que muestra el listado de grados. El usuario hace clic en "Editar" para abrir el modal de edición. |
+| **GradosForm** | Modal de edición con datos precargados del grado. Validación visual antes de enviar. |
 | **GradosController** | Endpoints `GET /:id` y `PATCH /:id` protegidos por guards JWT + Roles. |
 | **GradosService** | Métodos `findOne()` (carga con include) y `update()` (verificación + persistencia). |
 | **PrismaService** | Capa ORM que ejecuta las consultas de lectura y actualización. |

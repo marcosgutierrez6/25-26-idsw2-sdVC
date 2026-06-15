@@ -2,63 +2,69 @@
 title Diagrama de Secuencia - Crear Alumno (NestJS + Vue 3)
 
 actor "Usuario\n(Docente)" as User
-participant "AlumnosView" as FE
+participant "AlumnosView\n(Listado)" as List
+participant "AlumnosForm\n(Modal)" as Form
 participant "AlumnosController" as Controller
 participant "AlumnosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nuevo\nAlumno"
-activate FE
+User -> List: Hace clic en "Nuevo\nAlumno"
+activate List
 
-FE --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, grado
-note right
-  El grado se selecciona de\nun desplegable cargado\npreviamente
-end note
+List -> Form: Abre modal de\ncreación
+activate Form
+Form --> User: Muestra formulario\ncon campos: nombre,\napellidos, dni, email, grado
 
-User -> FE: Rellena campos\ny pulsa "Crear Alumno"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> Form: Rellena campos\ny pulsa "Crear Alumno"
+Form -> Form: Validación visual\nde campos obligatorios
 
-FE -> Controller: POST /api/alumnos\nbody: { nombre, apellidos, dni, email, gradoId }
+Form -> Controller: POST /api/alumnos\nbody: { nombre, apellidos, dni, email, gradoId }
 activate Controller
 
 Controller -> Service: create(createAlumnoDto)
 activate Service
 
-Service -> Prisma: alumno.create({\n  data: createAlumnoDto\n})
+Service -> Prisma: alumno.create({ data })
 activate Prisma
-Prisma -> DB: INSERT INTO Alumno\n(nombre, apellidos, dni, email, gradoId)
+Prisma -> DB: INSERT INTO Alumno
+(nombre, apellidos, dni, email, gradoId)
 activate DB
 
 alt Error FK (gradoId no existe)
-  DB --> Prisma: Error FOREIGN KEY constraint
+  DB --> Prisma: Error FK constraint
   deactivate DB
   Prisma --> Service: lanza error (P2003)
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 400 Bad Request\n{ message: "Grado no\nencontrado" }
-  FE --> User: Muestra mensaje\nde error
+  Controller --> Form: 400 Bad Request
+  deactivate Controller
+  Form --> User: Muestra mensaje\nde error
 else Error de unicidad (dni o email duplicado)
   DB --> Prisma: Error UNIQUE constraint
   deactivate DB
   Prisma --> Service: lanza error (P2002)
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 409 Conflict\n{ message: "DNI o email\nya existe" }
-  FE --> User: Muestra mensaje\nde error
+  Controller --> Form: 409 Conflict
+  deactivate Controller
+  Form --> User: Muestra "DNI o\nemail ya existe"
 else Creación exitosa
-  DB --> Prisma: alumno creado (id)
+  DB --> Prisma: alumno creado
   deactivate DB
   Prisma --> Service: alumno
   deactivate Prisma
 
   Service --> Controller: alumno
   deactivate Service
-  Controller --> FE: 201 Created\n{ alumno }
+  Controller --> Form: 201 Created\n{ alumno }
   deactivate Controller
-  FE --> User: Muestra alumno\ncreado y navega a\nalumno creado (editar)
+
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra éxito y\nrecarga listado
 end
 
-deactivate FE
+deactivate List
 
 @enduml

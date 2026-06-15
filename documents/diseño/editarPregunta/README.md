@@ -32,7 +32,8 @@ Detallar la interacción entre los componentes del sistema para editar una pregu
 title Diagrama de Secuencia - Editar Pregunta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
+participant "PreguntasView\n(Listado)" as List
+participant "PreguntasForm\n(Modal)" as Form
 participant "PreguntasController" as Controller
 participant "PreguntasService" as Service
 participant "PrismaService" as Prisma
@@ -40,10 +41,13 @@ participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
 == Carga de datos ==
 
-User -> FE: Hace clic en "Editar"\ndesde el listado
-activate FE
+User -> List: Hace clic en "Editar"\ndesde el listado
+activate List
 
-FE -> Controller: GET /api/preguntas/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/preguntas/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -61,10 +65,9 @@ alt Pregunta no encontrada
   deactivate Prisma
   Service --> Controller: lanza NotFoundException
   deactivate Service
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Pregunta\nno encontrada"
-  deactivate FE
-  stop
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Pregunta\nno encontrada"
+  deactivate Form
 else Carga exitosa
   DB --> Prisma: pregunta con\nrelaciones
   deactivate DB
@@ -72,18 +75,18 @@ else Carga exitosa
   deactivate Prisma
   Service --> Controller: pregunta
   deactivate Service
-  Controller --> FE: 200 OK\n{ pregunta }
+  Controller --> Form: 200 OK\n{ pregunta }
   deactivate Controller
-  FE --> User: Muestra formulario\ncon datos precargados:\nenunciado, tema, dificultad,\nestado (toggle hab/deshab)
+  Form --> User: Muestra formulario\ncon datos precargados:\nenunciado, tema, dificultad,\nestado (toggle hab/deshab)
 end
 
 == Modificación o eliminación ==
 
 alt Guardar cambios
-  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
-  FE -> FE: Validación visual\nde campos obligatorios
+  User -> Form: Modifica campos\ny pulsa "Guardar cambios"
+  Form -> Form: Validación visual\nde campos obligatorios
 
-  FE -> Controller: PATCH /api/preguntas/:id\nbody: { enunciado, tema,\ndificultad, estado }
+  Form -> Controller: PATCH /api/preguntas/:id\nbody: { enunciado, tema,\ndificultad, estado }
   activate Controller
   Controller -> Service: update(id, updatePreguntaDto)
   activate Service
@@ -108,13 +111,13 @@ alt Guardar cambios
 
   Service --> Controller: pregunta actualizada
   deactivate Service
-  Controller --> FE: 200 OK\n{ pregunta }
+  Controller --> Form: 200 OK\n{ pregunta }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a vista\nde la pregunta
+  Form --> User: Muestra confirmación
 
 else Eliminar pregunta
-  User -> FE: Pulsa "Eliminar"\ny confirma
-  FE -> Controller: DELETE /api/preguntas/:id
+  User -> Form: Pulsa "Eliminar"\ny confirma
+  Form -> Controller: DELETE /api/preguntas/:id
   activate Controller
   Controller -> Service: remove(id)
   activate Service
@@ -139,12 +142,13 @@ else Eliminar pregunta
 
   Service --> Controller: pregunta\n(eliminada)
   deactivate Service
-  Controller --> FE: 200 OK\n{ pregunta }
+  Controller --> Form: 200 OK\n{ pregunta }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega al listado
+  Form --> User: Muestra confirmación
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml
 ```
@@ -153,7 +157,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasView** | Vista que muestra el diálogo de edición con datos precargados (enunciado, tema, dificultad, estado), permite modificar campos, guardar cambios, cancelar o eliminar la pregunta. Validación visual antes de enviar. |
+| **PreguntasView** | Vista que muestra el listado de preguntas. El usuario hace clic en "Editar" para abrir el modal de edición. |
+| **PreguntasForm** | Modal de edición con datos precargados (enunciado, tema, dificultad, estado), permite modificar campos, guardar cambios, cancelar o eliminar la pregunta. Validación visual antes de enviar. |
 | **PreguntasController** | Endpoints REST `GET /api/preguntas/:id` (carga de datos), `PATCH /api/preguntas/:id` (actualización) y `DELETE /api/preguntas/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints. |
 | **PreguntasService** | Métodos `findOne()` (busca con include de respuestas y batería), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `pregunta.findUnique()`, `pregunta.update()` y `pregunta.delete()` sobre el modelo Pregunta. |

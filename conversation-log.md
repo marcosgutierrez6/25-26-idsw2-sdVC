@@ -1292,3 +1292,30 @@ Archivos: src/package.json, src/turbo.json, src/.gitignore, apps/backend (30+ ar
 - Añadida referencia al conversation-log.md en src/README.md
 
 **Resultado:** 41 casos de diseño completos con SVGs reales, READMEs con autor propio, documentación principal y src renovadas, índices navegables.
+
+
+---
+
+## [09:47] Corrección de participantes en diagramas de secuencia — View/Form según contexto
+
+**Prompt:** El usuario revisó los diagramas y señaló que los participantes estaban mal. El diagrama de contexto distingue entre:
+- `List<Entity>` = `<Entity>View` (listado)
+- `Edit<Entity>` = `<Entity>Form` (formulario/modal)
+
+Los diagramas de crear/editar usaban solo `<Entity>View` cuando deberían tener `<Entity>View` + `<Entity>Form`.
+
+**Correcciones aplicadas (26 archivos):**
+- 13 secuencia.puml corregidos: añadido Form como participante intermedio entre View y Controller
+- 13 README.md actualizados con los nuevos participantes
+- 13 SVGs regenerados vía kroki.io
+
+**Casos afectados:**
+- crear: Grado, Asignatura, Docente, Pregunta, Respuesta
+- editar: Alumno, Grado, Asignatura, Docente, Pregunta, Respuesta
+- verRespuestas: PreguntasForm → RespuestasView
+- eliminarRespuesta: PreguntasForm + RespuestasView
+
+Patrón general:
+```
+User → View (clic en botón) → Form (modal) → Controller → Service → Prisma → BD
+```

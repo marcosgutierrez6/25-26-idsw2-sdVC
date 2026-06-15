@@ -2,16 +2,20 @@
 title Diagrama de Secuencia - Ver Respuestas (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
+participant "PreguntasForm\n(Modal)" as ParentForm
+participant "RespuestasView\n(Listado)" as List
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Navega a detalle de\nuna pregunta
-activate FE
+User -> ParentForm: Navega a detalle de\nuna pregunta
+activate ParentForm
 
-FE -> Controller: GET /api/respuestas/pregunta/:preguntaId
+ParentForm -> List: Muestra listado\nde respuestas
+activate List
+
+List -> Controller: GET /api/respuestas/pregunta/:preguntaId
 activate Controller
 
 Controller -> Service: findByPregunta(preguntaId)
@@ -28,10 +32,12 @@ deactivate Prisma
 
 Service --> Controller: respuestas[]
 deactivate Service
-Controller --> FE: 200 OK\nrespuestas[]
+Controller --> List: 200 OK\nrespuestas[]
 deactivate Controller
 
-FE --> User: Muestra listado de\nrespuestas de la pregunta
-deactivate FE
+List --> ParentForm: Devuelve listado\nde respuestas
+deactivate List
+ParentForm --> User: Muestra listado de\nrespuestas de la pregunta
+deactivate ParentForm
 
 @enduml

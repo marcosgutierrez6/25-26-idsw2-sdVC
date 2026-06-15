@@ -32,7 +32,8 @@ Detallar la interacción entre los componentes del sistema para editar un alumno
 title Diagrama de Secuencia - Editar Alumno (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "AlumnosView" as FE
+participant "AlumnosView\n(Listado)" as List
+participant "AlumnosForm\n(Modal)" as Form
 participant "AlumnosController" as Controller
 participant "AlumnosService" as Service
 participant "PrismaService" as Prisma
@@ -40,10 +41,13 @@ participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
 == Carga de datos ==
 
-User -> FE: Hace clic en "Editar"\ndesde listado o vista
-activate FE
+User -> List: Hace clic en "Editar"\ndesde el listado
+activate List
 
-FE -> Controller: GET /api/alumnos/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/alumnos/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -61,10 +65,9 @@ alt Alumno no encontrado
   deactivate Prisma
   Service --> Controller: lanza NotFoundException
   deactivate Service
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Alumno\nno encontrado"
-  deactivate FE
-  stop
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Alumno\nno encontrado"
+  deactivate Form
 else Carga exitosa
   DB --> Prisma: alumno con\ngrado y asignaturas
   deactivate DB
@@ -72,18 +75,18 @@ else Carga exitosa
   deactivate Prisma
   Service --> Controller: alumno
   deactivate Service
-  Controller --> FE: 200 OK\n{ alumno }
+  Controller --> Form: 200 OK\n{ alumno }
   deactivate Controller
-  FE --> User: Muestra formulario\ncon datos precargados:\ndni, nombre, apellidos,\nemail, grado
+  Form --> User: Muestra formulario\ncon datos precargados:\ndni, nombre, apellidos,\nemail, grado
 end
 
 == Modificación o eliminación ==
 
 alt Guardar cambios
-  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
-  FE -> FE: Validación visual\nde campos obligatorios
+  User -> Form: Modifica campos\ny pulsa "Guardar cambios"
+  Form -> Form: Validación visual\nde campos obligatorios
 
-  FE -> Controller: PATCH /api/alumnos/:id\nbody: { dni, nombre,\napellidos, email, gradoId }
+  Form -> Controller: PATCH /api/alumnos/:id\nbody: { dni, nombre,\napellidos, email, gradoId }
   activate Controller
   Controller -> Service: update(id, updateAlumnoDto)
   activate Service
@@ -108,13 +111,13 @@ alt Guardar cambios
 
   Service --> Controller: alumno actualizado
   deactivate Service
-  Controller --> FE: 200 OK\n{ alumno }
+  Controller --> Form: 200 OK\n{ alumno }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a\nALUMNOS_ABIERTO2
+  Form --> User: Muestra confirmación
 
 else Eliminar alumno
-  User -> FE: Pulsa "Eliminar"\ny confirma
-  FE -> Controller: DELETE /api/alumnos/:id
+  User -> Form: Pulsa "Eliminar"\ny confirma
+  Form -> Controller: DELETE /api/alumnos/:id
   activate Controller
   Controller -> Service: remove(id)
   activate Service
@@ -139,12 +142,13 @@ else Eliminar alumno
 
   Service --> Controller: alumno\n(eliminado)
   deactivate Service
-  Controller --> FE: 200 OK\n{ alumno }
+  Controller --> Form: 200 OK\n{ alumno }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a\nALUMNOS_ABIERTO4
+  Form --> User: Muestra confirmación
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml
 ```
@@ -153,7 +157,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **AlumnosView** | Vista que muestra el diálogo de edición con datos precargados (DNI, nombre, apellidos, email, grado), permite modificar campos, guardar cambios, cancelar o eliminar el alumno. Validación visual antes de enviar. |
+| **AlumnosView** | Vista que muestra el listado de alumnos. El usuario hace clic en "Editar" para abrir el modal de edición. |
+| **AlumnosForm** | Modal de edición con datos precargados (DNI, nombre, apellidos, email, grado), permite modificar campos, guardar cambios, cancelar o eliminar el alumno. Validación visual antes de enviar. |
 | **AlumnosController** | Endpoints REST `GET /api/alumnos/:id` (carga de datos), `PATCH /api/alumnos/:id` (actualización) y `DELETE /api/alumnos/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints, solo DOCENTE y ADMIN. |
 | **AlumnosService** | Métodos `findOne()` (busca con `include: { grado: true, asignaturas: { include: { asignatura: true } } }`), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `alumno.findUnique()`, `alumno.update()` y `alumno.delete()` sobre el modelo Alumno. |

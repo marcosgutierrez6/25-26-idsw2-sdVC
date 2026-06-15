@@ -32,25 +32,28 @@ Detallar la interacción entre los componentes del sistema para crear un nuevo d
 title Diagrama de Secuencia - Crear Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin\nInstitucional)" as User
-participant "ProfesoresView" as FE
+participant "DocentesView\n(Listado)" as List
+participant "DocentesForm\n(Modal)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nuevo\nDocente"
-activate FE
+User -> List: Hace clic en "Nuevo\nDocente"
+activate List
 
-FE --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, password
+List -> Form: Abre modal de\ncreación
+activate Form
+Form --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, password
 note right
   El rol por defecto es DOCENTE
   (no se muestra en formulario)
 end note
 
-User -> FE: Rellena campos\ny pulsa "Crear Docente"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> Form: Rellena campos\ny pulsa "Crear Docente"
+Form -> Form: Validación visual\nde campos obligatorios
 
-FE -> Controller: POST /api/profesores\nbody: { nombre, apellidos, dni, email, password }
+Form -> Controller: POST /api/profesores\nbody: { nombre, apellidos, dni, email, password }
 activate Controller
 
 Controller -> Service: create(createProfesorDto)
@@ -73,8 +76,8 @@ alt Error de unicidad (dni o email duplicado)
   Prisma --> Service: lanza error (P2002)
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 409 Conflict\n{ message: "DNI o email\nya existe" }
-  FE --> User: Muestra mensaje\nde error
+  Controller --> Form: 409 Conflict\n{ message: "DNI o email\nya existe" }
+  Form --> User: Muestra mensaje\nde error
 else Creación exitosa
   DB --> Prisma: profesor creado (id, rol: DOCENTE)
   deactivate DB
@@ -83,12 +86,15 @@ else Creación exitosa
 
   Service --> Controller: profesor
   deactivate Service
-  Controller --> FE: 201 Created\n{ profesor }
+  Controller --> Form: 201 Created\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra docente\ncreado y navega a\neditarDocente()
+
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra docente\ncreado y navega a\neditarDocente()
 end
 
-deactivate FE
+deactivate List
 
 @enduml
 ```
@@ -97,7 +103,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **ProfesoresView** | Vista que muestra el formulario de creación con campos obligatorios (nombre, apellidos, dni, email, password) y valida visualmente antes de enviar. |
+| **DocentesView** | Vista que muestra el listado de docentes. El usuario hace clic en "Nuevo Docente" para abrir el modal de creación. |
+| **DocentesForm** | Modal de creación con campos obligatorios (nombre, apellidos, dni, email, password) y valida visualmente antes de enviar. |
 | **ProfesoresController** | Endpoint REST `POST /api/profesores` que recibe el `CreateProfesorDto` y delega en el servicio. Guards `JwtAuthGuard` + `RolesGuard` protegen el endpoint. Solo `ADMIN` puede crear docentes. |
 | **ProfesoresService** | Método `create()` que hashea la contraseña con bcrypt (salt rounds 10) y persiste el profesor mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `profesor.create()` con los datos del DTO y la contraseña hasheada. |

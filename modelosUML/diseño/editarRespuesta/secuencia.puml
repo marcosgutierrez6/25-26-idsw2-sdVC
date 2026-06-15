@@ -2,16 +2,24 @@
 title Diagrama de Secuencia - Editar Respuesta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
+participant "PreguntasForm\n(Modal)" as ParentForm
+participant "RespuestasView\n(Listado)" as List
+participant "RespuestasForm\n(Modal)" as Form
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Editar"\nsobre una respuesta
-activate FE
+User -> ParentForm: Hace clic en "Editar"\nsobre una respuesta
+activate ParentForm
 
-FE -> Controller: GET /api/respuestas/:id
+ParentForm -> List: Navega a vista\nde respuestas
+activate List
+
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/respuestas/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -28,18 +36,18 @@ deactivate Prisma
 
 alt No encontrada
   Service --> Controller: throw NotFoundException
-  Controller --> FE: 404 Not Found
-  FE --> User: "Respuesta\nno encontrada"
+  Controller --> Form: 404 Not Found
+  Form --> User: "Respuesta\nno encontrada"
 else Encontrada
   Service --> Controller: respuesta
   deactivate Service
-  Controller --> FE: 200 OK\n{ respuesta }
+  Controller --> Form: 200 OK\n{ respuesta }
   deactivate Controller
 
-  FE --> User: Muestra formulario\ncon datos actuales
+  Form --> User: Muestra formulario\ncon datos actuales
 
-  User -> FE: Modifica campos\ny confirma
-  FE -> Controller: PATCH /api/respuestas/:id\n{ texto, esCorrecta }
+  User -> Form: Modifica campos\ny confirma
+  Form -> Controller: PATCH /api/respuestas/:id\n{ texto, esCorrecta }
   activate Controller
 
   Controller -> Service: update(id, updateDto)
@@ -56,12 +64,15 @@ else Encontrada
 
   Service --> Controller: respuesta actualizada
   deactivate Service
-  Controller --> FE: 200 OK\n{ respuesta }
+  Controller --> Form: 200 OK\n{ respuesta }
   deactivate Controller
 
-  FE --> User: Muestra éxito y\nactualiza listado
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra listado\nactualizado
 end
 
-deactivate FE
+deactivate List
+deactivate ParentForm
 
 @enduml

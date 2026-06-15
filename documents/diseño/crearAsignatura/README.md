@@ -32,21 +32,24 @@ Detallar la interacción entre los componentes del sistema para crear una nueva 
 title Diagrama de Secuencia - Crear Asignatura (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "AsignaturasView" as FE
+participant "AsignaturasView\n(Listado)" as List
+participant "AsignaturasForm\n(Modal)" as Form
 participant "AsignaturasController" as Controller
 participant "AsignaturasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nueva\nAsignatura"
-activate FE
+User -> List: Hace clic en "Nueva\nAsignatura"
+activate List
 
-FE --> User: Muestra diálogo con\ncampos: titulo, codigo,\ncursoAcademico, gradoId
+List -> Form: Abre modal de\ncreación
+activate Form
+Form --> User: Muestra diálogo con\ncampos: titulo, codigo,\ncursoAcademico, gradoId
 
-User -> FE: Rellena campos\ny pulsa "Crear"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> Form: Rellena campos\ny pulsa "Crear"
+Form -> Form: Validación visual\nde campos obligatorios
 
-FE -> Controller: POST /api/asignaturas\nbody: { titulo, codigo, cursoAcademico, gradoId }
+Form -> Controller: POST /api/asignaturas\nbody: { titulo, codigo, cursoAcademico, gradoId }
 activate Controller
 
 Controller -> Service: create(createAsignaturaDto)
@@ -63,8 +66,8 @@ alt Unique constraint (código duplicado)
   Prisma --> Service: lanza error
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 409 Conflict
-  FE --> User: Muestra "Código\nduplicado"
+  Controller --> Form: 409 Conflict
+  Form --> User: Muestra "Código\nduplicado"
 else Creación exitosa
   DB --> Prisma: asignatura creada (id)
   deactivate DB
@@ -73,12 +76,15 @@ else Creación exitosa
 
   Service --> Controller: asignatura
   deactivate Service
-  Controller --> FE: 201 Created\n{ asignatura }
+  Controller --> Form: 201 Created\n{ asignatura }
   deactivate Controller
-  FE --> User: Muestra asignatura\ncreada y navega a\neditarAsignatura()
+
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra asignatura\ncreada y navega a\neditarAsignatura()
 end
 
-deactivate FE
+deactivate List
 
 @enduml
 ```
@@ -87,7 +93,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **AsignaturasView** | Vista que muestra el diálogo de creación con campos titulo, codigo, cursoAcademico, gradoId. |
+| **AsignaturasView** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Nueva Asignatura" para abrir el modal de creación. |
+| **AsignaturasForm** | Modal de creación con campos titulo, codigo, cursoAcademico, gradoId. Validación visual antes de enviar. |
 | **AsignaturasController** | Endpoint REST `POST /api/asignaturas` protegido por `JwtAuthGuard` + `RolesGuard`. |
 | **AsignaturasService** | Método `create()` que persiste la asignatura mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `asignatura.create()`. |

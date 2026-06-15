@@ -32,21 +32,24 @@ Detallar la interacción entre los componentes del sistema para crear una nueva 
 title Diagrama de Secuencia - Crear Pregunta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
+participant "PreguntasView\n(Listado)" as List
+participant "PreguntasForm\n(Modal)" as Form
 participant "PreguntasController" as Controller
 participant "PreguntasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nueva\nPregunta"
-activate FE
+User -> List: Hace clic en "Nueva\nPregunta"
+activate List
 
-FE --> User: Muestra diálogo con\ncampos: enunciado, tema,\ndificultad, batería
+List -> Form: Abre modal de\ncreación
+activate Form
+Form --> User: Muestra diálogo con\ncampos: enunciado, tema,\ndificultad, batería
 
-User -> FE: Rellena campos\ny pulsa "Crear"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> Form: Rellena campos\ny pulsa "Crear"
+Form -> Form: Validación visual\nde campos obligatorios
 
-FE -> Controller: POST /api/preguntas\nbody: { enunciado, tema, dificultad, bateriaId }
+Form -> Controller: POST /api/preguntas\nbody: { enunciado, tema, dificultad, bateriaId }
 activate Controller
 
 Controller -> Service: create(createPreguntaDto)
@@ -63,8 +66,8 @@ alt FK inválido (bateriaId no existe)
   Prisma --> Service: lanza error
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 400/500 Error
-  FE --> User: Muestra "Batería\nno encontrada"
+  Controller --> Form: 400/500 Error
+  Form --> User: Muestra "Batería\nno encontrada"
 else Creación exitosa
   DB --> Prisma: pregunta creada (id, estado: EN_CONSTRUCCION)
   deactivate DB
@@ -73,12 +76,15 @@ else Creación exitosa
 
   Service --> Controller: pregunta
   deactivate Service
-  Controller --> FE: 201 Created\n{ pregunta }
+  Controller --> Form: 201 Created\n{ pregunta }
   deactivate Controller
-  FE --> User: Muestra pregunta\ncreada y navega a\neditarPregunta()
+
+  Form --> List: Cierra modal y\nnotifica éxito
+  deactivate Form
+  List --> User: Muestra pregunta\ncreada y navega a\neditarPregunta()
 end
 
-deactivate FE
+deactivate List
 
 @enduml
 ```
@@ -87,7 +93,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasView** | Vista que muestra el diálogo de creación con campos obligatorios (enunciado, tema, dificultad, batería) y valida visualmente antes de enviar. |
+| **PreguntasView** | Vista que muestra el listado de preguntas. El usuario hace clic en "Nueva Pregunta" para abrir el modal de creación. |
+| **PreguntasForm** | Modal de creación con campos obligatorios (enunciado, tema, dificultad, batería) y valida visualmente antes de enviar. |
 | **PreguntasController** | Endpoint REST `POST /api/preguntas` que recibe el DTO y delega en el servicio. Guard `JwtAuthGuard` + `RolesGuard` protegen el endpoint. |
 | **PreguntasService** | Método `create()` que persiste la pregunta mediante Prisma. Sin validación explícita de batería — el FK constraint de la BD rechaza batería inválida. |
 | **PrismaService** | Capa ORM que ejecuta `pregunta.create()` con los datos del DTO. |

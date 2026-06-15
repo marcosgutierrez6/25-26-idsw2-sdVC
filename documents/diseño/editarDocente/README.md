@@ -32,7 +32,8 @@ Detallar la interacción entre los componentes del sistema para editar un docent
 title Diagrama de Secuencia - Editar Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin)" as User
-participant "ProfesoresView" as FE
+participant "DocentesView\n(Listado)" as List
+participant "DocentesForm\n(Modal)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
@@ -40,10 +41,13 @@ participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
 == Carga de datos ==
 
-User -> FE: Hace clic en "Editar"\ndesde listado o vista
-activate FE
+User -> List: Hace clic en "Editar"\ndesde el listado
+activate List
 
-FE -> Controller: GET /api/profesores/:id
+List -> Form: Abre modal de\nedición
+activate Form
+
+Form -> Controller: GET /api/profesores/:id
 activate Controller
 
 Controller -> Service: findOne(id)
@@ -61,10 +65,9 @@ alt Profesor no encontrado
   deactivate Prisma
   Service --> Controller: lanza NotFoundException
   deactivate Service
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Profesor\nno encontrado"
-  deactivate FE
-  stop
+  Controller --> Form: 404 Not Found
+  Form --> User: Muestra "Profesor\nno encontrado"
+  deactivate Form
 else Carga exitosa
   DB --> Prisma: profesor (sin password)\ncon asignaturas
   deactivate DB
@@ -72,18 +75,18 @@ else Carga exitosa
   deactivate Prisma
   Service --> Controller: profesor
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra formulario\ncon datos precargados:\nnombre, apellidos,\ndni, email, username
+  Form --> User: Muestra formulario\ncon datos precargados:\nnombre, apellidos,\ndni, email, username
 end
 
 == Modificación o eliminación ==
 
 alt Guardar cambios
-  User -> FE: Modifica campos\ny pulsa "Guardar cambios"
-  FE -> FE: Validación visual\nde campos obligatorios
+  User -> Form: Modifica campos\ny pulsa "Guardar cambios"
+  Form -> Form: Validación visual\nde campos obligatorios
 
-  FE -> Controller: PATCH /api/profesores/:id\nbody: { nombre, apellidos,\nemail, password? }
+  Form -> Controller: PATCH /api/profesores/:id\nbody: { nombre, apellidos,\nemail, password? }
   activate Controller
   Controller -> Service: update(id, updateProfesorDto)
   activate Service
@@ -112,13 +115,13 @@ alt Guardar cambios
 
   Service --> Controller: profesor actualizado
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega a vista\ndel docente
+  Form --> User: Muestra confirmación
 
 else Eliminar docente
-  User -> FE: Pulsa "Eliminar"\ny confirma
-  FE -> Controller: DELETE /api/profesores/:id
+  User -> Form: Pulsa "Eliminar"\ny confirma
+  Form -> Controller: DELETE /api/profesores/:id
   activate Controller
   Controller -> Service: remove(id)
   activate Service
@@ -143,12 +146,13 @@ else Eliminar docente
 
   Service --> Controller: profesor\n(eliminado)
   deactivate Service
-  Controller --> FE: 200 OK\n{ profesor }
+  Controller --> Form: 200 OK\n{ profesor }
   deactivate Controller
-  FE --> User: Muestra confirmación\ny navega al listado
+  Form --> User: Muestra confirmación
 end
 
-deactivate FE
+deactivate Form
+deactivate List
 
 @enduml
 ```
@@ -157,7 +161,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **ProfesoresView** | Vista que muestra el diálogo de edición con datos precargados (nombre, apellidos, dni, email, username), permite modificar campos, cambiar contraseña opcionalmente, guardar cambios, cancelar o eliminar el docente. Validación visual antes de enviar. |
+| **DocentesView** | Vista que muestra el listado de docentes. El usuario hace clic en "Editar" para abrir el modal de edición. |
+| **DocentesForm** | Modal de edición con datos precargados (nombre, apellidos, dni, email, username), permite modificar campos, cambiar contraseña opcionalmente, guardar cambios, cancelar o eliminar el docente. Validación visual antes de enviar. |
 | **ProfesoresController** | Endpoints REST `GET /api/profesores/:id` (carga de datos), `PATCH /api/profesores/:id` (actualización) y `DELETE /api/profesores/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints, solo ADMIN. |
 | **ProfesoresService** | Métodos `findOne()` (busca con `omit: { password: true }` e `include: { asignaturas: true }`), `update()` (verifica existencia vía `findOne()`, aplica `bcrypt.hash()` si hay nueva contraseña, y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `profesor.findUnique()`, `profesor.update()` y `profesor.delete()` sobre el modelo Profesor. |
