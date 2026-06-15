@@ -52,7 +52,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '../../stores/auth';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
@@ -70,7 +70,7 @@ async function handleLogin() {
   loading.value = true;
   try {
     await auth.login(email.value, password.value);
-    router.push('/');
+    router.push('/dashboard');
   } catch {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Credenciales inválidas', life: 3000 });
   } finally {

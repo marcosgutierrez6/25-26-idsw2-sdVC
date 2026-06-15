@@ -1,34 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import AppLayout from '../layouts/AppLayout.vue';
 import AuthLayout from '../layouts/AuthLayout.vue';
-import MainLayout from '../layouts/MainLayout.vue';
-import LoginView from '../views/LoginView.vue';
-import DashboardView from '../views/DashboardView.vue';
-import GradosView from '../views/GradosView.vue';
-import AsignaturasView from '../views/AsignaturasView.vue';
-import AlumnosView from '../views/AlumnosView.vue';
-import ProfesoresView from '../views/ProfesoresView.vue';
-import PreguntasView from '../views/PreguntasView.vue';
-import ExamenesView from '../views/ExamenesView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', name: 'Login', component: AuthLayout, meta: { requiresAuth: false }, children: [
-      { path: '', component: LoginView },
-    ] },
     {
       path: '/',
-      component: MainLayout,
+      component: AppLayout,
       meta: { requiresAuth: true },
+      redirect: '/dashboard',
       children: [
-        { path: '', name: 'Dashboard', component: DashboardView },
-        { path: 'grados', name: 'Grados', component: GradosView },
-        { path: 'asignaturas', name: 'Asignaturas', component: AsignaturasView },
-        { path: 'alumnos', name: 'Alumnos', component: AlumnosView },
-        { path: 'profesores', name: 'Profesores', component: ProfesoresView },
-        { path: 'preguntas', name: 'Preguntas', component: PreguntasView },
-        { path: 'examenes', name: 'Examenes', component: ExamenesView },
+        { path: 'dashboard', name: 'Dashboard', component: () => import('../views/DashboardView.vue') },
+        { path: 'grados', name: 'Grados', component: () => import('../views/GradosView.vue') },
+        { path: 'asignaturas', name: 'Asignaturas', component: () => import('../views/AsignaturasView.vue') },
+        { path: 'alumnos', name: 'Alumnos', component: () => import('../views/AlumnosView.vue') },
+        { path: 'profesores', name: 'Profesores', component: () => import('../views/ProfesoresView.vue') },
+        { path: 'preguntas', name: 'Preguntas', component: () => import('../views/PreguntasView.vue') },
+        { path: 'examenes', name: 'Examenes', component: () => import('../views/ExamenesView.vue') },
+      ],
+    },
+    {
+      path: '/auth',
+      component: AuthLayout,
+      meta: { requiresAuth: false },
+      redirect: '/auth/login',
+      children: [
+        { path: 'login', name: 'Login', component: () => import('../views/auth/LoginView.vue') },
       ],
     },
   ],
@@ -37,9 +36,9 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const auth = useAuthStore();
   if (to.meta.requiresAuth !== false && !auth.isAuthenticated) {
-    next('/login');
-  } else if (to.path === '/login' && auth.isAuthenticated) {
-    next('/');
+    next('/auth/login');
+  } else if (to.path.startsWith('/auth') && auth.isAuthenticated) {
+    next('/dashboard');
   } else {
     next();
   }

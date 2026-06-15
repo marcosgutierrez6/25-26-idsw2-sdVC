@@ -1630,3 +1630,44 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Build verificado sin errores
 
 **Decisión:** Aceptado todo siguiendo las indicaciones del usuario. El usuario guió la estrategia de layouts con Toast para mantenerlo limpio y reutilizable. Para las migraciones, usó el enfoque de `migrate diff` + `migrate resolve` para no perder los datos existentes en la BD.
+
+---
+
+## [17:30] Dashboard rediseñado con template + datos reales de la API
+
+**Prompt:** El usuario pidió reescribir el DashboardView.vue siguiendo un template de PrimeVue con sidebar de iconos vertical, cards de estadísticas, sección de listado y distribución por estado, pero adaptándolo a nuestras entidades (grados, asignaturas, alumnos, preguntas, exámenes) usando llamadas reales a la API con axios.
+
+**Resultado:**
+- Reesctiro completo del dashboard con el layout del template: sidebar con iconos de navegación, header con título + buscador + campana, 4 cards de estadísticas (Grados, Asignaturas, Alumnos, Preguntas) con colores distintivos (cyan, orange, slate, violet)
+- Sección "Últimos Exámenes" con lista de exámenes recientes desde la API, mostrando asignatura + estado con Tag coloreado
+- Sección "Exámenes por Estado" con MeterGroup de PrimeVue mostrando distribución GENERADO/ASIGNADO/RESUELTO/CORREGIDO, más detalles con bolas de colores
+- 3 cards inferiores con métricas derivadas: gestión de grados (asignaturas/grado, alumnos/grado), banco de preguntas (preguntas/asignatura), distribución de exámenes (porcentajes)
+- Llamadas API en paralelo con `Promise.all` a `/grados`, `/asignaturas`, `/alumnos`, `/preguntas`, `/examenes` con `limit` mínimo para eficiencia
+- Importados los componentes PrimeVue necesarios: IconField, InputIcon, InputText, MeterGroup, ProgressBar, Tag, Avatar
+- Build verificado sin errores
+
+**Decisión:** Aceptado bajo la guía del usuario. El usuario guió la adaptación del template de PrimeVue (originalmente para marketing) a un dashboard educativo con datos reales. Se mantuvo la estructura visual exacta del template pero reemplazando todo el contenido con información de nuestras entidades y llamadas a la API real.
+
+---
+
+## [17:45] Nuevos layouts: AppLayout (sidebar oscura) + AuthLayout + ruta /auth/login
+
+**Prompt:** El usuario pidió reestructurar los layouts de la aplicación siguiendo un template con dos layouts diferenciados:
+1. **AppLayout** — sidebar oscura (w-80) con menú colapsable, logo, secciones Home/Academia, perfil de usuario abajo y botón de cerrar sesión
+2. **AuthLayout** — lienzo en blanco centrado para login/registro
+3. Rutas hijas con lazy loading: `/` → AppLayout → dashboard/grados/asignaturas/... y `/auth` → AuthLayout → login
+4. Login movido a `views/auth/LoginView.vue`
+5. Ruta de login cambiada de `/login` a `/auth/login`
+6. Registrada directiva `v-styleclass` de PrimeVue globalmente
+
+**Resultado:**
+- Creado `AppLayout.vue` con sidebar oscura, menús colapsables con `v-styleclass`, enlaces a todas las entidades (Grados, Asignaturas, Alumnos, Profesores solo ADMIN, Preguntas, Exámenes), nombre de usuario y logout en la parte inferior
+- Actualizado `AuthLayout.vue` como fondo centrado con `<Toast />`
+- Movido `LoginView.vue` a `views/auth/LoginView.vue` con imports corregidos
+- Router reescrito con rutas anidadas y lazy loading (`() => import(...)`)
+- Añadido `redirect: '/dashboard'` en ruta raíz y `redirect: '/auth/login'` en ruta `/auth`
+- Navigation guard actualizado: redirige a `/auth/login` (no `/login`), y si ya autenticado va a `/dashboard`
+- `main.ts`: registrada directiva `StyleClass` con `app.directive('styleclass', StyleClass)`
+- Build verificado sin errores
+
+**Decisión:** Aceptado todo bajo la guía del usuario. El usuario proporcionó los templates exactos para ambos layouts y la estructura del router. Se adaptaron los menús a nuestras entidades reales (traduciendo "Your Networks" → "Academia", "Bookmarks" → "Grados", etc.) y se filtró Profesores solo para ADMIN. El lazy loading con `() => import()` mejora el rendimiento al cargar vistas bajo demanda.
