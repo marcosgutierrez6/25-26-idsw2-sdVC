@@ -10,6 +10,7 @@ import { PreguntasModule } from './Preguntas/preguntas.module';
 import { RespuestasModule } from './Respuestas/respuestas.module';
 import { ExamenesModule } from './Examenes/examenes.module';
 import { BateriaModule } from './Bateria/bateria.module';
+import { ConfiguracionModule } from './Configuracion/configuracion.module';
 import * as path from 'path';
 
 @Module({
@@ -28,6 +29,7 @@ import * as path from 'path';
     RespuestasModule,
     ExamenesModule,
     BateriaModule,
+    ConfiguracionModule,
   ],
 })
 export class AppModule {}
