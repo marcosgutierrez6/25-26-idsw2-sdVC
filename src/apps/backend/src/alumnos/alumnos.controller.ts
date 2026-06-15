@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { AlumnosService } from './alumnos.service';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { UpdateAlumnoDto } from './dto/update-alumno.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 import { JwtAuthGuard } from '../Common/jwt-auth.guard';
 import { RolesGuard } from '../Common/roles.guard';
 import { Roles } from '../Common/roles.decorator';
@@ -12,22 +13,22 @@ import { Rol } from '@prisma/client';
 export class AlumnosController {
   constructor(private readonly alumnosService: AlumnosService) {}
 
-  @Post()
-  @Roles(Rol.DOCENTE, Rol.ADMIN)
-  create(@Body() createAlumnoDto: CreateAlumnoDto) {
-    return this.alumnosService.create(createAlumnoDto);
-  }
-
   @Get()
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  findAll() {
-    return this.alumnosService.findAll();
+  index(@Query() pagination: PaginationDto) {
+    return this.alumnosService.findAll(pagination);
   }
 
   @Get(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  findOne(@Param('id') id: string) {
+  show(@Param('id') id: string) {
     return this.alumnosService.findOne(+id);
+  }
+
+  @Post()
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  create(@Body() createAlumnoDto: CreateAlumnoDto) {
+    return this.alumnosService.create(createAlumnoDto);
   }
 
   @Patch(':id')
@@ -38,7 +39,7 @@ export class AlumnosController {
 
   @Delete(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  remove(@Param('id') id: string) {
+  delete(@Param('id') id: string) {
     return this.alumnosService.remove(+id);
   }
 }

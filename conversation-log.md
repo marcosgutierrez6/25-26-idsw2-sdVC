@@ -1460,3 +1460,22 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - `remove()`: verificación de existencia via `findOne` antes de eliminar
 
 **Decisión:** Compilación exitosa. Es el único módulo con restricción `@Roles(Rol.ADMIN)` exclusiva (los demás permiten DOCENTE y ADMIN). El `omit: { password: true }` se mantiene en `findAll`, `findOne` y `update` para seguridad. El hashing condicional en `update` evita re-hashear la contraseña actual si no se está cambiando.
+
+---
+
+## [16:40] Backend de Alumnos — refactor a patrón limpio
+
+**Prompt:** El usuario pidió refactorizar Alumnos al mismo patrón que los módulos anteriores.
+
+**Resultado:**
+
+*Controller:*
+- `findAll` → `index` con `@Query() pagination: PaginationDto`
+- `findOne` → `show`, `remove` → `delete`
+- Mismos guards y roles (`DOCENTE`, `ADMIN`)
+
+*Service:*
+- `findAll()` → paginación con `skip`/`take`, `Promise.all` con `count`, `orderBy: { createdAt: 'desc' }`
+- `findOne()`, `update()`, `remove()` se mantienen igual (sin lógica extra como bcrypt)
+
+**Decisión:** Compilación exitosa. Sin cambios en DTOs ni en el módulo (el `AlumnosModule` ya estaba bien). Es un CRUD simple sin lógica de negocio adicional.
