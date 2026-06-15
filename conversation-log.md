@@ -1354,3 +1354,43 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 **Decisión:** Confirmado que la limpieza ya estaba hecha. Solo faltaba registrar la verificación en el conversation-log.
 
 ---
+
+## [16:05] Añadir comentarios de diseño al schema Prisma + cambiar a MySQL
+
+**Prompt:** El usuario pidió revisar todo el diseño y añadir al schema de Prisma los comentarios de diseño discutidos (casos de uso, reglas de negocio, transiciones de estado, componentes View/Form con tabs).
+
+**Resultado:**
+- Añadidos comentarios de diseño a todos los modelos y enums del schema (`src/apps/backend/prisma/schema.prisma`)
+- Se cambió provider de `sqlite` a `mysql`
+- Se creó la BD `jorgestor` en el contenedor Docker MySQL
+- Se ejecutó `prisma db push` para sincronizar schema + generar cliente
+
+**Decisión:** Se usó MySQL en Docker (puerto 3306, contenedor `romantic_carson`). BD creada con charset utf8mb4.
+
+---
+
+## [16:16] Reestructurar backend: carpetas con mayúscula inicial
+
+**Prompt:** El usuario pidió reorganizar el backend para que cada entidad tenga su carpeta con la primera letra en mayúscula (Alumnos, Asignaturas, Auth, Bateria, Common, Examenes, Grados, Preguntas, Profesores, Prisma, Respuestas).
+
+**Resultado:**
+- Renombradas las 11 carpetas via temp (`mv grados _Grados && mv _Grados Grados`) por el filesystem case-insensitive de macOS
+- Actualizados imports en `app.module.ts` y en todos los archivos que referenciaban `../prisma/` → `../Prisma/` y `../common/` → `../Common/`
+- Limpiada cache de TypeScript (dist, tsbuildinfo) y reiniciado watcher para eliminar errores de casing duplicado
+
+**Decisión:** Compilación exitosa sin errores. La estructura quedó limpia con todas las carpetas capitalizadas.
+
+---
+
+## [16:25] Refactorizar controladores: CRUD simple + lógica en service
+
+**Prompt:** El usuario pidió que los controladores sean super simples: `index` con paginación, `create`, `update`, `delete`. Toda la lógica de negocio debe ir en el service. Empezar por `corregirExamenes`.
+
+**Resultado:**
+- Creado `Common/dto/pagination.dto.ts` (reusable: page, limit con validación)
+- Creado `Examenes/dto/update-examen.dto.ts`
+- Refactorizado `ExamenesController`: endpoints `index` (GET paginado), `show` (GET :id), `create` (POST), `update` (PATCH), `delete` (DELETE) + helpers `generar`, `asignar`, `corregir`, `resultados`
+- `findAll()` ahora devuelve `{ data, total, page, limit, totalPages }`
+- Toda la lógica pesada (Fisher-Yates shuffle, hash SHA-256, cálculo de nota, transición de estado) permanece en `ExamenesService`
+
+**Decisión:** Compilación exitosa. El patrón está listo para aplicarse al resto de módulos.

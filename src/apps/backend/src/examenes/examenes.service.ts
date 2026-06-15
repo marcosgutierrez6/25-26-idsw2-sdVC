@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import * as crypto from 'crypto';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
+import { UpdateExamenDto } from './dto/update-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
 import { AsignarExamenesDto } from './dto/asignar-examenes.dto';
 import { EstadoExamen } from '@prisma/client';
@@ -14,10 +15,22 @@ export class ExamenesService {
     return this.prisma.examen.create({ data: createExamenDto });
   }
 
-  findAll() {
-    return this.prisma.examen.findMany({
-      include: { asignatura: true, _count: { select: { preguntas: true, alumnos: true } } },
-    });
+  async findAll(pagination?: { page?: number; limit?: number }) {
+    const page = pagination?.page ?? 1;
+    const limit = pagination?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.examen.findMany({
+        skip,
+        take: limit,
+        include: { asignatura: true, _count: { select: { preguntas: true, alumnos: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.examen.count(),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: number) {
@@ -31,6 +44,16 @@ export class ExamenesService {
     });
     if (!examen) throw new NotFoundException('Examen no encontrado');
     return examen;
+  }
+
+  async update(id: number, updateExamenDto: UpdateExamenDto) {
+    await this.findOne(id);
+    return this.prisma.examen.update({ where: { id }, data: updateExamenDto });
+  }
+
+  async remove(id: number) {
+    await this.findOne(id);
+    return this.prisma.examen.delete({ where: { id } });
   }
 
   async generar(generarDto: GenerarExamenesDto) {
@@ -193,32 +216,23 @@ export class ExamenesService {
 
     const nota = (aciertos / total) * 10;
 
-    const updatedAE = await this.prisma.alumnoExamen.update({
+    await this.prisma.alumnoExamen.update({
       where: { alumnoId_examenId: { alumnoId, examenId } },
       data: {
         respuestas: JSON.stringify(respuestas),
         nota,
-        alumnoId,
-        examenId,
       },
     });
 
-    // Check if all assigned students have been corrected
-    const todosCorregidos = await this.prisma.alumnoExamen.count({
+    const pendientes = await this.prisma.alumnoExamen.count({
       where: { examenId, nota: null },
     });
 
-    if (todosCorregidos === 0) {
-      await this.prisma.examen.update({
-        where: { id: examenId },
-        data: { estado: EstadoExamen.CORREGIDO },
-      });
-    } else {
-      await this.prisma.examen.update({
-        where: { id: examenId },
-        data: { estado: EstadoExamen.RESUELTO },
-      });
-    }
+    const nuevoEstado = pendientes === 0 ? EstadoExamen.CORREGIDO : EstadoExamen.RESUELTO;
+    await this.prisma.examen.update({
+      where: { id: examenId },
+      data: { estado: nuevoEstado },
+    });
 
     return { nota, aciertos, total, detalles };
   }
@@ -228,10 +242,5 @@ export class ExamenesService {
       where: { examenId },
       include: { alumno: true },
     });
-  }
-
-  async remove(id: number) {
-    await this.findOne(id);
-    return this.prisma.examen.delete({ where: { id } });
   }
 }
