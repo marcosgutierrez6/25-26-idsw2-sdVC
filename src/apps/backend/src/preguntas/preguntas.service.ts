@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreatePreguntaDto } from './dto/create-pregunta.dto';
 import { UpdatePreguntaDto } from './dto/update-pregunta.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 
 @Injectable()
 export class PreguntasService {
@@ -11,15 +12,29 @@ export class PreguntasService {
     return this.prisma.pregunta.create({ data: createPreguntaDto });
   }
 
-  findAll(filters?: { tema?: string; dificultad?: string; bateriaId?: string }) {
-    return this.prisma.pregunta.findMany({
-      where: {
-        ...(filters?.tema && { tema: filters.tema }),
-        ...(filters?.dificultad && { dificultad: filters.dificultad as any }),
-        ...(filters?.bateriaId && { bateriaId: +filters.bateriaId }),
-      },
-      include: { respuestas: true, bateria: { include: { asignatura: true } } },
-    });
+  async findAll(filters?: PaginationDto & { tema?: string; dificultad?: string; bateriaId?: string }) {
+    const page = filters?.page ?? 1;
+    const limit = filters?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(filters?.tema && { tema: filters.tema }),
+      ...(filters?.dificultad && { dificultad: filters.dificultad as any }),
+      ...(filters?.bateriaId && { bateriaId: +filters.bateriaId }),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.pregunta.findMany({
+        where,
+        skip,
+        take: limit,
+        include: { respuestas: true, bateria: { include: { asignatura: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.pregunta.count({ where }),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: number) {
