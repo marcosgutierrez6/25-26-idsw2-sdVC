@@ -50,8 +50,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '../api/axios';
-import TabPills from '../components/TabPills.vue';
+import api from '../../../api/axios';
+import TabPills from '../../../components/TabPills.vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import DataTable from 'primevue/datatable';

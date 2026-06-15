@@ -1,0 +1,1 @@
+export { BateriaView } from './BateriaView';

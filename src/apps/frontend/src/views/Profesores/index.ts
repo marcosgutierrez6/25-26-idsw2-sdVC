@@ -1,0 +1,1 @@
+export { ProfesoresView } from './ProfesoresView';

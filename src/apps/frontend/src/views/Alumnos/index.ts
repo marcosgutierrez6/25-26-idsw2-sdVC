@@ -1,0 +1,1 @@
+export { AlumnosView } from './AlumnosView';

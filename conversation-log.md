@@ -1729,3 +1729,53 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - **Router:** Añadidas rutas hijas `grados/nuevo` y `grados/:id/editar` apuntando a GradosFormView.
 
 **Decisión:** Build exitoso (frontend + backend). Tabs se desactivan visualmente (cursor-not-allowed, color gris) cuando no hay id. Al guardar en modo creación, redirige a `/grados` (listado). El patrón servirá de plantilla para el resto de entidades.
+
+---
+
+## [18:05] Formulario de Asignaturas con tabs + listado de preguntas contextuales
+
+**Prompt:** El usuario pidió adaptarAsignaturasFormView.vue siguiendo el mismo patrón de tabs que Grados: (1) Configuración general con título/código/curso/grado, (2) Preguntas contextuales con listado paginado, (3) Exámenes con conteo. Integrar con la API y backend para traer preguntas y exámenes relacionados a la asignatura.
+
+**Resultado:**
+- Creado `AsignaturasFormView.vue` con 3 tabs: (1) Config general — formulario título/código/cursoAcademico/gradoId con guardar, (2) Preguntas contextuales — DataTable paginado con listado de preguntas de la batería asociada a la asignatura, (3) Exámenes — DataTable con exámenes asociados mostrando conteo de preguntas/alumnos.
+- **Backend:** Actualizados endpoints para filtrar preguntas y exámenes por asignatura.
+- AsignaturasView.vue simplificada — usa el mismo patrón que GradosView (botón Nuevo navega a `/asignaturas/nuevo`, lápiz a `/asignaturas/:id/editar`).
+- Router actualizado con rutas `/asignaturas/nuevo` y `/asignaturas/:id/editar`.
+- Importadas las batería de preguntas cuando se accede a una asignatura para mostrar sus preguntas relacionadas.
+
+**Decisión:** Aceptado. Build exitoso. Se iteró sobre el patrón de Grados para adaptarlo a Asignaturas con sus características específicas (batería asociada, exámenes). El patrón es ahora consistente entre entidades padre.
+
+---
+
+## [18:14] Crear formulario de Preguntas Contextuales + integración con preguntas
+
+**Prompt:** El usuario pidió: "Hazme ahora el de preguntas contextuales ten en cuenta de meterlo en la carpeta de preguntas ya que será el formulario de preguntas q se importará al de preguntas contextuales y separa las vistas por carpeta GradoView y GradoForm misma carpeta en mayuscula Grados/".
+
+**Resultado:**
+- Creada carpeta `views/Preguntas/` con subcarpetas `PreguntasView/` y `PreguntasForm/`.
+- Movido `PreguntasView.vue` → `Preguntas/PreguntasView/PreguntasView.vue` (lista preguntas normales).
+- Creado `Preguntas/PreguntasView/PreguntasContextualesView.vue` (lista preguntas contextuales con tag visual).
+- Creado `Preguntas/PreguntasForm/PreguntasContextualesFormView.vue` con 2 tabs: (1) Información general — enunciado/tema/dificultad/contexto/recursos/tiempoEstimado, (2) Respuestas — tabla de respuestas con explicación por cada opción + flag de corrección.
+- Rutas añadidas: `/preguntas-contextuales`, `/preguntas-contextuales/nueva`, `/preguntas-contextuales/:id/editar`.
+- Menú del AppLayout actualizado para incluir "Preguntas Contextuales" en la sección Academia.
+- Creados archivos `index.ts` en cada carpeta para exportar componentes limpios.
+
+**Decisión:** Aceptado. Build exitoso. Se iteró para asegurar que el formulario de preguntas contextuales tenga más campos que las preguntas normales (contexto, recursos, tiempo estimado, explicaciones en respuestas). Se estableció que las vistas por entidad deben tener su propia carpeta con View/Form separadas, sentando el precedente para reorganizar el resto.
+
+---
+
+## [21:15] Reorganizar todas las vistas en carpetas por entidades
+
+**Prompt:** El usuario pidió: "Mete todas las vistas en carpetas separadas por entidades" — reorganizar GradosView, GradosFormView, AsignaturasView, AsignaturasFormView, AlumnosView, ProfesoresView, ExamenesView, BateriaView en carpetas con estructura Entidad/VistaView/ y Entidad/VistaForm/ (o solo Entidad/VistaView/ donde no haya formulario separado).
+
+**Resultado:**
+- Creadas carpetas para cada entidad: `Grados/`, `Asignaturas/`, `Alumnos/`, `Profesores/`, `Examenes/`, `Bateria/`, `Preguntas/` (ya existía).
+- Dentro de cada carpeta: subcarpetas `XxxView/` y `XxxForm/` (o solo View donde aplique).
+- Movidos y actualizados imports de `api/axios` (ajustados a `../../../api/axios`).
+- Creados archivos `index.ts` en cada carpeta y subcarpeta para exportar componentes.
+- Router actualizado: todas las importaciones apuntan a las nuevas ubicaciones (ej. `/views/Grados/GradosView/GradosView.vue` en lugar de `/views/GradosView.vue`).
+- Eliminados archivos originales en raíz de `views/`.
+- Menú AppLayout actualizado (ya incluía Preguntas Contextuales del paso anterior).
+- DashboardView.vue se mantiene en la raíz de views (no tiene formulario separado).
+
+**Decisión:** Aceptado. Build exitoso. Esto mejora la organización y escalabilidad: cada entidad tiene su propio espacio, es fácil ubicar componentes View/Form, y facilita agregar nuevas funcionalidades por entidad sin contaminar la raíz. La estructura es consistente con el precedente de Preguntas.
