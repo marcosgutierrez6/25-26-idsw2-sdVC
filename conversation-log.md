@@ -1499,3 +1499,27 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - `findOne()`, `update()`, `remove()` se mantienen sin cambios (sin lógica adicional como hashing o validaciones extra).
 
 **Decisión:** Compilación exitosa (0 errores). Grados es un CRUD puro sin lógica de negocio compleja — ni contraseñas que hashear, ni relaciones anidadas que validar. El patrón queda idéntico a Alumnos y Asignaturas. El include en `findOne` (`asignaturas`, `alumnos`) ya venía de antes y se conserva.
+
+---
+
+## [16:52] Backend de Auth — refactor: solo login + logout, sin register
+
+**Prompt:** El usuario indicó que Auth debe tener solo "iniciar sesión" (login) y "cerrar sesión" (logout). El registro (register) no debe existir — los profesores se crean exclusivamente desde el módulo Profesores con rol ADMIN.
+
+**Resultado:**
+
+*Iteración 1 — análisis del estado actual:*
+- AuthController tenía dos endpoints: `POST /auth/login` y `POST /auth/register`
+- AuthService tenía `login()` y `register()`, este último con bcrypt hash + creación de profesor + generación de JWT
+
+*Iteración 2 — eliminación de register:*
+- Se eliminó `register()` del controlador y del service
+- La creación de profesores ya está cubierta por `ProfesoresController.create()` con guard `@Roles(Rol.ADMIN)`, que también aplica bcrypt antes de persistir
+- Se eliminó la importación no utilizada de `@Body` inline types en el controlador
+
+*Iteración 3 — implementación de logout:*
+- Se añadió `POST /auth/logout` protegido con `@UseGuards(JwtAuthGuard)`
+- El service `logout()` simplemente retorna `{ message: 'Sesión cerrada correctamente' }`
+- **Decisión arquitectónica:** Con JWT stateless, el logout real se maneja del lado del cliente eliminando el token. No se implementa blacklist porque la aplicación no lo requiere — si en el futuro se necesita invalidación forzada, se podría añadir una tabla de tokens revocados o usar Redis. Por ahora, el endpoint existe como buena práctica de API (el frontend lo llama antes de redirigir al login).
+
+**Decisión:** Compilación exitosa. El módulo Auth queda minimalista: solo login (sin guards, cualquiera puede intentar autenticarse) y logout (requiere JWT). El register se elimina porque duplicaba funcionalidad con Profesores y porque la política es que solo un ADMIN puede crear docentes.
