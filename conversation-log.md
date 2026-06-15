@@ -1795,3 +1795,35 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Build verificado sin errores.
 
 **Decisión:** Aceptado. La solución usa Pinia para pasar props entre navegaciones de router sin necesidad de query params. El store se limpia después de guardar/volver para evitar contaminación de estado. El patrón es reutilizable para otros formularios que necesiten parámetros contextuales entre vistas.
+
+---
+
+## [21:25] Análisis del diagrama de contexto vs implementación actual
+
+**Prompt:** El usuario pidió revisar el diagrama de contexto SVG (`diagramaDeContextoAdministradorInstitucional/diagramaContexto.svg`) para entender exactamente cómo debe funcionar la aplicación, compararlo con la implementación actual y señalar qué está bien, qué falta, y qué queda por hacer.
+
+**Resultado:**
+- Analizado diagrama de estados con 4 estados: SESION_CERRADA → SISTEMA_DISPONIBLE → DOCENTES_ABIERTO → DOCENTE_ABIERTO
+- Diagrama muestra el patrón correcto: View (listado) → Form (crear/editar) → View (completarGestion)
+- Identificado que este patrón debe aplicarse consistentemente a todas las entidades (Grados, Asignaturas, Alumnos, Profesores, Preguntas)
+- Hallado que Alumnos y Profesores usan Dialogs inline, rompiendo el patrón de navegación de estados
+
+**Decisión:** Aceptado el análisis. Se identificó que el diagrama define claramente el flujo esperado. La implementación actual sigue el patrón para Grados, Asignaturas y Preguntas, pero Alumnos y Profesores usan dialogs inline que no respetan el patrón de estados. Se decidió refactorizar estas dos entidades.
+
+---
+
+## [21:20] Refactorizar Alumnos y Profesores: separar formularios de dialogs inline
+
+**Prompt:** El usuario pidió refactorizar Alumnos y Profesores para separar los formularios en vistas dedicadas (AlumnosFormView, ProfesoresFormView) en lugar de usar Dialogs inline, alineándose con el diagrama de contexto y el patrón consistente de todas las entidades.
+
+**Resultado:**
+- Creado `Alumnos/AlumnosForm/AlumnosFormView.vue` con formulario dedicado (nombre/apellidos/dni/email/grado)
+- Creado `Profesores/ProfesoresForm/ProfesoresFormView.vue` con formulario dedicado (nombre/apellidos/dni/email/password condicional)
+- AlumnosView actualizada: elimina dialog inline, mantiene tabla solo con botones que navegan a formulario
+- ProfesoresView actualizada: elimina dialog inline, mantiene tabla solo con botones que navegan a formulario
+- Ambas vistas mantienen un diálogo de confirmación solo para eliminar (patrón consistente)
+- Router actualizado con rutas: `/alumnos/nuevo`, `/alumnos/:id/editar`, `/profesores/nuevo`, `/profesores/:id/editar`
+- Creados archivos `index.ts` en AlumnosForm y ProfesoresForm para exportar componentes
+- Build verificado sin errores
+
+**Decisión:** Aceptado. Ahora todas las entidades siguen el mismo patrón: View (listado) → Form (crear/editar) → View. El diagrama de contexto se implementa correctamente, mejorando la consistencia y navegabilidad de la aplicación.
