@@ -1,6 +1,26 @@
--- ============================================================
 -- DATOS DE PRUEBA PARA PRUEBAS DE EXAMEN
--- ============================================================
+
+DELETE FROM `BateriaDePreguntas_Pregunta`;
+DELETE FROM `ExamenPregunta`;
+DELETE FROM `AlumnoExamen`;
+DELETE FROM `AlumnoAsignatura`;
+DELETE FROM `Respuesta`;
+DELETE FROM `Pregunta`;
+DELETE FROM `Examen`;
+DELETE FROM `BateriaDePreguntas`;
+DELETE FROM `Alumno`;
+DELETE FROM `Asignatura`;
+DELETE FROM `Profesor`;
+DELETE FROM `Grado`;
+
+ALTER TABLE `Grado` AUTO_INCREMENT = 1;
+ALTER TABLE `Profesor` AUTO_INCREMENT = 1;
+ALTER TABLE `Asignatura` AUTO_INCREMENT = 1;
+ALTER TABLE `Alumno` AUTO_INCREMENT = 1;
+ALTER TABLE `BateriaDePreguntas` AUTO_INCREMENT = 1;
+ALTER TABLE `Pregunta` AUTO_INCREMENT = 1;
+ALTER TABLE `Respuesta` AUTO_INCREMENT = 1;
+ALTER TABLE `Examen` AUTO_INCREMENT = 1;
 
 -- Grados
 INSERT INTO `Grado` (`titulo`, `codigo`, `createdAt`, `updatedAt`) VALUES
@@ -39,134 +59,86 @@ INSERT INTO `BateriaDePreguntas` (`nombre`, `asignaturaId`, `createdAt`, `update
 ('Batería Python Fundamentos', 2, NOW(), NOW()),
 ('Batería BD SQL Básico', 3, NOW(), NOW());
 
--- Preguntas para Matemáticas
+-- Preguntas
 INSERT INTO `Pregunta` (`enunciado`, `tema`, `dificultad`, `estado`, `createdAt`, `updatedAt`) VALUES
 ('¿Cuál es la derivada de x^2?', 'Cálculo', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('Resuelve la ecuación: 2x + 5 = 15', 'Álgebra', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('¿Cuál es el límite de 1/x cuando x tiende a infinito?', 'Cálculo', 'MEDIA', 'HABILITADA', NOW(), NOW()),
-('Integración por partes: ∫x*e^x dx', 'Cálculo', 'ALTA', 'HABILITADA', NOW(), NOW());
-
--- Preguntas para Python
-INSERT INTO `Pregunta` (`enunciado`, `tema`, `dificultad`, `estado`, `createdAt`, `updatedAt`) VALUES
+('Integración por partes: ∫x*e^x dx', 'Cálculo', 'ALTA', 'HABILITADA', NOW(), NOW()),
 ('¿Cuál es el resultado de print(type([1,2,3]))?', 'Tipos de datos', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('¿Qué hace la función len() en Python?', 'Funciones', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('¿Cuál es la diferencia entre una lista y una tupla?', 'Estructuras de datos', 'MEDIA', 'HABILITADA', NOW(), NOW()),
-('¿Cómo se implementa una clase abstracta en Python?', 'POO', 'ALTA', 'HABILITADA', NOW(), NOW());
-
--- Preguntas para Bases de Datos
-INSERT INTO `Pregunta` (`enunciado`, `tema`, `dificultad`, `estado`, `createdAt`, `updatedAt`) VALUES
+('¿Cómo se implementa una clase abstracta en Python?', 'POO', 'ALTA', 'HABILITADA', NOW(), NOW()),
 ('¿Qué es una clave primaria?', 'Conceptos', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('Escribe una consulta SELECT básica', 'SQL', 'BAJA', 'HABILITADA', NOW(), NOW()),
 ('¿Qué es una clave foránea?', 'Relaciones', 'MEDIA', 'HABILITADA', NOW(), NOW()),
 ('Optimiza esta consulta con un índice', 'Optimización', 'ALTA', 'HABILITADA', NOW(), NOW());
 
+-- Respuestas
+INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
+('2x', 1, 1, NOW(), NOW()),
+('x', 0, 1, NOW(), NOW()),
+('x^2', 0, 1, NOW(), NOW()),
+('2', 0, 1, NOW(), NOW()),
+('x = 5', 1, 2, NOW(), NOW()),
+('x = 10', 0, 2, NOW(), NOW()),
+('x = 3', 0, 2, NOW(), NOW()),
+('x = 7.5', 0, 2, NOW(), NOW()),
+('0', 1, 3, NOW(), NOW()),
+('1', 0, 3, NOW(), NOW()),
+('Infinito', 0, 3, NOW(), NOW()),
+('No existe', 0, 3, NOW(), NOW()),
+('x*e^x - e^x + C', 1, 4, NOW(), NOW()),
+('e^x + C', 0, 4, NOW(), NOW()),
+('x*e^x', 0, 4, NOW(), NOW()),
+('x^2*e^x + C', 0, 4, NOW(), NOW()),
+('<class list>', 1, 5, NOW(), NOW()),
+('<class tuple>', 0, 5, NOW(), NOW()),
+('<class array>', 0, 5, NOW(), NOW()),
+('<class dict>', 0, 5, NOW(), NOW()),
+('Retorna la longitud de un objeto', 1, 6, NOW(), NOW()),
+('Retorna el tipo de datos', 0, 6, NOW(), NOW()),
+('Crea una nueva lista', 0, 6, NOW(), NOW()),
+('Ordena los elementos', 0, 6, NOW(), NOW()),
+('Las tuplas son inmutables, las listas no', 1, 7, NOW(), NOW()),
+('Son exactamente lo mismo', 0, 7, NOW(), NOW()),
+('Las listas usan corchetes, las tuplas no', 0, 7, NOW(), NOW()),
+('Las tuplas tienen más elementos', 0, 7, NOW(), NOW()),
+('Usar ABC y abstractmethod', 1, 8, NOW(), NOW()),
+('Usar interface', 0, 8, NOW(), NOW()),
+('No se pueden crear en Python', 0, 8, NOW(), NOW()),
+('Usar la palabra abstract', 0, 8, NOW(), NOW()),
+('Identifica únicamente cada fila', 1, 9, NOW(), NOW()),
+('Es igual que una clave foránea', 0, 9, NOW(), NOW()),
+('Solo para números', 0, 9, NOW(), NOW()),
+('Puede haber varias en una tabla', 0, 9, NOW(), NOW()),
+('SELECT * FROM tabla', 1, 10, NOW(), NOW()),
+('GET * FROM tabla', 0, 10, NOW(), NOW()),
+('FETCH FROM tabla', 0, 10, NOW(), NOW()),
+('QUERY tabla', 0, 10, NOW(), NOW()),
+('Referencia a la clave primaria de otra tabla', 1, 11, NOW(), NOW()),
+('Una clave duplicada', 0, 11, NOW(), NOW()),
+('Siempre es numérica', 0, 11, NOW(), NOW()),
+('No puede ser nula', 0, 11, NOW(), NOW()),
+('Crear un índice en la columna de WHERE', 1, 12, NOW(), NOW()),
+('Aumentar la RAM', 0, 12, NOW(), NOW()),
+('Cambiar la base de datos', 0, 12, NOW(), NOW()),
+('No se puede optimizar', 0, 12, NOW(), NOW());
+
 -- Asociar preguntas con baterías
 INSERT INTO `BateriaDePreguntas_Pregunta` (`bateriaId`, `preguntaId`) VALUES
--- Batería Matemáticas (preguntas 1-4)
 (1, 1), (1, 2), (1, 3), (1, 4),
--- Batería Python (preguntas 5-8)
 (2, 5), (2, 6), (2, 7), (2, 8),
--- Batería BD (preguntas 9-12)
 (3, 9), (3, 10), (3, 11), (3, 12);
 
--- Respuestas para Matemáticas
--- Pregunta 1: Derivada de x^2
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('2x', TRUE, 1, NOW(), NOW()),
-('x', FALSE, 1, NOW(), NOW()),
-('x^2', FALSE, 1, NOW(), NOW()),
-('2', FALSE, 1, NOW(), NOW());
-
--- Pregunta 2: Ecuación 2x + 5 = 15
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('x = 5', TRUE, 2, NOW(), NOW()),
-('x = 10', FALSE, 2, NOW(), NOW()),
-('x = 3', FALSE, 2, NOW(), NOW()),
-('x = 7.5', FALSE, 2, NOW(), NOW());
-
--- Pregunta 3: Límite
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('0', TRUE, 3, NOW(), NOW()),
-('1', FALSE, 3, NOW(), NOW()),
-('Infinito', FALSE, 3, NOW(), NOW()),
-('No existe', FALSE, 3, NOW(), NOW());
-
--- Pregunta 4: Integración por partes
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('x*e^x - e^x + C', TRUE, 4, NOW(), NOW()),
-('e^x + C', FALSE, 4, NOW(), NOW()),
-('x*e^x', FALSE, 4, NOW(), NOW()),
-('x^2*e^x + C', FALSE, 4, NOW(), NOW());
-
--- Respuestas para Python
--- Pregunta 5: type([1,2,3])
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('<class \'list\'>', TRUE, 5, NOW(), NOW()),
-('<class \'tuple\'>', FALSE, 5, NOW(), NOW()),
-('<class \'array\'>', FALSE, 5, NOW(), NOW()),
-('<class \'dict\'>', FALSE, 5, NOW(), NOW());
-
--- Pregunta 6: función len()
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Retorna la longitud de un objeto', TRUE, 6, NOW(), NOW()),
-('Retorna el tipo de datos', FALSE, 6, NOW(), NOW()),
-('Crea una nueva lista', FALSE, 6, NOW(), NOW()),
-('Ordena los elementos', FALSE, 6, NOW(), NOW());
-
--- Pregunta 7: Diferencia lista y tupla
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Las tuplas son inmutables, las listas no', TRUE, 7, NOW(), NOW()),
-('Son exactamente lo mismo', FALSE, 7, NOW(), NOW()),
-('Las listas usan corchetes, las tuplas no', FALSE, 7, NOW(), NOW()),
-('Las tuplas tienen más elementos', FALSE, 7, NOW(), NOW());
-
--- Pregunta 8: Clase abstracta
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Usar ABC y abstractmethod', TRUE, 8, NOW(), NOW()),
-('Usar interface', FALSE, 8, NOW(), NOW()),
-('No se pueden crear en Python', FALSE, 8, NOW(), NOW()),
-('Usar la palabra abstract', FALSE, 8, NOW(), NOW());
-
--- Respuestas para Bases de Datos
--- Pregunta 9: Clave primaria
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Identifica únicamente cada fila', TRUE, 9, NOW(), NOW()),
-('Es igual que una clave foránea', FALSE, 9, NOW(), NOW()),
-('Solo para números', FALSE, 9, NOW(), NOW()),
-('Puede haber varias en una tabla', FALSE, 9, NOW(), NOW());
-
--- Pregunta 10: SELECT básico
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('SELECT * FROM tabla', TRUE, 10, NOW(), NOW()),
-('GET * FROM tabla', FALSE, 10, NOW(), NOW()),
-('FETCH FROM tabla', FALSE, 10, NOW(), NOW()),
-('QUERY tabla', FALSE, 10, NOW(), NOW());
-
--- Pregunta 11: Clave foránea
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Referencia a la clave primaria de otra tabla', TRUE, 11, NOW(), NOW()),
-('Una clave duplicada', FALSE, 11, NOW(), NOW()),
-('Siempre es numérica', FALSE, 11, NOW(), NOW()),
-('No puede ser nula', FALSE, 11, NOW(), NOW());
-
--- Pregunta 12: Optimización
-INSERT INTO `Respuesta` (`opcion`, `esCorrecta`, `preguntaId`, `createdAt`, `updatedAt`) VALUES
-('Crear un índice en la columna de WHERE', TRUE, 12, NOW(), NOW()),
-('Aumentar la RAM', FALSE, 12, NOW(), NOW()),
-('Cambiar la base de datos', FALSE, 12, NOW(), NOW()),
-('No se puede optimizar', FALSE, 12, NOW(), NOW());
-
--- Exámenes de ejemplo
+-- Exámenes
 INSERT INTO `Examen` (`evaluacion`, `estado`, `asignaturaId`, `createdAt`, `updatedAt`) VALUES
 ('PARCIAL_1', 'GENERADO', 1, NOW(), NOW()),
 ('PARCIAL_1', 'GENERADO', 2, NOW(), NOW()),
 ('PARCIAL_1', 'GENERADO', 3, NOW(), NOW());
 
--- Relacionar preguntas con exámenes (ejemplo: tomar 2 preguntas de cada batería)
+-- Relacionar preguntas con exámenes
 INSERT INTO `ExamenPregunta` (`examenId`, `preguntaId`) VALUES
--- Examen Matemáticas
 (1, 1), (1, 2),
--- Examen Python
 (2, 5), (2, 6),
--- Examen BD
 (3, 9), (3, 10);

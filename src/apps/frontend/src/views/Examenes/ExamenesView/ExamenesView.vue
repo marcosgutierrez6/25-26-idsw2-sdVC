@@ -107,22 +107,22 @@ onMounted(() => { cargar(); cargarAsignaturas(); cargarAlumnos(); });
 async function cargar() {
   loading.value = true;
   try {
-    const { data: res } = await api.get('/examenes', { params: { page: page.value, limit } });
-    items.value = res.data;
-    total.value = res.total;
+    const { data } = await api.get('/examenes', { params: { page: page.value, limit } });
+    items.value = data.data;
+    total.value = data.total;
   } finally {
     loading.value = false;
   }
 }
 
 async function cargarAsignaturas() {
-  const { data: res } = await api.get('/asignaturas', { params: { limit: 100 } });
-  asignaturas.value = res.data;
+  const { data } = await api.get('/asignaturas', { params: { limit: 100 } });
+  asignaturas.value = data.data;
 }
 
 async function cargarAlumnos() {
-  const { data: res } = await api.get('/alumnos', { params: { limit: 100 } });
-  alumnos.value = res.data;
+  const { data } = await api.get('/alumnos', { params: { limit: 100 } });
+  alumnos.value = data.data;
 }
 
 function onPage(event: any) {
@@ -159,7 +159,7 @@ async function verExamen(data: any) {
 }
 
 async function verResultados(data: any) {
-  const { data: res } = await api.get(`/examenes/${data.id}/resultados`);
+  const { data } = await api.get(`/examenes/${data.id}/resultados`);
   resultadosExamen.value = res;
   tabIndex.value = 2;
 }

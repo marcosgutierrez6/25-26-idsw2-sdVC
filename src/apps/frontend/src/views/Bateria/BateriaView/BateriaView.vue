@@ -10,7 +10,7 @@
       <Column field="nombre" header="Nombre" sortable />
       <Column field="asignatura.titulo" header="Asignatura" sortable />
       <Column header="Preguntas">
-        <template #body="{ data }">{{ Array.isArray(data.preguntas) ? data.preguntas.length : 0 }}</template>
+        <template #body="{ data }">{{ data._count?.preguntas || 0 }}</template>
       </Column>
       <Column header="Acciones">
         <template #body="{ data }">
@@ -55,9 +55,9 @@ onMounted(() => cargar());
 async function cargar() {
   loading.value = true;
   try {
-    const { data: res } = await api.get('/bateria', { params: { page: page.value, limit } });
-    items.value = res.data ?? res;
-    total.value = res.total ?? items.value.length;
+    const { data } = await api.get('/bateria', { params: { page: page.value, limit } });
+    items.value = data.data ?? data;
+    total.value = data.total ?? items.value.length;
   } finally {
     loading.value = false;
   }

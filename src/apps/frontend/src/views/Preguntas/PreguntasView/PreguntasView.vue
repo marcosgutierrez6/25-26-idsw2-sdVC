@@ -2,93 +2,68 @@
   <div class="p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Preguntas</h1>
-      <Button label="Nueva Pregunta" icon="pi pi-plus" @click="abrirDialog()" />
+      <Button label="Nueva Pregunta" icon="pi pi-plus" @click="router.push('/preguntas/nuevo')" />
     </div>
 
     <DataTable :value="items" :loading="loading" :paginator="true" :rows="limit" :totalRecords="total" lazy @page="onPage">
-      <Column field="id" header="ID" sortable />
+      <Column field="id" header="ID" sortable style="width: 60px" />
       <Column field="enunciado" header="Enunciado" />
-      <Column field="tema" header="Tema" sortable />
-      <Column field="dificultad" header="Dificultad" sortable />
-      <Column field="estado" header="Estado" />
-      <Column header="Respuestas">
+      <Column field="tema" header="Tema" sortable style="width: 100px" />
+      <Column field="dificultad" header="Dificultad" sortable style="width: 80px" />
+      <Column header="Respuestas" style="width: 80px">
         <template #body="{ data }">
-          <span v-for="r in data.respuestas" :key="r.id" class="respuesta-badge" :class="{ correcta: r.esCorrecta }">{{ r.opcion }}</span>
+          <span class="respuesta-numero">{{ data.respuestas.length }}</span>
         </template>
       </Column>
-      <Column header="Acciones">
+      <Column header="Acciones" style="width: 100px">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text" @click="abrirDialog(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="eliminar(data)" />
+          <Button icon="pi pi-pencil" class="p-button-text" @click="router.push(`/preguntas/${data.id}/editar`)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="confirmarEliminar(data)" />
         </template>
       </Column>
     </DataTable>
 
-    <Dialog v-model:visible="dialogVisible" :header="editando ? 'Editar Pregunta' : 'Nueva Pregunta'" modal style="width: 600px">
-      <form @submit.prevent="guardar">
-        <div class="field"><label>Asignatura</label>
-          <Select v-model="form.asignaturaId" :options="asignaturas" optionLabel="titulo" optionValue="id" class="w-full" />
-        </div>
-        <div class="field"><label>Enunciado</label><Textarea v-model="form.enunciado" class="w-full" rows="3" required /></div>
-        <div class="field"><label>Tema</label><InputText v-model="form.tema" class="w-full" required /></div>
-        <div class="field"><label>Dificultad</label>
-          <Select v-model="form.dificultad" :options="['BAJA', 'MEDIA', 'ALTA']" class="w-full" />
-        </div>
-        <div class="field"><h3>Respuestas</h3>
-          <div v-for="(r, i) in form.respuestas" :key="i" class="respuesta-row">
-            <InputText v-model="r.opcion" placeholder="Opción" class="mr-1" />
-            <Checkbox v-model="r.esCorrecta" :binary="true" />
-            <label class="ml-1">Correcta</label>
-            <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="form.respuestas.splice(i, 1)" v-if="form.respuestas.length > 2" />
-          </div>
-          <Button label="Añadir respuesta" icon="pi pi-plus" class="p-button-sm" @click="form.respuestas.push({ opcion: '', esCorrecta: false })" v-if="form.respuestas.length < 5" />
-        </div>
-        <Button type="submit" :label="editando ? 'Actualizar' : 'Crear'" class="w-full" />
-      </form>
+    <Dialog v-model:visible="deleteDialog" header="Confirmar eliminación" modal>
+      <p class="m-0">¿Estás seguro de que quieres eliminar esta pregunta?</p>
+      <div class="flex gap-2 justify-end mt-4">
+        <Button label="Cancelar" severity="secondary" @click="deleteDialog = false" />
+        <Button label="Eliminar" severity="danger" @click="eliminar" />
+      </div>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../../../api/axios';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import Select from 'primevue/select';
-import Checkbox from 'primevue/checkbox';
+
+const router = useRouter();
 
 const items = ref<any[]>([]);
-const asignaturas = ref<any[]>([]);
 const loading = ref(false);
 const total = ref(0);
 const page = ref(1);
 const limit = 10;
 
-const dialogVisible = ref(false);
-const editando = ref(false);
-const editandoId = ref<number | null>(null);
-const form = ref({ asignaturaId: null, enunciado: '', tema: '', dificultad: 'MEDIA', respuestas: [{ opcion: '', esCorrecta: false }, { opcion: '', esCorrecta: false }] });
+const deleteDialog = ref(false);
+const itemToDelete = ref<any>(null);
 
-onMounted(() => { cargar(); cargarAsignaturas(); });
+onMounted(() => cargar());
 
 async function cargar() {
   loading.value = true;
   try {
-    const { data: res } = await api.get('/preguntas', { params: { page: page.value, limit } });
-    items.value = res.data;
-    total.value = res.total;
+    const { data } = await api.get('/preguntas', { params: { page: page.value, limit } });
+    items.value = data.data;
+    total.value = data.total;
   } finally {
     loading.value = false;
   }
-}
-
-async function cargarAsignaturas() {
-  const { data: res } = await api.get('/asignaturas', { params: { limit: 100 } });
-  asignaturas.value = res.data;
 }
 
 function onPage(event: any) {
@@ -96,57 +71,36 @@ function onPage(event: any) {
   cargar();
 }
 
-function abrirDialog(data?: any) {
-  if (data) {
-    editando.value = true;
-    editandoId.value = data.id;
-    form.value = {
-      asignaturaId: data.bateria?.asignaturaId || null,
-      enunciado: data.enunciado,
-      tema: data.tema,
-      dificultad: data.dificultad,
-      respuestas: data.respuestas.map((r: any) => ({ opcion: r.opcion, esCorrecta: r.esCorrecta })),
-    };
-  } else {
-    editando.value = false;
-    editandoId.value = null;
-    form.value = { asignaturaId: null, enunciado: '', tema: '', dificultad: 'MEDIA', respuestas: [{ opcion: '', esCorrecta: false }, { opcion: '', esCorrecta: false }] };
-  }
-  dialogVisible.value = true;
+function confirmarEliminar(data: any) {
+  itemToDelete.value = data;
+  deleteDialog.value = true;
 }
 
-async function guardar() {
-  if (editando.value) {
-    await api.patch(`/preguntas/${editandoId.value}`, { enunciado: form.value.enunciado, tema: form.value.tema, dificultad: form.value.dificultad });
-  } else {
-    const baterias = await api.get('/bateria');
-    let bateria = baterias.data.find((b: any) => b.asignaturaId === form.value.asignaturaId);
-    if (!bateria) {
-      bateria = (await api.post('/bateria', { asignaturaId: form.value.asignaturaId })).data;
-    }
-    const { data: pregunta } = await api.post('/preguntas', { enunciado: form.value.enunciado, tema: form.value.tema, dificultad: form.value.dificultad, bateriaId: bateria.id });
-    for (const r of form.value.respuestas) {
-      if (r.opcion) await api.post('/respuestas', { opcion: r.opcion, esCorrecta: r.esCorrecta, preguntaId: pregunta.id });
-    }
-  }
-  dialogVisible.value = false;
-  editando.value = false;
-  editandoId.value = null;
-  form.value = { asignaturaId: null, enunciado: '', tema: '', dificultad: 'MEDIA', respuestas: [{ opcion: '', esCorrecta: false }, { opcion: '', esCorrecta: false }] };
-  page.value = 1;
-  cargar();
-}
-
-async function eliminar(data: any) {
-  await api.delete(`/preguntas/${data.id}`);
+async function eliminar() {
+  if (!itemToDelete.value) return;
+  await api.delete(`/preguntas/${itemToDelete.value.id}`);
+  deleteDialog.value = false;
+  itemToDelete.value = null;
   cargar();
 }
 </script>
 
 <style scoped>
-.field { margin-bottom: 1rem; }
-.field label { display: block; margin-bottom: 0.5rem; }
-.respuesta-badge { background: #e0e0e0; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
-.respuesta-badge.correcta { background: #c8e6c9; }
-.respuesta-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.respuesta-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.respuesta-numero.correcta {
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  color: #333;
+}
 </style>

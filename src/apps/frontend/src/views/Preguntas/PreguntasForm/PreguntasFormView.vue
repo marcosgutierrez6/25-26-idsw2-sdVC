@@ -168,8 +168,8 @@ onMounted(async () => {
 });
 
 async function cargarAsignaturas() {
-  const { data: res } = await api.get('/asignaturas', { params: { limit: 100 } });
-  asignaturas.value = res.data;
+  const { data } = await api.get('/asignaturas', { params: { limit: 100 } });
+  asignaturas.value = data.data;
 }
 
 async function guardar() {

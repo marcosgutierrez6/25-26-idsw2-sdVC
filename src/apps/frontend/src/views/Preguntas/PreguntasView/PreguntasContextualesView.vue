@@ -102,15 +102,15 @@ onMounted(() => cargar());
 async function cargar() {
   loading.value = true;
   try {
-    const { data: res } = await api.get('/preguntas', {
+    const { data } = await api.get('/preguntas', {
       params: {
         page: page.value,
         limit,
         esContextual: true,
       },
     });
-    items.value = res.data;
-    total.value = res.total;
+    items.value = data.data;
+    total.value = data.total;
   } finally {
     loading.value = false;
   }

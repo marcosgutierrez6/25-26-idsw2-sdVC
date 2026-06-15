@@ -97,9 +97,9 @@ async function cargarAsignaturas() {
   if (!gradoId.value) return;
   loadingAsig.value = true;
   try {
-    const { data: res } = await api.get('/asignaturas', { params: { page: pageAsig.value, limit: 10, gradoId: gradoId.value } });
-    asignaturas.value = res.data;
-    totalAsig.value = res.total;
+    const { data } = await api.get('/asignaturas', { params: { page: pageAsig.value, limit: 10, gradoId: gradoId.value } });
+    asignaturas.value = data.data;
+    totalAsig.value = data.total;
   } finally {
     loadingAsig.value = false;
   }
@@ -114,9 +114,9 @@ async function cargarAlumnos() {
   if (!gradoId.value) return;
   loadingAlu.value = true;
   try {
-    const { data: res } = await api.get('/alumnos', { params: { page: pageAlu.value, limit: 10, gradoId: gradoId.value } });
-    alumnos.value = res.data;
-    totalAlu.value = res.total;
+    const { data } = await api.get('/alumnos', { params: { page: pageAlu.value, limit: 10, gradoId: gradoId.value } });
+    alumnos.value = data.data;
+    totalAlu.value = data.total;
   } finally {
     loadingAlu.value = false;
   }

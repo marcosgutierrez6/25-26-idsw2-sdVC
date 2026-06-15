@@ -74,8 +74,8 @@ onMounted(async () => {
 });
 
 async function cargarGrados() {
-  const { data: res } = await api.get('/grados', { params: { limit: 100 } });
-  grados.value = res.data;
+  const { data } = await api.get('/grados', { params: { limit: 100 } });
+  grados.value = data.data;
 }
 
 async function guardar() {

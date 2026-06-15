@@ -9,7 +9,7 @@
 
     <form @submit.prevent="guardar" class="space-y-6">
       <!-- Datos básicos -->
-      <div class="max-w-md space-y-4">
+      <div class="grid grid-cols-2 gap-6">
         <div class="field">
           <label for="nombre">Nombre de la Batería</label>
           <InputText id="nombre" v-model="form.nombre" class="w-full" required />
@@ -131,32 +131,27 @@ onMounted(async () => {
       nombre: data.nombre,
       asignaturaId: data.asignaturaId,
     };
-    preguntasSeleccionadas.value = data.preguntas || [];
+    preguntasSeleccionadas.value = data.preguntas?.map((p: any) => p.preguntaId) || [];
     await cargarPreguntas();
   }
 });
 
 async function cargarAsignaturas() {
-  const { data: res } = await api.get('/asignaturas', { params: { limit: 100 } });
-  asignaturas.value = res.data;
+  const { data } = await api.get('/asignaturas', { params: { limit: 100 } });
+  asignaturas.value = data.data;
 }
 
 async function cargarPreguntas() {
   if (!form.value.asignaturaId) return;
   loadingPreguntas.value = true;
   try {
-    const baterias = await api.get('/bateria');
-    const bateriaData = (Array.isArray(baterias.data) ? baterias.data : baterias.data.data || [])
-      .find((b: any) => b.asignaturaId === form.value.asignaturaId);
-
-    if (bateriaData) {
-      const { data: res } = await api.get('/preguntas', {
-        params: { page: 1, limit: 1000, bateriaId: bateriaData.id }
-      });
-      preguntas.value = res.data;
-    } else {
-      preguntas.value = [];
-    }
+    const { data } = await api.get('/preguntas', {
+      params: { page: 1, limit: 1000 }
+    });
+    preguntas.value = data.data || [];
+  } catch (error) {
+    console.error('Error cargando preguntas:', error);
+    preguntas.value = [];
   } finally {
     loadingPreguntas.value = false;
   }

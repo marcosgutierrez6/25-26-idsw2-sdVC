@@ -35,7 +35,7 @@ export class AsignaturasService {
   async findOne(id: number) {
     const asignatura = await this.prisma.asignatura.findUnique({
       where: { id },
-      include: { grado: true, profesor: true, examenes: true, bateria: true },
+      include: { grado: true, profesor: true, examenes: true, baterias: true },
     });
     if (!asignatura) throw new NotFoundException('Asignatura no encontrada');
     return asignatura;

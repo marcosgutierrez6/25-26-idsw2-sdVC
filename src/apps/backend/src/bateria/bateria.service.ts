@@ -34,7 +34,7 @@ export class BateriaService {
       where: { id },
       include: {
         asignatura: true,
-        preguntas: { include: { respuestas: true } },
+        preguntas: { include: { pregunta: { include: { respuestas: true } } } },
       },
     });
     if (!bateria) throw new NotFoundException('Batería no encontrada');
@@ -42,10 +42,10 @@ export class BateriaService {
   }
 
   async findByAsignatura(asignaturaId: number) {
-    const bateria = await this.prisma.bateriaDePreguntas.findUnique({
+    const bateria = await this.prisma.bateriaDePreguntas.findFirst({
       where: { asignaturaId },
       include: {
-        preguntas: { include: { respuestas: true } },
+        preguntas: { include: { pregunta: { include: { respuestas: true } } } },
       },
     });
     if (!bateria) throw new NotFoundException('Batería no encontrada para esta asignatura');

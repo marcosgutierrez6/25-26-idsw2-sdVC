@@ -57,9 +57,9 @@ onMounted(() => cargar());
 async function cargar() {
   loading.value = true;
   try {
-    const { data: res } = await api.get('/asignaturas', { params: { page: page.value, limit } });
-    items.value = res.data;
-    total.value = res.total;
+    const { data } = await api.get('/asignaturas', { params: { page: page.value, limit } });
+    items.value = data.data;
+    total.value = data.total;
   } finally {
     loading.value = false;
   }

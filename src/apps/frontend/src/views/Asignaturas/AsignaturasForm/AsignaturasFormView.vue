@@ -98,8 +98,8 @@ const tabs = computed(() => [
 ]);
 
 onMounted(async () => {
-  const { data: res } = await api.get('/grados', { params: { limit: 100 } });
-  grados.value = res.data;
+  const { data } = await api.get('/grados', { params: { limit: 100 } });
+  grados.value = data.data;
 
   if (asignaturaId.value) {
     const { data } = await api.get(`/asignaturas/${asignaturaId.value}`);
@@ -117,9 +117,9 @@ async function cargarPreguntas() {
     const { data: baterias } = await api.get('/bateria');
     const bateria = (Array.isArray(baterias) ? baterias : baterias.data || []).find((b: any) => b.asignaturaId === asignaturaId.value);
     if (bateria) {
-      const { data: res } = await api.get('/preguntas', { params: { page: pagePre.value, limit: 10, bateriaId: bateria.id } });
-      preguntas.value = res.data;
-      totalPre.value = res.total;
+      const { data } = await api.get('/preguntas', { params: { page: pagePre.value, limit: 10, bateriaId: bateria.id } });
+      preguntas.value = data.data;
+      totalPre.value = data.total;
     }
   } finally {
     loadingPre.value = false;
@@ -135,9 +135,9 @@ async function cargarExamenes() {
   if (!asignaturaId.value) return;
   loadingEx.value = true;
   try {
-    const { data: res } = await api.get('/examenes', { params: { page: pageEx.value, limit: 10, asignaturaId: asignaturaId.value } });
-    examenes.value = res.data;
-    totalEx.value = res.total;
+    const { data } = await api.get('/examenes', { params: { page: pageEx.value, limit: 10, asignaturaId: asignaturaId.value } });
+    examenes.value = data.data;
+    totalEx.value = data.total;
   } finally {
     loadingEx.value = false;
   }

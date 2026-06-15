@@ -17,18 +17,23 @@ export class PreguntasService {
     const limit = filters?.limit ?? 10;
     const skip = (page - 1) * limit;
 
-    const where = {
+    const where: any = {
       ...(filters?.tema && { tema: filters.tema }),
       ...(filters?.dificultad && { dificultad: filters.dificultad as any }),
-      ...(filters?.bateriaId && { bateriaId: +filters.bateriaId }),
     };
+
+    if (filters?.bateriaId) {
+      where.baterias = {
+        some: { bateriaId: +filters.bateriaId },
+      };
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.pregunta.findMany({
         where,
         skip,
         take: limit,
-        include: { respuestas: true, bateria: { include: { asignatura: true } } },
+        include: { respuestas: true, baterias: { include: { bateria: { include: { asignatura: true } } } } },
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.pregunta.count({ where }),
@@ -40,7 +45,7 @@ export class PreguntasService {
   async findOne(id: number) {
     const pregunta = await this.prisma.pregunta.findUnique({
       where: { id },
-      include: { respuestas: true, bateria: { include: { asignatura: true } } },
+      include: { respuestas: true, baterias: { include: { bateria: { include: { asignatura: true } } } } },
     });
     if (!pregunta) throw new NotFoundException('Pregunta no encontrada');
     return pregunta;
