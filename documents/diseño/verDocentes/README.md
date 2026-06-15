@@ -25,47 +25,6 @@ Visualizar el listado de docentes (profesores) excluyendo contraseñas. Solo acc
 
 </div>
 
-## Código PlantUML
-
-```plantuml
-@startuml
-title Diagrama de Secuencia - Ver Docentes (NestJS + Vue 3)
-
-actor "Usuario (Admin)" as User
-participant "ProfesoresView" as FE
-participant "ProfesoresController" as Controller
-participant "ProfesoresService" as Service
-participant "PrismaService" as Prisma
-participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
-
-User -> FE: Navega a "Docentes"
-activate FE
-
-FE -> Controller: GET /api/profesores
-activate Controller
-
-Controller -> Service: findAll()
-activate Service
-
-Service -> Prisma: profesor.findMany({\n  omit: { password: true }\n})
-activate Prisma
-Prisma -> DB: SELECT id, nombre, email,\nrol FROM Profesor
-activate DB
-DB --> Prisma: profesores (sin password)
-deactivate DB
-Prisma --> Service: array de profesores
-deactivate Prisma
-
-Service --> Controller: profesores[]
-deactivate Service
-Controller --> FE: 200 OK\n{ profesores: [...] }
-deactivate Controller
-
-FE --> User: Muestra tabla con\ndocentes
-deactivate FE
-
-@enduml
-```
 
 ## Participantes
 

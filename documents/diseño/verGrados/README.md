@@ -25,47 +25,6 @@ Detallar la interacción para visualizar el listado de grados universitarios. Ca
 
 </div>
 
-## Código PlantUML
-
-```plantuml
-@startuml
-title Diagrama de Secuencia - Ver Grados (NestJS + Vue 3)
-
-actor "Usuario (Docente)" as User
-participant "GradosView" as FE
-participant "GradosController" as Controller
-participant "GradosService" as Service
-participant "PrismaService" as Prisma
-participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
-
-User -> FE: Navega a "Grados"
-activate FE
-
-FE -> Controller: GET /api/grados
-activate Controller
-
-Controller -> Service: findAll()
-activate Service
-
-Service -> Prisma: grado.findMany()
-activate Prisma
-Prisma -> DB: SELECT * FROM Grado
-activate DB
-DB --> Prisma: grados
-deactivate DB
-Prisma --> Service: array de grados
-deactivate Prisma
-
-Service --> Controller: grados[]
-deactivate Service
-Controller --> FE: 200 OK\n{ grados: [...] }
-deactivate Controller
-
-FE --> User: Muestra tabla con\ngrados
-deactivate FE
-
-@enduml
-```
 
 ## Participantes
 

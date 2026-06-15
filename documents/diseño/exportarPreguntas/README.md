@@ -25,55 +25,6 @@ Detallar la interacción entre los componentes del sistema para exportar todas l
 
 </div>
 
-## Código PlantUML
-
-```plantuml
-@startuml
-title Diagrama de Secuencia - Exportar Preguntas (NestJS + Vue 3)
-
-actor "Usuario (Docente/Admin)" as User
-participant "ExportarConfigView" as FE
-participant "PreguntasController" as Controller
-participant "PreguntasService" as Service
-participant "PrismaService" as Prisma
-participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
-
-User -> FE: Selecciona "Exportar\nPreguntas" en el menú
-activate FE
-
-FE -> Controller: GET /api/preguntas\n(query: include=respuestas,bateria)
-activate Controller
-
-Controller -> Service: findAll(options?)
-activate Service
-
-Service -> Prisma: pregunta.findMany({\n  include: {\n    respuestas: true,\n    bateria: { include: { asignatura: true } }\n  }\n})
-activate Prisma
-Prisma -> DB: SELECT Pregunta.*, Respuesta.*, Bateria.*, Asignatura.*\nFROM Pregunta LEFT JOIN Respuesta LEFT JOIN Bateria LEFT JOIN Asignatura
-activate DB
-DB --> Prisma: preguntas con respuestas,\nbatería y asignatura
-deactivate DB
-Prisma --> Service: array de preguntas
-deactivate Prisma
-
-Service --> Controller: { id, enunciado, tema, dificultad, respuestas: [...], bateria: {...} }[]
-deactivate Service
-
-Controller --> FE: 200 OK\n{ preguntas: [...] }
-deactivate Controller
-
-alt Error de base de datos
-  Controller --> FE: 500 Internal Server Error
-  FE --> User: Muestra mensaje de error
-else Exportación exitosa
-  FE -> FE: Compila datos en\nformato JSON
-  FE --> User: Inicia descarga\ndel archivo exportado
-end
-
-deactivate FE
-
-@enduml
-```
 
 ## Participantes
 

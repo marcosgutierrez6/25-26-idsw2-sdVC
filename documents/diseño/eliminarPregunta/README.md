@@ -25,65 +25,6 @@ Detallar la interacción para eliminar una pregunta con confirmación previa, ve
 
 </div>
 
-## Código PlantUML
-
-```plantuml
-@startuml
-title Diagrama de Secuencia - Eliminar Pregunta (NestJS + Vue 3)
-
-actor "Usuario (Docente)" as User
-participant "PreguntasView" as FE
-participant "PreguntasController" as Controller
-participant "PreguntasService" as Service
-participant "PrismaService" as Prisma
-participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
-
-User -> FE: Hace clic en "Eliminar"\nsobre una pregunta
-activate FE
-
-FE --> User: Muestra diálogo de\nconfirmación
-
-User -> FE: Confirma eliminación
-FE -> Controller: DELETE /api/preguntas/:id
-activate Controller
-
-Controller -> Service: remove(id)
-activate Service
-
-Service -> Prisma: pregunta.findUnique({ where: { id } })
-activate Prisma
-Prisma -> DB: SELECT Pregunta WHERE id=?
-activate DB
-DB --> Prisma: pregunta | null
-deactivate DB
-Prisma --> Service: pregunta
-deactivate Prisma
-
-alt Pregunta no encontrada
-  Service --> Controller: throw NotFoundException
-  Controller --> FE: 404 Not Found
-  FE --> User: Muestra "Pregunta\nno encontrada"
-else Pregunta existe
-  Service -> Prisma: pregunta.delete({ where: { id } })
-  activate Prisma
-  Prisma -> DB: DELETE FROM Pregunta WHERE id=?
-  activate DB
-  DB --> Prisma: pregunta eliminada
-  deactivate DB
-  Prisma --> Service: pregunta eliminada
-  deactivate Prisma
-
-  Service --> Controller: pregunta eliminada
-  deactivate Service
-  Controller --> FE: 200 OK\n{ pregunta }
-  deactivate Controller
-  FE --> User: Muestra éxito y\nrecarga listado
-end
-
-deactivate FE
-
-@enduml
-```
 
 ## Participantes
 
