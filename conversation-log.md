@@ -1827,3 +1827,26 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Build verificado sin errores
 
 **Decisión:** Aceptado. Ahora todas las entidades siguen el mismo patrón: View (listado) → Form (crear/editar) → View. El diagrama de contexto se implementa correctamente, mejorando la consistencia y navegabilidad de la aplicación.
+
+---
+
+## [21:34] Reorganizar menú con secciones colapsables y orden prioritario
+
+**Prompt:** El usuario pidió mejorar y reorganizar el menú principal de AppLayout.vue separándolo correctamente en:
+- Elementos fijos superiores: Inicio (Dashboard) y Exámenes (más usados)
+- Secciones colapsables: Academia (arriba) y Configuración (abajo)
+- Academia: Alumnos, Profesores, Preguntas, Batería
+- Configuración: Grados, Asignaturas, Exportar, Importar
+- El usuario señaló que el colapso no funcionaba actualmente
+
+**Resultado:**
+- Reorganizado menú en AppLayout.vue con estructura clara de prioridades
+- Implementación de colapso usando estado reactivo `openSections` con `ref` y función `toggleSection()`
+- Sustituyó `v-styleclass` (que no funcionaba) por `v-show` con lógica reactiva
+- Iconos dinámicos que rotan: `pi-angle-down` ↔ `pi-angle-up` según estado
+- Secciones abiertas por defecto: `[true, true]` (Academia y Configuración)
+- Menú ahora tiene jerarquía clara: items fijos (Inicio, Exámenes) → secciones colapsables
+- Order: Academia primero, Configuración después (según pedido del usuario)
+- Build verificado sin errores
+
+**Decisión:** Aceptado. El menú ahora es funcional y colapsable. La estructura mejora significativamente la navegabilidad priorizando Inicio y Exámenes (lo más usado) y agrupando las demás funciones por contexto. Los usuarios pueden desplegar/contraer secciones según necesidad.
