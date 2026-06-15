@@ -2,13 +2,15 @@
 title Diagrama de Secuencia - Editar Respuesta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasForm\n(Modal)" as ParentForm
+participant "PreguntasForm\n(Formulario con tabs)" as ParentForm
 participant "RespuestasView\n(Listado)" as List
-participant "RespuestasForm\n(Modal)" as Form
+participant "RespuestasForm\n(Formulario)" as Form
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over ParentForm : Modo edición: [Datos] [Respuestas] (activo)\ntodos los tabs activos
 
 User -> ParentForm: Hace clic en "Editar"\nsobre una respuesta
 activate ParentForm

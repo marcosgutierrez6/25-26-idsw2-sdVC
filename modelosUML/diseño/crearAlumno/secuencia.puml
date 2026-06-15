@@ -3,18 +3,26 @@ title Diagrama de Secuencia - Crear Alumno (NestJS + Vue 3)
 
 actor "Usuario\n(Docente)" as User
 participant "AlumnosView\n(Listado)" as List
-participant "AlumnosForm\n(Modal)" as Form
+participant "AlumnosForm\n(Formulario con tabs)" as Form
 participant "AlumnosController" as Controller
 participant "AlumnosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form
+  <b>Modo creación:</b>
+  [Datos Personales] (activo)
+  [Asignaturas] (desactivado)
+  [Exámenes] (desactivado)
+end note
+
 User -> List: Hace clic en "Nuevo\nAlumno"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
-Form --> User: Muestra formulario\ncon campos: nombre,\napellidos, dni, email, grado
+Form --> User: Muestra formulario\ncon campos: nombre,\napellidos, dni, email, grado\nSolo tab [Datos Personales] activo
 
 User -> Form: Rellena campos\ny pulsa "Crear Alumno"
 Form -> Form: Validación visual\nde campos obligatorios
@@ -27,8 +35,7 @@ activate Service
 
 Service -> Prisma: alumno.create({ data })
 activate Prisma
-Prisma -> DB: INSERT INTO Alumno
-(nombre, apellidos, dni, email, gradoId)
+Prisma -> DB: INSERT INTO Alumno\n(nombre, apellidos, dni, email, gradoId)
 activate DB
 
 alt Error FK (gradoId no existe)
@@ -60,11 +67,13 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ alumno }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra éxito y\nrecarga listado
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form
+    <b>Modo edición:</b>
+    [Datos Personales] [Asignaturas]
+    [Exámenes] (todos activos)
+  end note
+  Form --> User: Muestra alumno creado\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml

@@ -3,16 +3,19 @@ title Diagrama de Secuencia - Crear Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin\nInstitucional)" as User
 participant "DocentesView\n(Listado)" as List
-participant "DocentesForm\n(Modal)" as Form
+participant "DocentesForm\n(Formulario con tabs)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo creación: [Datos del Docente] (activo)\n[Asignaturas] (desactivado)
+
 User -> List: Hace clic en "Nuevo\nDocente"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
 Form --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, password
 note right
@@ -59,11 +62,9 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ profesor }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra docente\ncreado y navega a\neditarDocente()
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form : Modo edición: [Datos del Docente] [Asignaturas]\n(todos activos)
+  Form --> User: Muestra docente creado\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml

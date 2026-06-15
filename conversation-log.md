@@ -1319,3 +1319,15 @@ Patrón general:
 ```
 User → View (clic en botón) → Form (modal) → Controller → Service → Prisma → BD
 ```
+
+## [10:24] Revisar y regenerar SVGs de diseño: separar View de Form con tabs
+
+**Prompt:** El usuario pidió revisar todos los SVGs porque estaban mal. Explicó que los diagramas de diseño no distinguen entre View (listado) y Form (editar/crear). En los formularios debe haber tabs: desactivados en modo creación, activos en modo edición. Señaló específicamente crearAlumno como ejemplo de que "siempre va al view no va al form". Como referencia proporcionó los diagramas de contexto (`diagramaDeContextoDocente.puml` y `diagramaDeContextoAdministradorInstitucional.puml`).
+
+**Resultado:** Se corrigieron 12 archivos PUML de diseño (`modelosUML/diseño/`) y se regeneraron los 41 SVGs correspondientes en `images/diseño/`:
+- 6 `crear*`: el flujo post-creación ahora permanece en el Form en modo edición con tabs activos, en lugar de volver al Listado. Se añadió `note over Form` indicando tabs desactivados en creación.
+- 6 `editar*`: renombrado participante a "Formulario con tabs", añadido note con tabs activos. Navegación cambiada de modal a página (desactivando List).
+- Tabs deducidos del contexto: Alumno → [Datos Personales][Asignaturas][Exámenes]; Asignatura → [Datos][Preguntas Contextuales][Exámenes]; Docente → [Datos del Docente][Asignaturas]; Grado → [Datos del Grado][Alumnos][Asignaturas]; Pregunta → [Datos][Respuestas].
+- Se utilizó PlantUML JAR para regenerar SVGs.
+
+**Decisión:** Aceptado el alcance definido por el usuario: solo corregir diagramas de diseño/secuencia. El usuario eligió deducir los tabs del diagrama de contexto en lugar de definirlos explícitamente. Los demás diagramas (detalladoCasosDeUso, prototipadoCasosDeUso) no se modificaron por decisión del usuario.

@@ -2,18 +2,20 @@
 title Diagrama de Secuencia - Crear Respuesta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasForm\n(Modal)" as ParentForm
+participant "PreguntasForm\n(Formulario con tabs)" as ParentForm
 participant "RespuestasView\n(Listado)" as List
-participant "RespuestasForm\n(Modal)" as Form
+participant "RespuestasForm\n(Formulario)" as Form
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> ParentForm: Abre gestión de\nrespuestas
+note over ParentForm : Modo edición: [Datos] [Respuestas] (activo)\ntodos los tabs activos
+
+User -> ParentForm: Cambia al tab\n[Respuestas]
 activate ParentForm
 
-ParentForm -> List: Navega a vista\nde respuestas
+ParentForm -> List: Carga listado\nde respuestas
 activate List
 
 List -> Form: Abre modal de\nnueva respuesta

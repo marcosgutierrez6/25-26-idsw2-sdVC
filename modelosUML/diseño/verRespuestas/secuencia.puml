@@ -2,14 +2,16 @@
 title Diagrama de Secuencia - Ver Respuestas (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasForm\n(Modal)" as ParentForm
+participant "PreguntasForm\n(Formulario con tabs)" as ParentForm
 participant "RespuestasView\n(Listado)" as List
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> ParentForm: Navega a detalle de\nuna pregunta
+note over ParentForm : Modo edición: [Datos] [Respuestas] (activo)\ntodos los tabs activos
+
+User -> ParentForm: Cambia al tab\n[Respuestas]
 activate ParentForm
 
 ParentForm -> List: Muestra listado\nde respuestas

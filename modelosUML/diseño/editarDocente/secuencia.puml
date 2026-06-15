@@ -3,18 +3,21 @@ title Diagrama de Secuencia - Editar Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin)" as User
 participant "DocentesView\n(Listado)" as List
-participant "DocentesForm\n(Modal)" as Form
+participant "DocentesForm\n(Formulario con tabs)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over Form : Modo edición: [Datos del Docente] [Asignaturas]\n(todos activos)
 
 == Carga de datos ==
 
 User -> List: Hace clic en "Editar"\ndesde el listado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/profesores/:id
@@ -122,6 +125,5 @@ else Eliminar docente
 end
 
 deactivate Form
-deactivate List
 
 @enduml

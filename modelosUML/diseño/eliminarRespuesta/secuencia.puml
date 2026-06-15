@@ -2,7 +2,7 @@
 title Diagrama de Secuencia - Eliminar Respuesta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
-participant "PreguntasForm\n(Modal)" as ParentForm
+participant "PreguntasForm\n(Formulario con tabs)" as ParentForm
 participant "RespuestasView\n(Listado)" as List
 participant "RespuestasController" as Controller
 participant "RespuestasService" as Service
