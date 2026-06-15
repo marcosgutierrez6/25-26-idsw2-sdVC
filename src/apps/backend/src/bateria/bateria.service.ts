@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateBateriaDto } from './dto/create-bateria.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 
 @Injectable()
 export class BateriaService {
@@ -10,10 +11,22 @@ export class BateriaService {
     return this.prisma.bateriaDePreguntas.create({ data: createBateriaDto });
   }
 
-  findAll() {
-    return this.prisma.bateriaDePreguntas.findMany({
-      include: { asignatura: true, _count: { select: { preguntas: true } } },
-    });
+  async findAll(pagination?: PaginationDto) {
+    const page = pagination?.page ?? 1;
+    const limit = pagination?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.bateriaDePreguntas.findMany({
+        skip,
+        take: limit,
+        include: { asignatura: true, _count: { select: { preguntas: true } } },
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.bateriaDePreguntas.count(),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: number) {

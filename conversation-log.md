@@ -1571,3 +1571,25 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - No se actualiza estado de sistema (no existe en la BD)
 
 **Decisión:** Compilación exitosa. Queda pendiente si en el futuro se añade una entidad "SesionDeGeneracion" o similar para trackear generaciones. Por ahora, `deleteMany` con filtro por estado es suficiente y sigue el principio de mínima sorpresa.
+
+---
+
+## [17:10] Backend de Bateria — refactor a patrón limpio
+
+**Prompt:** Refactorizar Bateria al mismo patrón.
+
+**Resultado:**
+
+*Controller:*
+- `findAll` → `index` con `@Query() pagination: PaginationDto`
+- `findOne` → `show`, `remove` → `delete`
+- Se conserva `findByAsignatura` como endpoint específico (`GET /bateria/asignatura/:asignaturaId`)
+- No tiene `update` ni `Patch` — el original tampoco lo tenía, y no hay DTO de update. Se deja sin actualización.
+
+*Service:*
+- `findAll()`: paginación con `skip`/`take`, `Promise.all` paralelo, include de `asignatura` + `_count.preguntas`, orden por `id` ascendente.
+- `findByAsignatura()` se conserva sin paginación (devuelve una sola batería por asignatura al ser `findUnique` por `asignaturaId`)
+
+**Decisión:** Compilación exitosa. Es el módulo más simple junto con Grados y Alumnos. Sin lógica de negocio extra, solo CRUD (sin update).
+
+---
