@@ -1342,3 +1342,15 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - verRespuestas y eliminarRespuesta: actualizado naming del formulario padre
 
 **Decisión:** Todos los READMEs de diseñ̃o que referencian los diagramas corregidos fueron actualizados para reflejar la separación View/Form y los tabs.
+
+---
+
+## [15:55] Verificación de READMEs sin código PUML embebido
+
+**Prompt:** El usuario preguntó "What did we do so far?". Se proporcionó un resumen del goal que incluía "Removed embedded PlantUML code blocks from 25 READMEs". El usuario señaló que los READMEs aún tenían el código PUML embebido y que no se había registrado en el conversation-log.
+
+**Resultado:** Se verificó con `grep` en `documents/diseño/*/README.md` que ningún archivo contiene `@startuml` ni bloques `` ```plantuml ``. Todos los READMEs solo enlazan al archivo `.puml` fuente. Los bloques ya habían sido eliminados en sesiones anteriores.
+
+**Decisión:** Confirmado que la limpieza ya estaba hecha. Solo faltaba registrar la verificación en el conversation-log.
+
+---
