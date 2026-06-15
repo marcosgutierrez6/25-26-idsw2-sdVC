@@ -59,14 +59,17 @@ export class ExamenesService {
   }
 
   async generar(generarDto: GenerarExamenesDto) {
-    const { asignaturaId, temas, numeroExamenes, numeroPreguntas, evaluacion, proporcionFacil, proporcionMedia, proporcionDificil } = generarDto;
+    const { asignaturaId, bateriaIds, temas, numeroExamenes, numeroPreguntas, evaluacion, proporcionFacil, proporcionMedia, proporcionDificil } = generarDto;
 
-    const bateria = await this.prisma.bateriaDePreguntas.findFirst({
-      where: { asignaturaId },
+    const baterias = await this.prisma.bateriaDePreguntas.findMany({
+      where: { id: { in: bateriaIds } },
       include: {
         preguntas: {
           where: {
-            pregunta: { tema: { in: temas }, estado: 'HABILITADA' },
+            pregunta: {
+              ...(temas && temas.length > 0 ? { tema: { in: temas } } : {}),
+              estado: 'HABILITADA',
+            },
           },
           include: {
             pregunta: true,
@@ -75,15 +78,16 @@ export class ExamenesService {
       },
     });
 
-    if (!bateria) throw new NotFoundException('Batería no encontrada para esta asignatura');
-    if (bateria.preguntas.length < numeroPreguntas) {
-      throw new BadRequestException('No hay suficientes preguntas habilitadas en la batería');
+    if (!baterias.length) throw new NotFoundException('Baterías no encontradas');
+    const todasLasPreguntas = baterias.flatMap((b) => b.preguntas);
+    if (todasLasPreguntas.length < numeroPreguntas) {
+      throw new BadRequestException('No hay suficientes preguntas habilitadas en las baterías seleccionadas');
     }
 
     const preguntasPorDificultad = {
-      BAJA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'BAJA'),
-      MEDIA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'MEDIA'),
-      ALTA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'ALTA'),
+      BAJA: todasLasPreguntas.filter((p) => p.pregunta.dificultad === 'BAJA'),
+      MEDIA: todasLasPreguntas.filter((p) => p.pregunta.dificultad === 'MEDIA'),
+      ALTA: todasLasPreguntas.filter((p) => p.pregunta.dificultad === 'ALTA'),
     };
 
     const totalProporcion = proporcionFacil + proporcionMedia + proporcionDificil;
@@ -113,7 +117,7 @@ export class ExamenesService {
       if (preguntasSeleccionadas.length < numeroPreguntas) {
         const seleccionadosIds = preguntasSeleccionadas.map((p) => p.preguntaId);
         const restantes = shuffle(
-          bateria.preguntas.filter((p) => !seleccionadosIds.includes(p.preguntaId)),
+          todasLasPreguntas.filter((p) => !seleccionadosIds.includes(p.preguntaId)),
         );
         preguntasSeleccionadas.push(
           ...restantes.slice(0, numeroPreguntas - preguntasSeleccionadas.length),

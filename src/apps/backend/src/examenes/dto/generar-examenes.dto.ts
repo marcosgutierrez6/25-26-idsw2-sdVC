@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsNotEmpty, IsArray, IsEnum } from 'class-validator';
+import { IsInt, IsString, IsNotEmpty, IsArray, IsEnum, IsOptional } from 'class-validator';
 import { Evaluacion } from '@prisma/client';
 
 export class GenerarExamenesDto {
@@ -6,8 +6,13 @@ export class GenerarExamenesDto {
   asignaturaId: number;
 
   @IsArray()
+  @IsInt({ each: true })
+  bateriaIds: number[];
+
+  @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  temas: string[];
+  temas?: string[];
 
   @IsInt()
   numeroExamenes: number;

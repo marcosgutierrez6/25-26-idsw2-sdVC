@@ -33,8 +33,9 @@
           <template #title>Generar Exámenes</template>
           <template #content>
             <form @submit.prevent="generarExamenes">
-              <div class="field"><label>Asignatura</label><Select v-model="genForm.asignaturaId" :options="asignaturas" optionLabel="titulo" optionValue="id" class="w-full" required /></div>
-              <div class="field"><label>Temas</label><Select v-model="genForm.temas" :options="temas" multiple class="w-full" required /></div>
+              <div class="field"><label>Asignatura</label><Select v-model="genForm.asignaturaId" :options="asignaturas" optionLabel="titulo" optionValue="id" class="w-full" required @change="cargarBaterias" placeholder="Seleccionar asignatura" /></div>
+              <div class="field"><label>Batería de Preguntas</label><Select v-model="bateriaSeleccionada" :options="baterias" optionLabel="nombre" optionValue="id" class="w-full" :disabled="!genForm.asignaturaId" placeholder="Seleccionar batería" /></div>
+              <div class="field"><label>Temas (separados por coma, opcional)</label><InputText v-model="temasText" placeholder="Ej: Tema 1, Tema 2, Tema 3" class="w-full" /></div>
               <div class="field"><label>Evaluación</label><Select v-model="genForm.evaluacion" :options="evaluaciones" class="w-full" required /></div>
               <div class="field"><label>Número de exámenes</label><InputNumber v-model="genForm.numeroExamenes" class="w-full" :min="1" required /></div>
               <div class="field"><label>Preguntas por examen</label><InputNumber v-model="genForm.numeroPreguntas" class="w-full" :min="1" required /></div>
@@ -79,9 +80,11 @@ import TabPanel from 'primevue/tabpanel';
 import Card from 'primevue/card';
 import Select from 'primevue/select';
 import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
 
 const items = ref<any[]>([]);
 const asignaturas = ref<any[]>([]);
+const baterias = ref<any[]>([]);
 const alumnos = ref<any[]>([]);
 const loading = ref(false);
 const total = ref(0);
@@ -91,10 +94,11 @@ const generando = ref(false);
 const tabIndex = ref(0);
 
 const genForm = ref({
-  asignaturaId: null, temas: [], evaluacion: 'PARCIAL_1', numeroExamenes: 1, numeroPreguntas: 10,
+  asignaturaId: null, bateriaIds: [], temas: [], evaluacion: 'PARCIAL_1', numeroExamenes: 1, numeroPreguntas: 10,
   proporcionFacil: 40, proporcionMedia: 40, proporcionDificil: 20,
 });
-const temas = ref(['Tema 1', 'Tema 2', 'Tema 3', 'Tema 4', 'Tema 5']);
+const bateriaSeleccionada = ref<number | null>(null);
+const temasText = ref('');
 const evaluaciones = ref(['PARCIAL_1', 'PARCIAL_2', 'PARCIAL_3', 'EXAMEN_FINAL', 'EXAMEN_EXTRAORDINARIO']);
 
 const asignarDialog = ref(false);
@@ -120,6 +124,22 @@ async function cargarAsignaturas() {
   asignaturas.value = data.data;
 }
 
+async function cargarBaterias() {
+  if (!genForm.value.asignaturaId) {
+    baterias.value = [];
+    bateriaSeleccionada.value = null;
+    return;
+  }
+  try {
+    const response = await api.get(`/bateria/asignatura/${genForm.value.asignaturaId}`);
+    baterias.value = Array.isArray(response.data) ? response.data : (response.data.data || []);
+    bateriaSeleccionada.value = null;
+  } catch (error) {
+    baterias.value = [];
+    bateriaSeleccionada.value = null;
+  }
+}
+
 async function cargarAlumnos() {
   const { data } = await api.get('/alumnos', { params: { limit: 100 } });
   alumnos.value = data.data;
@@ -131,11 +151,21 @@ function onPage(event: any) {
 }
 
 async function generarExamenes() {
+  if (!bateriaSeleccionada.value) {
+    alert('Debes seleccionar una batería de preguntas');
+    return;
+  }
+
   generando.value = true;
   try {
+    genForm.value.temas = temasText.value.split(',').map(t => t.trim()).filter(t => t);
+    genForm.value.bateriaIds = [bateriaSeleccionada.value];
     await api.post('/examenes/generar', genForm.value);
     cargar();
     tabIndex.value = 0;
+  } catch (error: any) {
+    console.error('Error generando exámenes:', error.response?.data || error.message);
+    alert('Error al generar exámenes: ' + (error.response?.data?.message || error.message));
   } finally {
     generando.value = false;
   }
@@ -159,7 +189,7 @@ async function verExamen(data: any) {
 }
 
 async function verResultados(data: any) {
-  const { data } = await api.get(`/examenes/${data.id}/resultados`);
+  const { data: res } = await api.get(`/examenes/${data.id}/resultados`);
   resultadosExamen.value = res;
   tabIndex.value = 2;
 }

@@ -2004,3 +2004,47 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado. Todos los cambios mantienen coherencia con el esquema N:M usando tabla intermedia.
 
 ---
+
+## [22:20] Cambio de temas a input de texto en generar exámenes
+
+**Prompt:** El usuario indicó que el tema debería ser un input de texto.
+
+**Resultado:**
+
+*ExamenesView.vue:*
+- Cambió Select de temas a InputText
+- Input acepta temas separados por coma: "Tema 1, Tema 2, Tema 3"
+- Función `generarExamenes` parsea el texto dividiendo por comas: `temasText.value.split(',').map(t => t.trim()).filter(t => t)`
+- Establece `genForm.value.temas` con el array parseado antes de enviar al backend
+
+**Decisión:** Aceptado. Ahora los usuarios pueden escribir temas libremente sin estar limitados a una lista predefinida.
+
+---
+
+## [22:25] Agregar selector de baterías en generar exámenes
+
+**Prompt:** El usuario indicó que debería poder escoger las baterías de preguntas para evitar coger preguntas sin relación.
+
+**Resultado:**
+
+*ExamenesView.vue (Frontend):*
+- Agregó selector de baterías (múltiple) después de asignatura
+- Agregó evento `@change="cargarBaterias"` en asignatura para cargar baterías cuando cambia
+- Cambió temas a opcional (ya no requerido)
+- Agregó variable `baterias` ref y `genForm.bateriaIds`
+- Creó función `cargarBaterias()` que obtiene baterías de la asignatura seleccionada
+
+*GenerarExamenesDto (Backend):*
+- Agregó campo `bateriaIds: number[]` requerido
+- Cambió `temas` a opcional
+- Cambió de búsqueda por asignatura a búsqueda por IDs de baterías específicas
+
+*examenes.service.ts (Backend):*
+- Cambió `findFirst` a `findMany` para obtener múltiples baterías
+- Combina preguntas de todas las baterías seleccionadas: `todasLasPreguntas = baterias.flatMap(b => b.preguntas)`
+- Mantiene filtro por temas opcional si se proporcionan
+- Actualiza todos los filtros para usar `todasLasPreguntas` en lugar de una sola batería
+
+**Decisión:** Aceptado. Ahora el usuario debe seleccionar explícitamente las baterías de preguntas que desea usar para generar exámenes.
+
+---

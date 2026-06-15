@@ -42,14 +42,12 @@ export class BateriaService {
   }
 
   async findByAsignatura(asignaturaId: number) {
-    const bateria = await this.prisma.bateriaDePreguntas.findFirst({
+    const baterias = await this.prisma.bateriaDePreguntas.findMany({
       where: { asignaturaId },
-      include: {
-        preguntas: { include: { pregunta: { include: { respuestas: true } } } },
-      },
+      include: { asignatura: true },
+      orderBy: { id: 'asc' },
     });
-    if (!bateria) throw new NotFoundException('Batería no encontrada para esta asignatura');
-    return bateria;
+    return baterias;
   }
 
   async remove(id: number) {
