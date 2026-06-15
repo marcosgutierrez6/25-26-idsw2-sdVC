@@ -3,9 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// ──────────────────────────────────────────────
+// Enumeraciones
+// ──────────────────────────────────────────────
 
 enum Dificultad {
   BAJA
@@ -39,61 +43,101 @@ enum Rol {
   ADMIN
 }
 
+// ──────────────────────────────────────────────
+// Grado
+// ──────────────────────────────────────────────
+// CU: crearGrado, editarGrado, eliminarGrado, verGrados,
+//     importarGrados, exportarGrados
+// Diseño: GradosView + GradosForm con tabs
+//   [Datos del Grado][Alumnos][Asignaturas]
+// Restricciones: codigo único
 model Grado {
-  id        Int          @id @default(autoincrement())
-  titulo    String
-  codigo    String       @unique
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  codigo      String       @unique
   asignaturas Asignatura[]
-  alumnos   Alumno[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  alumnos     Alumno[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// Asignatura
+// ──────────────────────────────────────────────
+// CU: crearAsignatura, editarAsignatura, eliminarAsignatura,
+//     verAsignaturas, importarAsignaturas, exportarAsignaturas
+// Diseño: AsignaturasView + AsignaturasForm con tabs
+//   [Datos][Preguntas Contextuales][Exámenes]
+// Restricciones: unique compuesto [codigo, cursoAcademico]
+//   profesorId opcional (la asignatura existe sin tutor asignado)
 model Asignatura {
-  id            Int          @id @default(autoincrement())
-  titulo        String
-  codigo        String
+  id             Int          @id @default(autoincrement())
+  titulo         String
+  codigo         String
   cursoAcademico String
-  gradoId       Int
-  grado         Grado        @relation(fields: [gradoId], references: [id])
-  profesorId    Int?
-  profesor      Profesor?    @relation(fields: [profesorId], references: [id])
-  examenes      Examen[]
-  bateria       BateriaDePreguntas?
-  alumnos       AlumnoAsignatura[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  gradoId        Int
+  grado          Grado        @relation(fields: [gradoId], references: [id])
+  profesorId     Int?
+  profesor       Profesor?    @relation(fields: [profesorId], references: [id])
+  examenes       Examen[]
+  bateria        BateriaDePreguntas?
+  alumnos        AlumnoAsignatura[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@unique([codigo, cursoAcademico])
 }
 
+// ──────────────────────────────────────────────
+// Profesor (Docente / Admin)
+// ──────────────────────────────────────────────
+// CU: crearDocente, editarDocente, eliminarDocente, verDocentes
+// Diseño: ProfesoresView + ProfesoresForm con tabs
+//   [Datos del Docente][Asignaturas]
+// Restricciones: dni y email únicos
+//   password hasheada con bcrypt (salt rounds 10)
+//   omit: { password: true } en findAll
 model Profesor {
-  id         Int          @id @default(autoincrement())
-  nombre     String
-  apellidos  String
-  dni        String       @unique
-  email      String       @unique
-  password   String
-  rol        Rol          @default(DOCENTE)
+  id          Int          @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  dni         String       @unique
+  email       String       @unique
+  password    String
+  rol         Rol          @default(DOCENTE)
   asignaturas Asignatura[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// Alumno
+// ──────────────────────────────────────────────
+// CU: crearAlumno, editarAlumno, eliminarAlumno, verAlumnos,
+//     importarAlumnos, exportarAlumnos
+// Diseño: AlumnosView + AlumnosForm con tabs
+//   [Datos Personales][Asignaturas][Exámenes]
+// Restricciones: dni y email únicos
+//   gradoId FK → Grado (validada por BD)
 model Alumno {
-  id         Int          @id @default(autoincrement())
-  nombre     String
-  apellidos  String
-  dni        String       @unique
-  email      String       @unique
-  gradoId    Int
-  grado      Grado        @relation(fields: [gradoId], references: [id])
+  id          Int          @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  dni         String       @unique
+  email       String       @unique
+  gradoId     Int
+  grado       Grado        @relation(fields: [gradoId], references: [id])
   asignaturas AlumnoAsignatura[]
-  examenes   AlumnoExamen[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  examenes    AlumnoExamen[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// AlumnoAsignatura (relación N:M)
+// ──────────────────────────────────────────────
+// CU: editarAlumno (pestaña Asignaturas), editarAsignatura
+// Tabla intermedia: matrícula de alumno en asignatura
 model AlumnoAsignatura {
   alumnoId     Int
   alumno       Alumno     @relation(fields: [alumnoId], references: [id])
@@ -103,6 +147,12 @@ model AlumnoAsignatura {
   @@id([alumnoId, asignaturaId])
 }
 
+// ──────────────────────────────────────────────
+// BateriaDePreguntas
+// ──────────────────────────────────────────────
+// CU: crearAsignatura (se crea junto con la asignatura),
+//     importarPreguntas, exportarPreguntas
+// Relación 1:1 con Asignatura
 model BateriaDePreguntas {
   id          Int        @id @default(autoincrement())
   asignaturaId Int       @unique
@@ -112,20 +162,36 @@ model BateriaDePreguntas {
   updatedAt   DateTime   @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// Pregunta
+// ──────────────────────────────────────────────
+// CU: crearPregunta, editarPregunta, eliminarPregunta,
+//     verPreguntas, importarPreguntas, exportarPreguntas
+// Diseño: PreguntasView + PreguntasForm con tabs
+//   [Datos][Respuestas]
+// Restricciones: máximo 5 respuestas por pregunta (regla de negocio)
+//   estado inicial EN_CONSTRUCCION
 model Pregunta {
-  id               Int          @id @default(autoincrement())
-  enunciado        String
-  tema             String
-  dificultad       Dificultad
-  estado           EstadoPregunta @default(EN_CONSTRUCCION)
-  bateriaId        Int
-  bateria          BateriaDePreguntas @relation(fields: [bateriaId], references: [id])
-  respuestas       Respuesta[]
-  examenes         ExamenPregunta[]
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id         Int          @id @default(autoincrement())
+  enunciado  String
+  tema       String
+  dificultad Dificultad
+  estado     EstadoPregunta @default(EN_CONSTRUCCION)
+  bateriaId  Int
+  bateria    BateriaDePreguntas @relation(fields: [bateriaId], references: [id])
+  respuestas Respuesta[]
+  examenes   ExamenPregunta[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// Respuesta
+// ──────────────────────────────────────────────
+// CU: crearRespuesta, editarRespuesta, eliminarRespuesta,
+//     verRespuestas
+// Restricciones: al menos una respuesta debe tener esCorrecta = true
+//   (validado en servicio, no en BD)
 model Respuesta {
   id         Int      @id @default(autoincrement())
   opcion     String
@@ -136,6 +202,16 @@ model Respuesta {
   updatedAt  DateTime @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// Examen
+// ──────────────────────────────────────────────
+// CU: generarExamenes, asignarExamenes, corregirExamenes,
+//     cancelarGeneracion, verExamenes, exportarExamenes
+// Diseño: ExamenesView con tabs [Listado][Generar][Resultados]
+// Restricciones:
+//   estado: GENERADO → ASIGNADO → RESUELTO → CORREGIDO
+//   claveCorreccion: JSON con { ordenRespuestas: number[] },
+//     generada en asignarExamenes con hash SHA-256
 model Examen {
   id              Int          @id @default(autoincrement())
   evaluacion      Evaluacion
@@ -149,6 +225,11 @@ model Examen {
   updatedAt       DateTime     @updatedAt
 }
 
+// ──────────────────────────────────────────────
+// ExamenPregunta (relación N:M)
+// ──────────────────────────────────────────────
+// CU: generarExamenes (se crean N exámenes con sus preguntas),
+//     corregirExamenes (se cruzan respuestas del alumno)
 model ExamenPregunta {
   examenId   Int
   examen     Examen   @relation(fields: [examenId], references: [id])
@@ -158,15 +239,24 @@ model ExamenPregunta {
   @@id([examenId, preguntaId])
 }
 
+// ──────────────────────────────────────────────
+// AlumnoExamen (relación N:M con datos)
+// ──────────────────────────────────────────────
+// CU: asignarExamenes (genera hash por alumno),
+//     corregirExamenes (almacena respuestas + nota)
+// Restricciones:
+//   hashAsignacion: SHA-256(timestamp + alumnoId + examenId), único
+//   respuestas: JSON con { respuestas: number[] } (índices de opciones)
+//   nota: calculada en corregirExamenes, escala 0-10
 model AlumnoExamen {
-  alumnoId     Int
-  alumno       Alumno   @relation(fields: [alumnoId], references: [id])
-  examenId     Int
-  examen       Examen   @relation(fields: [examenId], references: [id])
+  alumnoId      Int
+  alumno        Alumno   @relation(fields: [alumnoId], references: [id])
+  examenId      Int
+  examen        Examen   @relation(fields: [examenId], references: [id])
   hashAsignacion String? @unique
-  respuestas   String?
-  nota         Float?
-  createdAt    DateTime @default(now())
+  respuestas    String?
+  nota          Float?
+  createdAt     DateTime @default(now())
 
   @@id([alumnoId, examenId])
 }
