@@ -1331,3 +1331,14 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Se utilizó PlantUML JAR para regenerar SVGs.
 
 **Decisión:** Aceptado el alcance definido por el usuario: solo corregir diagramas de diseño/secuencia. El usuario eligió deducir los tabs del diagrama de contexto en lugar de definirlos explícitamente. Los demás diagramas (detalladoCasosDeUso, prototipadoCasosDeUso) no se modificaron por decisión del usuario.
+
+## [15:51] Inconsistencia READMEs vs diagramas: Participantes no reflejan View/Form split
+
+**Prompt:** El usuario reportó una inconsistencia: el README lista 5 participantes (sin separar AlumnosView de AlumnosForm), pero el diagrama tiene 7 (con View y Form como entidades separadas). Indicó que revisara todas las entidades.
+
+**Resultado:** Se actualizaron 14 READMEs en documents/diseño/:
+- 6 crear*: actualizado código PlantUML embedido y tabla de Participantes con View+Form separados y tabs desactivados/activados
+- 6 editar*: mismo patrón, tabs todos activos
+- verRespuestas y eliminarRespuesta: actualizado naming del formulario padre
+
+**Decisión:** Todos los READMEs de diseñ̃o que referencian los diagramas corregidos fueron actualizados para reflejar la separación View/Form y los tabs.

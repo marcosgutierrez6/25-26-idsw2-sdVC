@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Crear Grado (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "GradosView\n(Listado)" as List
-participant "GradosForm\n(Modal)" as Form
+participant "GradosForm\n(Formulario con tabs)" as Form
 participant "GradosController" as Controller
 participant "GradosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo creación: [Datos del Grado] (activo)\n[Alumnos] (desactivado) [Asignaturas] (desactivado)
+
 User -> List: Hace clic en "Nuevo Grado"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
-Form --> User: Muestra diálogo con\ncampos: título, código
+Form --> User: Muestra formulario\ncon campos: título, código
 
 User -> Form: Rellena campos\ny pulsa "Crear"
 Form -> Form: Validación visual\nde campos obligatorios
@@ -79,12 +82,10 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ grado }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra grado\ncreado y navega a\neditarGrado()
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form : Modo edición: [Datos del Grado] [Alumnos]\n[Asignaturas] (todos activos)
+  Form --> User: Muestra grado creado\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml
 ```
@@ -93,8 +94,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **GradosView** | Vista que muestra el listado de grados. El usuario hace clic en "Nuevo Grado" para abrir el modal de creación. |
-| **GradosForm** | Modal de creación con campos título y código, validación visual antes de enviar. |
+| **GradosView (Listado)** | Vista que muestra el listado de grados. El usuario hace clic en "Nuevo Grado" para navegar al formulario de creación. |
+| **GradosForm (Formulario con tabs)** | Formulario con tabs: [Datos del Grado] (activo), [Alumnos] (desactivado), [Asignaturas] (desactivado). En modo creación solo el tab de Datos del Grado está disponible. Tras crear, cambia a modo edición con todos los tabs activos. |
 | **GradosController** | Endpoint REST `POST /api/grados` protegido por `JwtAuthGuard` + `RolesGuard`. |
 | **GradosService** | Método `create()` que persiste el grado mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `grado.create()`. |

@@ -29,9 +29,9 @@ Crear una nueva respuesta asociada a una pregunta, con validación de límite m�
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasForm** | Contexto de pregunta desde donde se gestionan las respuestas. |
-| **RespuestasView** | Vista que muestra el listado de respuestas de la pregunta actual. |
-| **RespuestasForm** | Modal de creación de nueva respuesta. Validación visual antes de enviar. |
+| **PreguntasForm (Formulario con tabs)** | Contexto de pregunta desde donde se gestionan las respuestas. Modo edición: [Datos] [Respuestas] (todos activos). |
+| **RespuestasView (Listado)** | Vista que muestra el listado de respuestas de la pregunta actual. |
+| **RespuestasForm (Formulario)** | Modal de creación de nueva respuesta. Validación visual antes de enviar. |
 | **RespuestasController** | POST /api/respuestas. |
 | **RespuestasService** | create() con validación de límite. |
 | **PrismaService** | Capa ORM. |

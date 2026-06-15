@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Editar Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin)" as User
 participant "DocentesView\n(Listado)" as List
-participant "DocentesForm\n(Modal)" as Form
+participant "DocentesForm\n(Formulario con tabs)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over Form : Modo edición: [Datos del Docente] [Asignaturas]\n(todos activos)
 
 == Carga de datos ==
 
 User -> List: Hace clic en "Editar"\ndesde el listado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/profesores/:id
@@ -152,7 +155,6 @@ else Eliminar docente
 end
 
 deactivate Form
-deactivate List
 
 @enduml
 ```
@@ -161,8 +163,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **DocentesView** | Vista que muestra el listado de docentes. El usuario hace clic en "Editar" para abrir el modal de edición. |
-| **DocentesForm** | Modal de edición con datos precargados (nombre, apellidos, dni, email, username), permite modificar campos, cambiar contraseña opcionalmente, guardar cambios, cancelar o eliminar el docente. Validación visual antes de enviar. |
+| **DocentesView (Listado)** | Vista que muestra el listado de docentes. El usuario hace clic en "Editar" para navegar al formulario de edición. |
+| **DocentesForm (Formulario con tabs)** | Formulario con tabs: [Datos del Docente] [Asignaturas] (todos activos en modo edición). Muestra datos precargados (nombre, apellidos, dni, email, username), permite modificar campos, cambiar contraseña opcionalmente, guardar cambios o eliminar. Validación visual antes de enviar. |
 | **ProfesoresController** | Endpoints REST `GET /api/profesores/:id` (carga de datos), `PATCH /api/profesores/:id` (actualización) y `DELETE /api/profesores/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints, solo ADMIN. |
 | **ProfesoresService** | Métodos `findOne()` (busca con `omit: { password: true }` e `include: { asignaturas: true }`), `update()` (verifica existencia vía `findOne()`, aplica `bcrypt.hash()` si hay nueva contraseña, y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `profesor.findUnique()`, `profesor.update()` y `profesor.delete()` sobre el modelo Profesor. |

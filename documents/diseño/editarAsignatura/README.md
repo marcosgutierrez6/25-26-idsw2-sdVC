@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Editar Asignatura (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "AsignaturasView\n(Listado)" as List
-participant "AsignaturasForm\n(Modal)" as Form
+participant "AsignaturasForm\n(Formulario con tabs)" as Form
 participant "AsignaturasController" as Controller
 participant "AsignaturasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over Form : Modo edición: [Datos] [Preguntas Contextuales]\n[Exámenes] (todos activos)
 
 == Carga de datos ==
 
 User -> List: Hace clic en "Editar"\ndesde el listado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/asignaturas/:id
@@ -148,7 +151,6 @@ else Eliminar asignatura
 end
 
 deactivate Form
-deactivate List
 
 @enduml
 ```
@@ -157,12 +159,12 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **AsignaturasView** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Editar" para abrir el modal de edición. |
-| **AsignaturasForm** | Modal de edición con datos precargados (título, código, curso académico, grado), permite modificar campos, guardar cambios, cancelar o eliminar la asignatura. Validación visual antes de enviar. |
+| **AsignaturasView (Listado)** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Editar" para navegar al formulario de edición. |
+| **AsignaturasForm (Formulario con tabs)** | Formulario con tabs: [Datos] [Preguntas Contextuales] [Exámenes] (todos activos en modo edición). Muestra datos precargados (título, código, curso, grado, batería), permite modificar, guardar, cancelar o eliminar. Validación visual antes de enviar. |
 | **AsignaturasController** | Endpoints REST `GET /api/asignaturas/:id` (carga de datos), `PATCH /api/asignaturas/:id` (actualización) y `DELETE /api/asignaturas/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints. |
-| **AsignaturasService** | Métodos `findOne()` (busca con include de grado, profesor, exámenes y batería), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
-| **PrismaService** | Capa ORM que ejecuta `asignatura.findUnique()`, `asignatura.update()` y `asignatura.delete()` sobre el modelo Asignatura. |
-| **Base de Datos (SQLite/PostgreSQL)** | Almacena y recupera los datos de la asignatura, su grado, profesor, exámenes y batería asociada. |
+| **AsignaturasService** | Métodos `findOne()`, `update()` y `remove()` con verificación de existencia. |
+| **PrismaService** | Capa ORM que ejecuta las consultas sobre el modelo Asignatura. |
+| **Base de Datos (SQLite/PostgreSQL)** | Almacena y recupera los datos de la asignatura y sus relaciones. |
 
 ## Decisiones de diseño
 

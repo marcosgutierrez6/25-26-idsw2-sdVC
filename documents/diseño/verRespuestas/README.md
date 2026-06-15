@@ -29,8 +29,8 @@ Listar las respuestas asociadas a una pregunta específica.
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasForm** | Contexto de pregunta desde donde se visualizan las respuestas. |
-| **RespuestasView** | Muestra el listado de respuestas de la pregunta actual. |
+| **PreguntasForm (Formulario con tabs)** | Contexto de pregunta desde donde se visualizan las respuestas. Modo edición: [Datos] [Respuestas] (todos activos). |
+| **RespuestasView (Listado)** | Muestra el listado de respuestas de la pregunta actual. |
 | **RespuestasController** | GET /api/respuestas/pregunta/:preguntaId. |
 | **RespuestasService** | findByPregunta() con filtro por preguntaId. |
 | **PrismaService** | Capa ORM. |

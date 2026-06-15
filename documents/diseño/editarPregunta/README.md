@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Editar Pregunta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "PreguntasView\n(Listado)" as List
-participant "PreguntasForm\n(Modal)" as Form
+participant "PreguntasForm\n(Formulario con tabs)" as Form
 participant "PreguntasController" as Controller
 participant "PreguntasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over Form : Modo edición: [Datos] [Respuestas]\n(todos activos)
 
 == Carga de datos ==
 
 User -> List: Hace clic en "Editar"\ndesde el listado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/preguntas/:id
@@ -148,7 +151,6 @@ else Eliminar pregunta
 end
 
 deactivate Form
-deactivate List
 
 @enduml
 ```
@@ -157,8 +159,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasView** | Vista que muestra el listado de preguntas. El usuario hace clic en "Editar" para abrir el modal de edición. |
-| **PreguntasForm** | Modal de edición con datos precargados (enunciado, tema, dificultad, estado), permite modificar campos, guardar cambios, cancelar o eliminar la pregunta. Validación visual antes de enviar. |
+| **PreguntasView (Listado)** | Vista que muestra el listado de preguntas. El usuario hace clic en "Editar" para navegar al formulario de edición. |
+| **PreguntasForm (Formulario con tabs)** | Formulario con tabs: [Datos] [Respuestas] (todos activos en modo edición). Muestra datos precargados (enunciado, tema, dificultad, estado), permite modificar campos, guardar cambios o eliminar. Validación visual antes de enviar. |
 | **PreguntasController** | Endpoints REST `GET /api/preguntas/:id` (carga de datos), `PATCH /api/preguntas/:id` (actualización) y `DELETE /api/preguntas/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints. |
 | **PreguntasService** | Métodos `findOne()` (busca con include de respuestas y batería), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `pregunta.findUnique()`, `pregunta.update()` y `pregunta.delete()` sobre el modelo Pregunta. |

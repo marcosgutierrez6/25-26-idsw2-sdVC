@@ -33,16 +33,19 @@ title Diagrama de Secuencia - Crear Docente (NestJS + Vue 3)
 
 actor "Usuario (Admin\nInstitucional)" as User
 participant "DocentesView\n(Listado)" as List
-participant "DocentesForm\n(Modal)" as Form
+participant "DocentesForm\n(Formulario con tabs)" as Form
 participant "ProfesoresController" as Controller
 participant "ProfesoresService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo creación: [Datos del Docente] (activo)\n[Asignaturas] (desactivado)
+
 User -> List: Hace clic en "Nuevo\nDocente"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
 Form --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, password
 note right
@@ -89,12 +92,10 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ profesor }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra docente\ncreado y navega a\neditarDocente()
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form : Modo edición: [Datos del Docente] [Asignaturas]\n(todos activos)
+  Form --> User: Muestra docente creado\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml
 ```
@@ -103,12 +104,11 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **DocentesView** | Vista que muestra el listado de docentes. El usuario hace clic en "Nuevo Docente" para abrir el modal de creación. |
-| **DocentesForm** | Modal de creación con campos obligatorios (nombre, apellidos, dni, email, password) y valida visualmente antes de enviar. |
+| **DocentesView (Listado)** | Vista que muestra el listado de docentes. El usuario hace clic en "Nuevo Docente" para navegar al formulario de creación. |
+| **DocentesForm (Formulario con tabs)** | Formulario con tabs: [Datos del Docente] (activo), [Asignaturas] (desactivado). En modo creación solo el tab de Datos del Docente está disponible. Tras crear, cambia a modo edición con todos los tabs activos. |
 | **ProfesoresController** | Endpoint REST `POST /api/profesores` que recibe el `CreateProfesorDto` y delega en el servicio. Guards `JwtAuthGuard` + `RolesGuard` protegen el endpoint. Solo `ADMIN` puede crear docentes. |
 | **ProfesoresService** | Método `create()` que hashea la contraseña con bcrypt (salt rounds 10) y persiste el profesor mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `profesor.create()` con los datos del DTO y la contraseña hasheada. |
-| **Base de Datos (SQLite/PostgreSQL)** | Almacena el profesor con rol `DOCENTE` por defecto. Valida unicidad de DNI y email mediante `UNIQUE constraint`. |
 
 ## Decisiones de diseño
 

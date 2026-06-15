@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Crear Pregunta (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "PreguntasView\n(Listado)" as List
-participant "PreguntasForm\n(Modal)" as Form
+participant "PreguntasForm\n(Formulario con tabs)" as Form
 participant "PreguntasController" as Controller
 participant "PreguntasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo creación: [Datos] (activo)\n[Respuestas] (desactivado)
+
 User -> List: Hace clic en "Nueva\nPregunta"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
-Form --> User: Muestra diálogo con\ncampos: enunciado, tema,\ndificultad, batería
+Form --> User: Muestra formulario\ncon campos: enunciado, tema,\ndificultad, batería
 
 User -> Form: Rellena campos\ny pulsa "Crear"
 Form -> Form: Validación visual\nde campos obligatorios
@@ -79,12 +82,10 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ pregunta }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra pregunta\ncreada y navega a\neditarPregunta()
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form : Modo edición: [Datos] [Respuestas]\n(todos activos)
+  Form --> User: Muestra pregunta creada\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml
 ```
@@ -93,12 +94,11 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasView** | Vista que muestra el listado de preguntas. El usuario hace clic en "Nueva Pregunta" para abrir el modal de creación. |
-| **PreguntasForm** | Modal de creación con campos obligatorios (enunciado, tema, dificultad, batería) y valida visualmente antes de enviar. |
+| **PreguntasView (Listado)** | Vista que muestra el listado de preguntas. El usuario hace clic en "Nueva Pregunta" para navegar al formulario de creación. |
+| **PreguntasForm (Formulario con tabs)** | Formulario con tabs: [Datos] (activo), [Respuestas] (desactivado). En modo creación solo el tab de Datos está disponible. Tras crear, cambia a modo edición con todos los tabs activos. |
 | **PreguntasController** | Endpoint REST `POST /api/preguntas` que recibe el DTO y delega en el servicio. Guard `JwtAuthGuard` + `RolesGuard` protegen el endpoint. |
 | **PreguntasService** | Método `create()` que persiste la pregunta mediante Prisma. Sin validación explícita de batería — el FK constraint de la BD rechaza batería inválida. |
 | **PrismaService** | Capa ORM que ejecuta `pregunta.create()` con los datos del DTO. |
-| **Base de Datos (SQLite/PostgreSQL)** | Almacena la pregunta con estado `EN_CONSTRUCCION` por defecto. Valida la FK `bateriaId` a nivel de BD. |
 
 ## Decisiones de diseño
 

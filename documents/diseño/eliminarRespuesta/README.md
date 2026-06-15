@@ -29,8 +29,8 @@ Eliminar una respuesta con confirmación previa, verificación de existencia y m
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasForm** | Contexto de pregunta desde donde se eliminan las respuestas. |
-| **RespuestasView** | Vista que muestra el listado de respuestas y el diálogo de confirmación. |
+| **PreguntasForm (Formulario con tabs)** | Contexto de pregunta desde donde se eliminan las respuestas. Modo edición: [Datos] [Respuestas] (todos activos). |
+| **RespuestasView (Listado)** | Vista que muestra el listado de respuestas y el diálogo de confirmación. |
 | **RespuestasController** | DELETE /api/respuestas/:id. |
 | **RespuestasService** | remove() con findOne previo. |
 | **PrismaService** | Capa ORM. |

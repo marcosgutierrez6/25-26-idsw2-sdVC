@@ -33,16 +33,19 @@ title Diagrama de Secuencia - Editar Grado (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "GradosView\n(Listado)" as List
-participant "GradosForm\n(Modal)" as Form
+participant "GradosForm\n(Formulario con tabs)" as Form
 participant "GradosController" as Controller
 participant "GradosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo edición: [Datos del Grado] [Alumnos]\n[Asignaturas] (todos activos)
+
 User -> List: Hace clic en editar\nun grado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/grados/:id
@@ -103,7 +106,6 @@ else Grado existe
 end
 
 deactivate Form
-deactivate List
 
 @enduml
 ```
@@ -112,8 +114,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **GradosView** | Vista que muestra el listado de grados. El usuario hace clic en "Editar" para abrir el modal de edición. |
-| **GradosForm** | Modal de edición con datos precargados del grado. Validación visual antes de enviar. |
+| **GradosView (Listado)** | Vista que muestra el listado de grados. El usuario hace clic en "Editar" para navegar al formulario de edición. |
+| **GradosForm (Formulario con tabs)** | Formulario con tabs: [Datos del Grado] [Alumnos] [Asignaturas] (todos activos en modo edición). Muestra datos precargados del grado con sus relaciones. Validación visual antes de enviar. |
 | **GradosController** | Endpoints `GET /:id` y `PATCH /:id` protegidos por guards JWT + Roles. |
 | **GradosService** | Métodos `findOne()` (carga con include) y `update()` (verificación + persistencia). |
 | **PrismaService** | Capa ORM que ejecuta las consultas de lectura y actualización. |

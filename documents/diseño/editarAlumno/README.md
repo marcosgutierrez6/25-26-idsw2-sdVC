@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Editar Alumno (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "AlumnosView\n(Listado)" as List
-participant "AlumnosForm\n(Modal)" as Form
+participant "AlumnosForm\n(Formulario con tabs)" as Form
 participant "AlumnosController" as Controller
 participant "AlumnosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
+
+note over Form : Modo edición: [Datos Personales] [Asignaturas]\n[Exámenes] (todos activos)
 
 == Carga de datos ==
 
 User -> List: Hace clic en "Editar"\ndesde el listado
 activate List
 
-List -> Form: Abre modal de\nedición
+List -> Form: Navega a formulario\nde edición
+deactivate List
 activate Form
 
 Form -> Controller: GET /api/alumnos/:id
@@ -148,7 +151,6 @@ else Eliminar alumno
 end
 
 deactivate Form
-deactivate List
 
 @enduml
 ```
@@ -157,8 +159,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **AlumnosView** | Vista que muestra el listado de alumnos. El usuario hace clic en "Editar" para abrir el modal de edición. |
-| **AlumnosForm** | Modal de edición con datos precargados (DNI, nombre, apellidos, email, grado), permite modificar campos, guardar cambios, cancelar o eliminar el alumno. Validación visual antes de enviar. |
+| **AlumnosView (Listado)** | Vista que muestra el listado de alumnos. El usuario hace clic en "Editar" para navegar al formulario de edición. |
+| **AlumnosForm (Formulario con tabs)** | Formulario con tabs: [Datos Personales] [Asignaturas] [Exámenes] (todos activos en modo edición). Muestra datos precargados (DNI, nombre, apellidos, email, grado), permite modificar campos, guardar cambios o eliminar el alumno. Validación visual antes de enviar. |
 | **AlumnosController** | Endpoints REST `GET /api/alumnos/:id` (carga de datos), `PATCH /api/alumnos/:id` (actualización) y `DELETE /api/alumnos/:id` (eliminación). Guards `JwtAuthGuard` + `RolesGuard` protegen los endpoints, solo DOCENTE y ADMIN. |
 | **AlumnosService** | Métodos `findOne()` (busca con `include: { grado: true, asignaturas: { include: { asignatura: true } } }`), `update()` (verifica existencia vía `findOne()` y luego persiste con Prisma) y `remove()` (verifica existencia vía `findOne()` y luego elimina). |
 | **PrismaService** | Capa ORM que ejecuta `alumno.findUnique()`, `alumno.update()` y `alumno.delete()` sobre el modelo Alumno. |

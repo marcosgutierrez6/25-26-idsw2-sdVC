@@ -32,64 +32,79 @@ Detallar la interacción entre los componentes del sistema para crear un nuevo a
 title Diagrama de Secuencia - Crear Alumno (NestJS + Vue 3)
 
 actor "Usuario\n(Docente)" as User
-participant "AlumnosView" as FE
+participant "AlumnosView\n(Listado)" as List
+participant "AlumnosForm\n(Formulario con tabs)" as Form
 participant "AlumnosController" as Controller
 participant "AlumnosService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
-User -> FE: Hace clic en "Nuevo\nAlumno"
-activate FE
-
-FE --> User: Muestra formulario con\ncampos: nombre, apellidos,\ndni, email, grado
-note right
-  El grado se selecciona de\nun desplegable cargado\npreviamente
+note over Form
+  <b>Modo creación:</b>
+  [Datos Personales] (activo)
+  [Asignaturas] (desactivado)
+  [Exámenes] (desactivado)
 end note
 
-User -> FE: Rellena campos\ny pulsa "Crear Alumno"
-FE -> FE: Validación visual\nde campos obligatorios
+User -> List: Hace clic en "Nuevo\nAlumno"
+activate List
 
-FE -> Controller: POST /api/alumnos\nbody: { nombre, apellidos, dni, email, gradoId }
+List -> Form: Navega a formulario\nde creación
+deactivate List
+activate Form
+Form --> User: Muestra formulario\ncon campos: nombre,\napellidos, dni, email, grado\nSolo tab [Datos Personales] activo
+
+User -> Form: Rellena campos\ny pulsa "Crear Alumno"
+Form -> Form: Validación visual\nde campos obligatorios
+
+Form -> Controller: POST /api/alumnos\nbody: { nombre, apellidos, dni, email, gradoId }
 activate Controller
 
 Controller -> Service: create(createAlumnoDto)
 activate Service
 
-Service -> Prisma: alumno.create({\n  data: createAlumnoDto\n})
+Service -> Prisma: alumno.create({ data })
 activate Prisma
 Prisma -> DB: INSERT INTO Alumno\n(nombre, apellidos, dni, email, gradoId)
 activate DB
 
 alt Error FK (gradoId no existe)
-  DB --> Prisma: Error FOREIGN KEY constraint
+  DB --> Prisma: Error FK constraint
   deactivate DB
   Prisma --> Service: lanza error (P2003)
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 400 Bad Request\n{ message: "Grado no\nencontrado" }
-  FE --> User: Muestra mensaje\nde error
+  Controller --> Form: 400 Bad Request
+  deactivate Controller
+  Form --> User: Muestra mensaje\nde error
 else Error de unicidad (dni o email duplicado)
   DB --> Prisma: Error UNIQUE constraint
   deactivate DB
   Prisma --> Service: lanza error (P2002)
   deactivate Prisma
   Service --> Controller: lanza excepción
-  Controller --> FE: 409 Conflict\n{ message: "DNI o email\nya existe" }
-  FE --> User: Muestra mensaje\nde error
+  Controller --> Form: 409 Conflict
+  deactivate Controller
+  Form --> User: Muestra "DNI o\nemail ya existe"
 else Creación exitosa
-  DB --> Prisma: alumno creado (id)
+  DB --> Prisma: alumno creado
   deactivate DB
   Prisma --> Service: alumno
   deactivate Prisma
 
   Service --> Controller: alumno
   deactivate Service
-  Controller --> FE: 201 Created\n{ alumno }
+  Controller --> Form: 201 Created\n{ alumno }
   deactivate Controller
-  FE --> User: Muestra alumno\ncreado y navega a\nalumno creado (editar)
-end
 
-deactivate FE
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form
+    <b>Modo edición:</b>
+    [Datos Personales] [Asignaturas]
+    [Exámenes] (todos activos)
+  end note
+  Form --> User: Muestra alumno creado\ncon tabs ahora activos
+end
 
 @enduml
 ```
@@ -98,7 +113,8 @@ deactivate FE
 
 | Componente | Responsabilidad |
 |---|---|
-| **AlumnosView** | Vista que muestra el formulario de creación con campos obligatorios (nombre, apellidos, dni, email, grado) y valida visualmente antes de enviar. El grado se selecciona de un desplegable cargado previamente desde `GET /grados`. |
+| **AlumnosView (Listado)** | Vista que muestra el listado de alumnos. El usuario hace clic en "Nuevo Alumno" para navegar al formulario de creación. |
+| **AlumnosForm (Formulario con tabs)** | Formulario con tabs: [Datos Personales] (activo), [Asignaturas] (desactivado), [Exámenes] (desactivado). En modo creación solo el tab de Datos Personales está disponible. Tras crear, cambia a modo edición con todos los tabs activos. |
 | **AlumnosController** | Endpoint REST `POST /api/alumnos` que recibe el `CreateAlumnoDto` y delega en el servicio. Guards `JwtAuthGuard` + `RolesGuard` protegen el endpoint. Permite `DOCENTE` y `ADMIN`. |
 | **AlumnosService** | Método `create()` que persiste el alumno mediante Prisma sin lógica adicional. La validación de FK a grado y unicidad de DNI/email se delega a la base de datos. |
 | **PrismaService** | Capa ORM que ejecuta `alumno.create()` con los datos del DTO. |

@@ -33,18 +33,21 @@ title Diagrama de Secuencia - Crear Asignatura (NestJS + Vue 3)
 
 actor "Usuario (Docente)" as User
 participant "AsignaturasView\n(Listado)" as List
-participant "AsignaturasForm\n(Modal)" as Form
+participant "AsignaturasForm\n(Formulario con tabs)" as Form
 participant "AsignaturasController" as Controller
 participant "AsignaturasService" as Service
 participant "PrismaService" as Prisma
 participant "Base de Datos\n(SQLite/PostgreSQL)" as DB
 
+note over Form : Modo creación: [Datos] (activo)\n[Preguntas Contextuales] (desactivado)\n[Exámenes] (desactivado)
+
 User -> List: Hace clic en "Nueva\nAsignatura"
 activate List
 
-List -> Form: Abre modal de\ncreación
+List -> Form: Navega a formulario\nde creación
+deactivate List
 activate Form
-Form --> User: Muestra diálogo con\ncampos: titulo, codigo,\ncursoAcademico, gradoId
+Form --> User: Muestra formulario\ncon campos: titulo, codigo,\ncursoAcademico, gradoId
 
 User -> Form: Rellena campos\ny pulsa "Crear"
 Form -> Form: Validación visual\nde campos obligatorios
@@ -79,12 +82,10 @@ else Creación exitosa
   Controller --> Form: 201 Created\n{ asignatura }
   deactivate Controller
 
-  Form --> List: Cierra modal y\nnotifica éxito
-  deactivate Form
-  List --> User: Muestra asignatura\ncreada y navega a\neditarAsignatura()
+  Form --> Form: Activa tabs y\ncambia a modo edición
+  note over Form : Modo edición: [Datos] [Preguntas Contextuales]\n[Exámenes] (todos activos)
+  Form --> User: Muestra asignatura creada\ncon tabs ahora activos
 end
-
-deactivate List
 
 @enduml
 ```
@@ -93,8 +94,8 @@ deactivate List
 
 | Componente | Responsabilidad |
 |---|---|
-| **AsignaturasView** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Nueva Asignatura" para abrir el modal de creación. |
-| **AsignaturasForm** | Modal de creación con campos titulo, codigo, cursoAcademico, gradoId. Validación visual antes de enviar. |
+| **AsignaturasView (Listado)** | Vista que muestra el listado de asignaturas. El usuario hace clic en "Nueva Asignatura" para navegar al formulario de creación. |
+| **AsignaturasForm (Formulario con tabs)** | Formulario con tabs: [Datos] (activo), [Preguntas Contextuales] (desactivado), [Exámenes] (desactivado). En modo creación solo el tab de Datos está disponible. Tras crear, cambia a modo edición con todos los tabs activos. |
 | **AsignaturasController** | Endpoint REST `POST /api/asignaturas` protegido por `JwtAuthGuard` + `RolesGuard`. |
 | **AsignaturasService** | Método `create()` que persiste la asignatura mediante Prisma. |
 | **PrismaService** | Capa ORM que ejecuta `asignatura.create()`. |

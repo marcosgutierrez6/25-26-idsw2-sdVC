@@ -29,9 +29,9 @@ Editar el texto y/o la corrección de una respuesta existente.
 
 | Componente | Responsabilidad |
 |---|---|
-| **PreguntasForm** | Contexto de pregunta desde donde se gestionan las respuestas. |
-| **RespuestasView** | Vista que muestra el listado de respuestas de la pregunta actual. |
-| **RespuestasForm** | Modal de edición precargado con datos de la respuesta. |
+| **PreguntasForm (Formulario con tabs)** | Contexto de pregunta desde donde se gestionan las respuestas. Modo edición: [Datos] [Respuestas] (todos activos). |
+| **RespuestasView (Listado)** | Vista que muestra el listado de respuestas de la pregunta actual. |
+| **RespuestasForm (Formulario)** | Modal de edición precargado con datos de la respuesta. |
 | **RespuestasController** | GET /api/respuestas/:id + PATCH /api/respuestas/:id. |
 | **RespuestasService** | findOne() para precarga + update(). |
 | **PrismaService** | Capa ORM. |
