@@ -20,7 +20,7 @@
       </Column>
     </DataTable>
 
-    <Dialog v-model:visible="dialogVisible" :header="editando ? 'Editar Alumno' : 'Nuevo Alumno'" modal>
+    <Dialog v-model:visible="dialogVisible" :header="editando ? 'Editar Alumno' : 'Nuevo Alumno'" modal style="width: 600px">
       <form @submit.prevent="guardar">
         <div class="field"><label>Nombre</label><InputText v-model="form.nombre" class="w-full" required /></div>
         <div class="field"><label>Apellidos</label><InputText v-model="form.apellidos" class="w-full" required /></div>
