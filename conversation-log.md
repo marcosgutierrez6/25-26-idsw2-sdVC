@@ -1812,7 +1812,7 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 
 ---
 
-## [21:20] Refactorizar Alumnos y Profesores: separar formularios de dialogs inline
+## [21:29] Refactorizar Alumnos y Profesores: separar formularios de dialogs inline
 
 **Prompt:** El usuario pidió refactorizar Alumnos y Profesores para separar los formularios en vistas dedicadas (AlumnosFormView, ProfesoresFormView) en lugar de usar Dialogs inline, alineándose con el diagrama de contexto y el patrón consistente de todas las entidades.
 
