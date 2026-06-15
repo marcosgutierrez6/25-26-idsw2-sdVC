@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { RespuestasService } from './respuestas.service';
 import { CreateRespuestaDto } from './dto/create-respuesta.dto';
 import { UpdateRespuestaDto } from './dto/update-respuesta.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 import { JwtAuthGuard } from '../Common/jwt-auth.guard';
 import { RolesGuard } from '../Common/roles.guard';
 import { Roles } from '../Common/roles.decorator';
@@ -12,10 +13,10 @@ import { Rol } from '@prisma/client';
 export class RespuestasController {
   constructor(private readonly respuestasService: RespuestasService) {}
 
-  @Post()
+  @Get()
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  create(@Body() createRespuestaDto: CreateRespuestaDto) {
-    return this.respuestasService.create(createRespuestaDto);
+  index(@Query() pagination: PaginationDto) {
+    return this.respuestasService.findAll(pagination);
   }
 
   @Get('pregunta/:preguntaId')
@@ -26,8 +27,14 @@ export class RespuestasController {
 
   @Get(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  findOne(@Param('id') id: string) {
+  show(@Param('id') id: string) {
     return this.respuestasService.findOne(+id);
+  }
+
+  @Post()
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  create(@Body() createRespuestaDto: CreateRespuestaDto) {
+    return this.respuestasService.create(createRespuestaDto);
   }
 
   @Patch(':id')
@@ -38,7 +45,7 @@ export class RespuestasController {
 
   @Delete(':id')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  remove(@Param('id') id: string) {
+  delete(@Param('id') id: string) {
     return this.respuestasService.remove(+id);
   }
 }

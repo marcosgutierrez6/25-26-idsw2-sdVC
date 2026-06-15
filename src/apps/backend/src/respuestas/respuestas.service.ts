@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateRespuestaDto } from './dto/create-respuesta.dto';
 import { UpdateRespuestaDto } from './dto/update-respuesta.dto';
+import { PaginationDto } from '../Common/dto/pagination.dto';
 
 @Injectable()
 export class RespuestasService {
@@ -15,6 +16,24 @@ export class RespuestasService {
       throw new BadRequestException('Máximo 5 respuestas por pregunta');
     }
     return this.prisma.respuesta.create({ data: createRespuestaDto });
+  }
+
+  async findAll(pagination?: PaginationDto) {
+    const page = pagination?.page ?? 1;
+    const limit = pagination?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.respuesta.findMany({
+        skip,
+        take: limit,
+        include: { pregunta: true },
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.respuesta.count(),
+    ]);
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   findByPregunta(preguntaId: number) {

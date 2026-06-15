@@ -1523,3 +1523,23 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - **Decisión arquitectónica:** Con JWT stateless, el logout real se maneja del lado del cliente eliminando el token. No se implementa blacklist porque la aplicación no lo requiere — si en el futuro se necesita invalidación forzada, se podría añadir una tabla de tokens revocados o usar Redis. Por ahora, el endpoint existe como buena práctica de API (el frontend lo llama antes de redirigir al login).
 
 **Decisión:** Compilación exitosa. El módulo Auth queda minimalista: solo login (sin guards, cualquiera puede intentar autenticarse) y logout (requiere JWT). El register se elimina porque duplicaba funcionalidad con Profesores y porque la política es que solo un ADMIN puede crear docentes.
+
+---
+
+## [17:04] Backend de Respuestas — refactor a patrón limpio
+
+**Prompt:** Refactorizar Respuestas al mismo patrón.
+
+**Resultado:**
+
+*Iteración 1 — controlador:*
+- Se añadió `GET /respuestas` (`index`) con `@Query() pagination: PaginationDto` (listado paginado)
+- `findOne` → `show`, `remove` → `delete`
+- Se conserva `GET /respuestas/pregunta/:preguntaId` como endpoint específico (no encaja en el patrón CRUD estándar, es un filtro por pregunta)
+
+*Iteración 2 — service:*
+- `findAll()`: paginación completa con `skip`/`take`, `Promise.all` paralelo, include de `pregunta`, orden por `id` ascendente.
+- Se conserva `findByPregunta()` sin paginación — devuelve todas las respuestas de una pregunta (útil para el frontend al mostrar las opciones de una pregunta concreta; el máximo es 5 por regla de negocio, así que no necesita paginación).
+- Se conserva la regla de negocio en `create()`: count de respuestas por `preguntaId`, lanza `BadRequestException` si ya hay 5.
+
+**Decisión:** Compilación exitosa. Respuestas tiene una particularidad frente a los demás módulos: el endpoint `findByPregunta` específico, y la validación de máximo 5 respuestas en creación. El resto del patrón es idéntico.
