@@ -33,6 +33,8 @@ const router = createRouter({
         { path: 'preguntas-contextuales/:id/editar', name: 'PreguntasContextualesEditar', component: () => import('../views/Preguntas/PreguntasForm/PreguntasContextualesFormView.vue') },
         { path: 'examenes', name: 'Examenes', component: () => import('../views/Examenes/ExamenesView/ExamenesView.vue') },
         { path: 'bateria', name: 'Bateria', component: () => import('../views/Bateria/BateriaView/BateriaView.vue') },
+        { path: 'bateria/nueva', name: 'BateriaNueva', component: () => import('../views/Bateria/BateriaForm/BateriaFormView.vue') },
+        { path: 'bateria/:id/editar', name: 'BateriaEditar', component: () => import('../views/Bateria/BateriaForm/BateriaFormView.vue') },
       ],
     },
     {

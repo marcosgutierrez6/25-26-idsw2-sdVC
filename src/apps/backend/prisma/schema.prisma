@@ -7,9 +7,158 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ──────────────────────────────────────────────
-// Enumeraciones
-// ──────────────────────────────────────────────
+model Grado {
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  codigo      String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  alumnos     Alumno[]
+  asignaturas Asignatura[]
+}
+
+model Asignatura {
+  id             Int                 @id @default(autoincrement())
+  titulo         String
+  codigo         String
+  cursoAcademico String
+  gradoId        Int
+  profesorId     Int?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  alumnos        AlumnoAsignatura[]
+  grado          Grado               @relation(fields: [gradoId], references: [id])
+  profesor       Profesor?           @relation(fields: [profesorId], references: [id])
+  baterias       BateriaDePreguntas[]
+  examenes       Examen[]
+
+  @@unique([codigo, cursoAcademico])
+  @@index([gradoId], map: "Asignatura_gradoId_fkey")
+  @@index([profesorId], map: "Asignatura_profesorId_fkey")
+}
+
+model Profesor {
+  id          Int          @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  dni         String       @unique
+  email       String       @unique
+  password    String
+  rol         Rol          @default(DOCENTE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  asignaturas Asignatura[]
+}
+
+model Alumno {
+  id          Int                @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  dni         String             @unique
+  email       String             @unique
+  gradoId     Int
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  grado       Grado              @relation(fields: [gradoId], references: [id])
+  asignaturas AlumnoAsignatura[]
+  examenes    AlumnoExamen[]
+
+  @@index([gradoId], map: "Alumno_gradoId_fkey")
+}
+
+model AlumnoAsignatura {
+  alumnoId     Int
+  asignaturaId Int
+  alumno       Alumno     @relation(fields: [alumnoId], references: [id])
+  asignatura   Asignatura @relation(fields: [asignaturaId], references: [id])
+
+  @@id([alumnoId, asignaturaId])
+  @@index([asignaturaId], map: "AlumnoAsignatura_asignaturaId_fkey")
+}
+
+model BateriaDePreguntas {
+  id            Int                        @id @default(autoincrement())
+  nombre        String
+  asignaturaId  Int
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+  asignatura    Asignatura                 @relation(fields: [asignaturaId], references: [id])
+  preguntas     BateriaDePreguntas_Pregunta[]
+}
+
+model Pregunta {
+  id         Int                        @id @default(autoincrement())
+  enunciado  String
+  tema       String
+  dificultad Dificultad
+  estado     EstadoPregunta             @default(EN_CONSTRUCCION)
+  createdAt  DateTime                   @default(now())
+  updatedAt  DateTime                   @updatedAt
+  examenes   ExamenPregunta[]
+  baterias   BateriaDePreguntas_Pregunta[]
+  respuestas Respuesta[]
+}
+
+model BateriaDePreguntas_Pregunta {
+  bateriaId  Int
+  bateria    BateriaDePreguntas @relation(fields: [bateriaId], references: [id])
+  preguntaId Int
+  pregunta   Pregunta           @relation(fields: [preguntaId], references: [id])
+
+  @@id([bateriaId, preguntaId])
+  @@index([preguntaId], map: "BateriaDePreguntas_Pregunta_preguntaId_fkey")
+}
+
+model Respuesta {
+  id         Int      @id @default(autoincrement())
+  opcion     String
+  esCorrecta Boolean
+  preguntaId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+  @@index([preguntaId], map: "Respuesta_preguntaId_fkey")
+}
+
+model Examen {
+  id              Int              @id @default(autoincrement())
+  evaluacion      Evaluacion
+  claveCorreccion String?
+  estado          EstadoExamen     @default(GENERADO)
+  asignaturaId    Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  alumnos         AlumnoExamen[]
+  asignatura      Asignatura       @relation(fields: [asignaturaId], references: [id])
+  preguntas       ExamenPregunta[]
+
+  @@index([asignaturaId], map: "Examen_asignaturaId_fkey")
+}
+
+model ExamenPregunta {
+  examenId   Int
+  preguntaId Int
+  examen     Examen   @relation(fields: [examenId], references: [id])
+  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
+
+  @@id([examenId, preguntaId])
+  @@index([preguntaId], map: "ExamenPregunta_preguntaId_fkey")
+}
+
+model AlumnoExamen {
+  alumnoId       Int
+  examenId       Int
+  hashAsignacion String?  @unique
+  respuestas     String?
+  nota           Float?
+  createdAt      DateTime @default(now())
+  alumno         Alumno   @relation(fields: [alumnoId], references: [id])
+  examen         Examen   @relation(fields: [examenId], references: [id])
+
+  @@id([alumnoId, examenId])
+  @@index([examenId], map: "AlumnoExamen_examenId_fkey")
+}
 
 enum Dificultad {
   BAJA
@@ -41,222 +190,4 @@ enum EstadoPregunta {
 enum Rol {
   DOCENTE
   ADMIN
-}
-
-// ──────────────────────────────────────────────
-// Grado
-// ──────────────────────────────────────────────
-// CU: crearGrado, editarGrado, eliminarGrado, verGrados,
-//     importarGrados, exportarGrados
-// Diseño: GradosView + GradosForm con tabs
-//   [Datos del Grado][Alumnos][Asignaturas]
-// Restricciones: codigo único
-model Grado {
-  id          Int          @id @default(autoincrement())
-  titulo      String
-  codigo      String       @unique
-  asignaturas Asignatura[]
-  alumnos     Alumno[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// Asignatura
-// ──────────────────────────────────────────────
-// CU: crearAsignatura, editarAsignatura, eliminarAsignatura,
-//     verAsignaturas, importarAsignaturas, exportarAsignaturas
-// Diseño: AsignaturasView + AsignaturasForm con tabs
-//   [Datos][Preguntas Contextuales][Exámenes]
-// Restricciones: unique compuesto [codigo, cursoAcademico]
-//   profesorId opcional (la asignatura existe sin tutor asignado)
-model Asignatura {
-  id             Int          @id @default(autoincrement())
-  titulo         String
-  codigo         String
-  cursoAcademico String
-  gradoId        Int
-  grado          Grado        @relation(fields: [gradoId], references: [id])
-  profesorId     Int?
-  profesor       Profesor?    @relation(fields: [profesorId], references: [id])
-  examenes       Examen[]
-  bateria        BateriaDePreguntas?
-  alumnos        AlumnoAsignatura[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  @@unique([codigo, cursoAcademico])
-}
-
-// ──────────────────────────────────────────────
-// Profesor (Docente / Admin)
-// ──────────────────────────────────────────────
-// CU: crearDocente, editarDocente, eliminarDocente, verDocentes
-// Diseño: ProfesoresView + ProfesoresForm con tabs
-//   [Datos del Docente][Asignaturas]
-// Restricciones: dni y email únicos
-//   password hasheada con bcrypt (salt rounds 10)
-//   omit: { password: true } en findAll
-model Profesor {
-  id          Int          @id @default(autoincrement())
-  nombre      String
-  apellidos   String
-  dni         String       @unique
-  email       String       @unique
-  password    String
-  rol         Rol          @default(DOCENTE)
-  asignaturas Asignatura[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// Alumno
-// ──────────────────────────────────────────────
-// CU: crearAlumno, editarAlumno, eliminarAlumno, verAlumnos,
-//     importarAlumnos, exportarAlumnos
-// Diseño: AlumnosView + AlumnosForm con tabs
-//   [Datos Personales][Asignaturas][Exámenes]
-// Restricciones: dni y email únicos
-//   gradoId FK → Grado (validada por BD)
-model Alumno {
-  id          Int          @id @default(autoincrement())
-  nombre      String
-  apellidos   String
-  dni         String       @unique
-  email       String       @unique
-  gradoId     Int
-  grado       Grado        @relation(fields: [gradoId], references: [id])
-  asignaturas AlumnoAsignatura[]
-  examenes    AlumnoExamen[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// AlumnoAsignatura (relación N:M)
-// ──────────────────────────────────────────────
-// CU: editarAlumno (pestaña Asignaturas), editarAsignatura
-// Tabla intermedia: matrícula de alumno en asignatura
-model AlumnoAsignatura {
-  alumnoId     Int
-  alumno       Alumno     @relation(fields: [alumnoId], references: [id])
-  asignaturaId Int
-  asignatura   Asignatura @relation(fields: [asignaturaId], references: [id])
-
-  @@id([alumnoId, asignaturaId])
-}
-
-// ──────────────────────────────────────────────
-// BateriaDePreguntas
-// ──────────────────────────────────────────────
-// CU: crearAsignatura (se crea junto con la asignatura),
-//     importarPreguntas, exportarPreguntas
-// Relación 1:1 con Asignatura
-model BateriaDePreguntas {
-  id          Int        @id @default(autoincrement())
-  asignaturaId Int       @unique
-  asignatura  Asignatura @relation(fields: [asignaturaId], references: [id])
-  preguntas   Pregunta[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// Pregunta
-// ──────────────────────────────────────────────
-// CU: crearPregunta, editarPregunta, eliminarPregunta,
-//     verPreguntas, importarPreguntas, exportarPreguntas
-// Diseño: PreguntasView + PreguntasForm con tabs
-//   [Datos][Respuestas]
-// Restricciones: máximo 5 respuestas por pregunta (regla de negocio)
-//   estado inicial EN_CONSTRUCCION
-model Pregunta {
-  id         Int          @id @default(autoincrement())
-  enunciado  String
-  tema       String
-  dificultad Dificultad
-  estado     EstadoPregunta @default(EN_CONSTRUCCION)
-  bateriaId  Int
-  bateria    BateriaDePreguntas @relation(fields: [bateriaId], references: [id])
-  respuestas Respuesta[]
-  examenes   ExamenPregunta[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// Respuesta
-// ──────────────────────────────────────────────
-// CU: crearRespuesta, editarRespuesta, eliminarRespuesta,
-//     verRespuestas
-// Restricciones: al menos una respuesta debe tener esCorrecta = true
-//   (validado en servicio, no en BD)
-model Respuesta {
-  id         Int      @id @default(autoincrement())
-  opcion     String
-  esCorrecta Boolean
-  preguntaId Int
-  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// Examen
-// ──────────────────────────────────────────────
-// CU: generarExamenes, asignarExamenes, corregirExamenes,
-//     cancelarGeneracion, verExamenes, exportarExamenes
-// Diseño: ExamenesView con tabs [Listado][Generar][Resultados]
-// Restricciones:
-//   estado: GENERADO → ASIGNADO → RESUELTO → CORREGIDO
-//   claveCorreccion: JSON con { ordenRespuestas: number[] },
-//     generada en asignarExamenes con hash SHA-256
-model Examen {
-  id              Int          @id @default(autoincrement())
-  evaluacion      Evaluacion
-  claveCorreccion String?
-  estado          EstadoExamen @default(GENERADO)
-  asignaturaId    Int
-  asignatura      Asignatura   @relation(fields: [asignaturaId], references: [id])
-  preguntas       ExamenPregunta[]
-  alumnos         AlumnoExamen[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-}
-
-// ──────────────────────────────────────────────
-// ExamenPregunta (relación N:M)
-// ──────────────────────────────────────────────
-// CU: generarExamenes (se crean N exámenes con sus preguntas),
-//     corregirExamenes (se cruzan respuestas del alumno)
-model ExamenPregunta {
-  examenId   Int
-  examen     Examen   @relation(fields: [examenId], references: [id])
-  preguntaId Int
-  pregunta   Pregunta @relation(fields: [preguntaId], references: [id])
-
-  @@id([examenId, preguntaId])
-}
-
-// ──────────────────────────────────────────────
-// AlumnoExamen (relación N:M con datos)
-// ──────────────────────────────────────────────
-// CU: asignarExamenes (genera hash por alumno),
-//     corregirExamenes (almacena respuestas + nota)
-// Restricciones:
-//   hashAsignacion: SHA-256(timestamp + alumnoId + examenId), único
-//   respuestas: JSON con { respuestas: number[] } (índices de opciones)
-//   nota: calculada en corregirExamenes, escala 0-10
-model AlumnoExamen {
-  alumnoId      Int
-  alumno        Alumno   @relation(fields: [alumnoId], references: [id])
-  examenId      Int
-  examen        Examen   @relation(fields: [examenId], references: [id])
-  hashAsignacion String? @unique
-  respuestas    String?
-  nota          Float?
-  createdAt     DateTime @default(now())
-
-  @@id([alumnoId, examenId])
 }

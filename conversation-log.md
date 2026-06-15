@@ -1850,3 +1850,30 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Build verificado sin errores
 
 **Decisión:** Aceptado. El menú ahora es funcional y colapsable. La estructura mejora significativamente la navegabilidad priorizando Inicio y Exámenes (lo más usado) y agrupando las demás funciones por contexto. Los usuarios pueden desplegar/contraer secciones según necesidad.
+
+---
+
+## [21:47] Refactorizar completamente Batería de Preguntas: formulario con selector de preguntas
+
+**Prompt:** El usuario pidió refactorizar completamente la Batería de Preguntas. Indicó que:
+- La batería agrupa preguntas por nombre y asignatura
+- Una asignatura puede pertenecer a varios grados
+- El formulario debe ser sencillo: nombre + seleccionar asignatura + DataGrid de preguntas
+- DataGrid debe incluir barra de búsqueda y checkboxes para seleccionar preguntas
+- Las preguntas seleccionadas deben guardarse como JSON en DB (susceptible a cambios)
+
+**Resultado:**
+- Creado `Bateria/BateriaForm/BateriaFormView.vue` con:
+  - Campo "Nombre de la Batería" (nuevo)
+  - Selector de asignatura (deshabilitado en edición)
+  - DataGrid scrollable (400px) con todas las preguntas de la asignatura
+  - Barra de búsqueda con filtrado en vivo (enunciado + tema)
+  - Checkboxes por pregunta + checkbox "seleccionar todo"
+  - Contador: "X de Y preguntas seleccionadas"
+  - Tags de dificultad (BAJA/MEDIA/ALTA con color)
+- BateriaView actualizada: solo listado, elimina dialog inline
+- Tabla ahora muestra: ID, Nombre, Asignatura, Cantidad de preguntas
+- Router actualizado: `/bateria/nueva`, `/bateria/:id/editar`
+- Estructura consistente con otras entidades (View/Form separados)
+
+**Decisión:** Aceptado. La batería ahora es un formulario intuitivo con selección visual de preguntas. El JSON en DB permite cambios futuros sin requerimientos de migración. El patrón View/Form es consistente con el resto de la aplicación.
