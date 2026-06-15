@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import AuthLayout from '../layouts/AuthLayout.vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
@@ -13,7 +14,9 @@ import ExamenesView from '../views/ExamenesView.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', name: 'Login', component: LoginView, meta: { requiresAuth: false } },
+    { path: '/login', name: 'Login', component: AuthLayout, meta: { requiresAuth: false }, children: [
+      { path: '', component: LoginView },
+    ] },
     {
       path: '/',
       component: MainLayout,

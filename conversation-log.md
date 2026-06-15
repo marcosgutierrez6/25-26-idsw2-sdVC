@@ -1593,3 +1593,40 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 **Decisión:** Compilación exitosa. Es el módulo más simple junto con Grados y Alumnos. Sin lógica de negocio extra, solo CRUD (sin update).
 
 ---
+
+## [17:18] Rediseño del login (split layout) + instalación de Tailwind CSS
+
+**Prompt:** El usuario pidió cambiar el front del login siguiendo un template de PrimeVue con diseño split (formulario a la izquierda, imagen con overlay morado a la derecha). También pidió migrar de PrimeFlex a Tailwind CSS como framework de utilidades.
+
+**Resultado:**
+- Instalado `primeflex` inicialmente para que funcionaran las utility classes del template
+- Reescrito `LoginView.vue` con el template split: logo SVG, campos email/password con toggle mask, checkbox "Remember me", enlace "Forgot password", fondo con overlay gradiente
+- Mantenida la lógica de login existente (Pinia store, router push, error handling con Message)
+- Instalado `tailwindcss` + `@tailwindcss/vite` como dependencias de desarrollo
+- Creado `tailwind.config.js` con content paths
+- Actualizado `vite.config.ts` — añadido plugin `tailwindcss()`
+- Creado `src/assets/main.css` con `@import "tailwindcss"`
+- Actualizado `main.ts` — reemplazado `primeflex/primeflex.css` → `./assets/main.css`
+- Build verificado sin errores
+
+**Decisión:** Aceptado todo bajo la guía del usuario. El usuario me guió paso a paso para instalar Tailwind correctamente con Vite (usando `@tailwindcss/vite` plugin), reemplazando PrimeFlex que no es compatible con la versión de Vite/PrimeVue del proyecto. La combinación Tailwind + PrimeVue Aura theme es la configuración estándar recomendada. El login quedó con el diseño moderno split que pidió, y Tailwind listo para el resto del front.
+
+---
+
+## [17:25] Toast global en layouts + español login + migraciones Prisma
+
+**Prompt:** El usuario pidió tres cosas: (1) traducir el login a español, (2) eliminar la línea "¿No tienes una cuenta?", (3) añadir toast de error en login en lugar del Message, y (4) crear dos layouts con Toast para no repetir la importación en cada vista (AuthLayout para el login con Toast, y MainLayout para el contenido principal también con Toast). Además, pidió crear las migraciones de Prisma que no estaban hechas.
+
+**Resultado:**
+- Login traducido a español: títulos, labels, placeholders, botones
+- Eliminada la línea de registro
+- Creado `AuthLayout.vue` con `<Toast />` + `<router-view />`
+- Añadido `<Toast />` a `MainLayout.vue`
+- Registrado `ToastService` como plugin en `main.ts`
+- Router actualizado: login usa `AuthLayout` como layout padre con LoginView como hijo
+- LoginView reescrito: usa `useToast()` en lugar de `Message`, muestra toast error con "Credenciales inválidas"
+- Eliminada importación de `Message` en LoginView
+- Migraciones Prisma creadas: generado SQL con `migrate diff` y marcado como applied con `migrate resolve` (sin resetear la BD existente)
+- Build verificado sin errores
+
+**Decisión:** Aceptado todo siguiendo las indicaciones del usuario. El usuario guió la estrategia de layouts con Toast para mantenerlo limpio y reutilizable. Para las migraciones, usó el enfoque de `migrate diff` + `migrate resolve` para no perder los datos existentes en la BD.
