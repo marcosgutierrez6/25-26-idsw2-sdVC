@@ -140,7 +140,6 @@ const menuConfig: MenuSection[] = [
       { path: '/alumnos', text: 'Alumnos', icon: 'pi pi-users' },
       { path: '/profesores', text: 'Profesores', icon: 'pi pi-user', adminOnly: true },
       { path: '/preguntas', text: 'Preguntas', icon: 'pi pi-question-circle' },
-      { path: '/preguntas-contextuales', text: 'Preguntas Contextuales', icon: 'pi pi-bookmark' },
       { path: '/bateria', text: 'Batería', icon: 'pi pi-database' },
       { path: '/examenes', text: 'Exámenes', icon: 'pi pi-file' },
     ],
