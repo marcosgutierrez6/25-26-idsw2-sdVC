@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../Prisma/prisma.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
 import { AsignarExamenesDto } from './dto/asignar-examenes.dto';

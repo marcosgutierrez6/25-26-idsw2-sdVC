@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } f
 import { PreguntasService } from './preguntas.service';
 import { CreatePreguntaDto } from './dto/create-pregunta.dto';
 import { UpdatePreguntaDto } from './dto/update-pregunta.dto';
-import { JwtAuthGuard } from '../common/jwt-auth.guard';
-import { RolesGuard } from '../common/roles.guard';
-import { Roles } from '../common/roles.decorator';
+import { JwtAuthGuard } from '../Common/jwt-auth.guard';
+import { RolesGuard } from '../Common/roles.guard';
+import { Roles } from '../Common/roles.decorator';
 import { Rol } from '@prisma/client';
 
 @Controller('preguntas')

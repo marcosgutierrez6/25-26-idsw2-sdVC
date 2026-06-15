@@ -3,11 +3,11 @@ import { ExamenesService } from './examenes.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
 import { AsignarExamenesDto } from './dto/asignar-examenes.dto';
-import { JwtAuthGuard } from '../common/jwt-auth.guard';
-import { RolesGuard } from '../common/roles.guard';
-import { Roles } from '../common/roles.decorator';
+import { JwtAuthGuard } from '../Common/jwt-auth.guard';
+import { RolesGuard } from '../Common/roles.guard';
+import { Roles } from '../Common/roles.decorator';
 import { Rol } from '@prisma/client';
-import { CurrentUser } from '../common/current-user.decorator';
+import { CurrentUser } from '../Common/current-user.decorator';
 
 @Controller('examenes')
 @UseGuards(JwtAuthGuard, RolesGuard)
