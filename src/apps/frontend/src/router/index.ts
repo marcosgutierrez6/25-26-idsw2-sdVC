@@ -14,6 +14,8 @@ const router = createRouter({
       children: [
         { path: 'dashboard', name: 'Dashboard', component: () => import('../views/DashboardView.vue') },
         { path: 'grados', name: 'Grados', component: () => import('../views/GradosView.vue') },
+        { path: 'grados/nuevo', name: 'GradosNuevo', component: () => import('../views/GradosFormView.vue') },
+        { path: 'grados/:id/editar', name: 'GradosEditar', component: () => import('../views/GradosFormView.vue') },
         { path: 'asignaturas', name: 'Asignaturas', component: () => import('../views/AsignaturasView.vue') },
         { path: 'alumnos', name: 'Alumnos', component: () => import('../views/AlumnosView.vue') },
         { path: 'profesores', name: 'Profesores', component: () => import('../views/ProfesoresView.vue') },

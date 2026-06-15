@@ -16,15 +16,17 @@ export class AlumnosService {
     const page = pagination?.page ?? 1;
     const limit = pagination?.limit ?? 10;
     const skip = (page - 1) * limit;
+    const where = pagination?.gradoId ? { gradoId: pagination.gradoId } : {};
 
     const [data, total] = await Promise.all([
       this.prisma.alumno.findMany({
         skip,
         take: limit,
+        where,
         include: { grado: true },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.alumno.count(),
+      this.prisma.alumno.count({ where }),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };

@@ -174,7 +174,6 @@
 </template>
 
 <script setup lang="ts">
-import 'primeicons/primeicons.css';
 import { ref, reactive, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../api/axios';

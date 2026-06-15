@@ -1688,7 +1688,7 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 
 ---
 
-## [18:50] Eliminar useToast de las vistas
+## [17:50] Eliminar useToast de las vistas
 
 **Prompt:** El usuario dijo: "pq pones el toast si te dije de poner un layout bueno 2 uno para auth y otro para la app no tiene sentido duplicar codigo de toast".
 
@@ -1702,7 +1702,7 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 
 ---
 
-## [18:55] Añadir menú Batería + menú dinámico desde JSON
+## [18:03] Añadir menú Batería + menú dinámico desde JSON
 
 **Prompt:** El usuario pidió: "Falta una opcion en el menu q sea bateria haz q sea dinamico el path el texto y el icono y donde va q hay como 2 tipos de menu q sea un json lib sabes?"
 
@@ -1718,10 +1718,14 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 
 ---
 
-## [18:15] Añadir conversation-log.md al repositorio
+## [18:02] Formulario de Grados con tabs + backend gradoId filter
 
-**Prompt:** "añade el conversation log". Se pidió registrar la sesión actual en el archivo conversation-log.md.
+**Prompt:** El usuario pidió crear una vista de formulario para Grados con tabs, siguiendo un template de PrimeVue con animación. El primer tab es "Configuración general" y los otros tabs (Asignaturas, Alumnos) deben estar desactivados al crear (sin id) y activos al editar (con id), mostrando DataGrids readonly con paginación. Rutas: `/grados/nuevo` y `/:id/editar`.
 
-**Resultado:** Añadidas las entradas de esta sesión al conversation-log.md.
+**Resultado:**
+- **Backend:** Añadido `gradoId?: number` opcional a `PaginationDto`. Actualizados `AsignaturasService.findAll()` y `AlumnosService.findAll()` para filtrar por `gradoId` cuando se pasa.
+- **GradosFormView.vue:** Nueva vista con el template de tabs animados (transición con `--tab-dx`/`--tab-dw`). Tres tabs: (1) Configuración general — formulario título/código + guardar (siempre activo), (2) Asignaturas — DataTable paginado readonly (desactivado si es creación), (3) Alumnos — DataTable paginado readonly (desactivado si es creación). Usa `computed(() => route.params.id)` para detectar modo crear/editar.
+- **GradosView.vue:** Simplificado — botón "Nuevo Grado" navega a `/grados/nuevo`, lápiz navega a `/grados/:id/editar`. Solo eliminar queda inline. Eliminados Dialog, InputText, editando, form que ya no se usan.
+- **Router:** Añadidas rutas hijas `grados/nuevo` y `grados/:id/editar` apuntando a GradosFormView.
 
-**Decisión:** Aceptado.
+**Decisión:** Build exitoso (frontend + backend). Tabs se desactivan visualmente (cursor-not-allowed, color gris) cuando no hay id. Al guardar en modo creación, redirige a `/grados` (listado). El patrón servirá de plantilla para el resto de entidades.

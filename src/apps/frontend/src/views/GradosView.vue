@@ -2,7 +2,7 @@
   <div class="p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Grados</h1>
-      <Button label="Nuevo Grado" icon="pi pi-plus" @click="abrirDialog()" />
+      <Button label="Nuevo Grado" icon="pi pi-plus" @click="router.push('/grados/nuevo')" />
     </div>
 
     <DataTable :value="items" :loading="loading" :paginator="true" :rows="limit" :totalRecords="total" lazy @page="onPage">
@@ -11,36 +11,32 @@
       <Column field="codigo" header="Código" sortable />
       <Column header="Acciones">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text" @click="abrirDialog(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="eliminar(data)" />
+          <Button icon="pi pi-pencil" class="p-button-text" @click="router.push(`/grados/${data.id}/editar`)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="confirmarEliminar(data)" />
         </template>
       </Column>
     </DataTable>
 
-    <Dialog v-model:visible="dialogVisible" :header="editando ? 'Editar Grado' : 'Nuevo Grado'" modal>
-      <form @submit.prevent="guardar">
-        <div class="field">
-          <label for="titulo">Título</label>
-          <InputText id="titulo" v-model="form.titulo" class="w-full" required />
-        </div>
-        <div class="field">
-          <label for="codigo">Código</label>
-          <InputText id="codigo" v-model="form.codigo" class="w-full" required />
-        </div>
-        <Button type="submit" :label="editando ? 'Actualizar' : 'Crear'" class="w-full" />
-      </form>
+    <Dialog v-model:visible="deleteDialog" header="Confirmar eliminación" modal>
+      <p class="m-0">¿Estás seguro de que quieres eliminar el grado <strong>{{ itemToDelete?.titulo }}</strong>?</p>
+      <div class="flex gap-2 justify-end mt-4">
+        <Button label="Cancelar" severity="secondary" @click="deleteDialog = false" />
+        <Button label="Eliminar" severity="danger" @click="eliminar" />
+      </div>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../api/axios';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
+
+const router = useRouter();
 
 const items = ref<any[]>([]);
 const loading = ref(false);
@@ -48,10 +44,8 @@ const total = ref(0);
 const page = ref(1);
 const limit = 10;
 
-const dialogVisible = ref(false);
-const editando = ref(false);
-const editandoId = ref<number | null>(null);
-const form = ref({ titulo: '', codigo: '' });
+const deleteDialog = ref(false);
+const itemToDelete = ref<any>(null);
 
 onMounted(() => cargar());
 
@@ -71,40 +65,16 @@ function onPage(event: any) {
   cargar();
 }
 
-function abrirDialog(data?: any) {
-  if (data) {
-    editando.value = true;
-    editandoId.value = data.id;
-    form.value = { titulo: data.titulo, codigo: data.codigo };
-  } else {
-    editando.value = false;
-    editandoId.value = null;
-    form.value = { titulo: '', codigo: '' };
-  }
-  dialogVisible.value = true;
+function confirmarEliminar(data: any) {
+  itemToDelete.value = data;
+  deleteDialog.value = true;
 }
 
-async function guardar() {
-  if (editando.value) {
-    await api.patch(`/grados/${editandoId.value}`, form.value);
-  } else {
-    await api.post('/grados', form.value);
-  }
-  dialogVisible.value = false;
-  editando.value = false;
-  editandoId.value = null;
-  form.value = { titulo: '', codigo: '' };
-  page.value = 1;
-  cargar();
-}
-
-async function eliminar(data: any) {
-  await api.delete(`/grados/${data.id}`);
+async function eliminar() {
+  if (!itemToDelete.value) return;
+  await api.delete(`/grados/${itemToDelete.value.id}`);
+  deleteDialog.value = false;
+  itemToDelete.value = null;
   cargar();
 }
 </script>
-
-<style scoped>
-.field { margin-bottom: 1rem; }
-.field label { display: block; margin-bottom: 0.5rem; }
-</style>

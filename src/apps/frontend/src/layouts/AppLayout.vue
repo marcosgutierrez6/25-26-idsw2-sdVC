@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import 'primeicons/primeicons.css';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import Toast from 'primevue/toast';
