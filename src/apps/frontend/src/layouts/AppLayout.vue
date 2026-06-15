@@ -15,7 +15,7 @@
       </div>
 
       <div class="overflow-y-auto flex-1 p-2 flex flex-col gap-4">
-        <ul class="list-none m-0 flex flex-col">
+        <ul v-for="(section, si) in menuConfig" :key="si" class="list-none m-0 flex flex-col">
           <li>
             <div
               v-styleclass="{
@@ -27,90 +27,29 @@
               }"
               class="flex items-center cursor-pointer p-3 gap-4 rounded-lg section-header"
             >
-              <span class="font-semibold text-base leading-tight">Home</span>
+              <span class="font-semibold text-base leading-tight">{{ section.title }}</span>
               <i class="pi pi-angle-down text-base! leading-none! text-surface-400 ml-auto" />
             </div>
-            <ul class="list-none m-0 overflow-hidden flex flex-col gap-1">
-              <li>
-                <router-link to="/dashboard" class="menu-link" :class="{ 'menu-active': $route.path === '/dashboard' }">
-                  <i class="pi pi-home text-base! leading-none!" />
-                  <span class="font-medium text-base leading-tight">Dashboard</span>
-                  <span v-if="$route.path === '/dashboard'" class="menu-indicator" />
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/grados" class="menu-link" :class="{ 'menu-active': $route.path === '/grados' }">
-                  <i class="pi pi-book text-base! leading-none!" />
-                  <span class="font-medium text-base leading-tight">Grados</span>
-                  <span v-if="$route.path === '/grados'" class="menu-indicator" />
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/asignaturas" class="menu-link" :class="{ 'menu-active': $route.path === '/asignaturas' }">
-                  <i class="pi pi-bookmark text-base! leading-none!" />
-                  <span class="font-medium text-base leading-tight">Asignaturas</span>
-                  <span v-if="$route.path === '/asignaturas'" class="menu-indicator" />
+            <ul class="list-none m-0 overflow-hidden flex flex-col gap-1" :class="{ 'mt-1': section.style === 'badge' }">
+              <li v-for="(item, ii) in section.items" :key="ii">
+                <router-link
+                  v-if="!item.adminOnly || auth.isAdmin"
+                  :to="item.path"
+                  class="menu-link"
+                  :class="{ 'menu-active': $route.path === item.path }"
+                >
+                  <span v-if="section.style === 'badge'" class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
+                    <i :class="item.icon + ' text-xs! leading-none! text-violet-200'" />
+                  </span>
+                  <i v-else :class="item.icon + ' text-base! leading-none!'" />
+                  <span class="font-medium text-base leading-tight">{{ item.text }}</span>
+                  <span v-if="$route.path === item.path" class="menu-indicator" />
                 </router-link>
               </li>
             </ul>
           </li>
-        </ul>
-
-        <hr class="border-t border-surface-800 my-0" />
-
-        <ul class="list-none m-0 flex flex-col gap-1">
-          <li>
-            <div
-              v-styleclass="{
-                selector: '@next',
-                enterFromClass: 'hidden',
-                enterActiveClass: 'animate-slidedown',
-                leaveToClass: 'hidden',
-                leaveActiveClass: 'animate-slideup'
-              }"
-              class="flex items-center cursor-pointer p-3 gap-4 rounded-lg section-header"
-            >
-              <span class="font-semibold text-base leading-tight">Academia</span>
-              <i class="pi pi-angle-down text-base! leading-none! text-surface-400 ml-auto" />
-            </div>
-            <ul class="list-none m-0 overflow-hidden flex flex-col gap-1 mt-1">
-              <li>
-                <router-link to="/alumnos" class="menu-link" :class="{ 'menu-active': $route.path === '/alumnos' }">
-                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
-                    <i class="pi pi-users text-xs! leading-none! text-violet-200" />
-                  </span>
-                  <span class="font-medium text-base leading-tight">Alumnos</span>
-                  <span v-if="$route.path === '/alumnos'" class="menu-indicator" />
-                </router-link>
-              </li>
-              <li v-if="auth.isAdmin">
-                <router-link to="/profesores" class="menu-link" :class="{ 'menu-active': $route.path === '/profesores' }">
-                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
-                    <i class="pi pi-user text-xs! leading-none! text-violet-200" />
-                  </span>
-                  <span class="font-medium text-base leading-tight">Profesores</span>
-                  <span v-if="$route.path === '/profesores'" class="menu-indicator" />
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/preguntas" class="menu-link" :class="{ 'menu-active': $route.path === '/preguntas' }">
-                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
-                    <i class="pi pi-question-circle text-xs! leading-none! text-violet-200" />
-                  </span>
-                  <span class="font-medium text-base leading-tight">Preguntas</span>
-                  <span v-if="$route.path === '/preguntas'" class="menu-indicator" />
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/examenes" class="menu-link" :class="{ 'menu-active': $route.path === '/examenes' }">
-                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
-                    <i class="pi pi-file text-xs! leading-none! text-violet-200" />
-                  </span>
-                  <span class="font-medium text-base leading-tight">Exámenes</span>
-                  <span v-if="$route.path === '/examenes'" class="menu-indicator" />
-                </router-link>
-              </li>
-            </ul>
+          <li v-if="si < menuConfig.length - 1">
+            <hr class="border-t border-surface-800 my-0" />
           </li>
         </ul>
       </div>
@@ -159,7 +98,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import Badge from 'primevue/badge';
 import Toast from 'primevue/toast';
 
 const auth = useAuthStore();
@@ -170,6 +108,42 @@ function cerrarSesion() {
   auth.logout();
   router.push('/auth/login');
 }
+
+interface MenuItem {
+  path: string
+  text: string
+  icon: string
+  adminOnly?: boolean
+}
+
+interface MenuSection {
+  title: string
+  style: 'simple' | 'badge'
+  items: MenuItem[]
+}
+
+const menuConfig: MenuSection[] = [
+  {
+    title: 'Home',
+    style: 'simple',
+    items: [
+      { path: '/dashboard', text: 'Dashboard', icon: 'pi pi-home' },
+      { path: '/grados', text: 'Grados', icon: 'pi pi-book' },
+      { path: '/asignaturas', text: 'Asignaturas', icon: 'pi pi-bookmark' },
+    ],
+  },
+  {
+    title: 'Academia',
+    style: 'badge',
+    items: [
+      { path: '/alumnos', text: 'Alumnos', icon: 'pi pi-users' },
+      { path: '/profesores', text: 'Profesores', icon: 'pi pi-user', adminOnly: true },
+      { path: '/preguntas', text: 'Preguntas', icon: 'pi pi-question-circle' },
+      { path: '/bateria', text: 'Batería', icon: 'pi pi-database' },
+      { path: '/examenes', text: 'Exámenes', icon: 'pi pi-file' },
+    ],
+  },
+];
 </script>
 
 <style scoped>

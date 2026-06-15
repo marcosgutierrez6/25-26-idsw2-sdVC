@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <Toolbar class="mb-3">
-      <template #start><h1 class="m-0">Profesores</h1></template>
-      <template #end>
-        <Button label="Nuevo Profesor" icon="pi pi-plus" @click="abrirDialog()" />
-      </template>
-    </Toolbar>
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Profesores</h1>
+      <Button label="Nuevo Profesor" icon="pi pi-plus" @click="abrirDialog()" />
+    </div>
 
-    <DataTable :value="profesores" :loading="loading">
+    <DataTable :value="items" :loading="loading" :paginator="true" :rows="limit" :totalRecords="total" lazy @page="onPage">
       <Column field="id" header="ID" sortable />
       <Column field="nombre" header="Nombre" sortable />
       <Column field="apellidos" header="Apellidos" sortable />
@@ -38,15 +36,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../api/axios';
-import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 
-const profesores = ref<any[]>([]);
+const items = ref<any[]>([]);
 const loading = ref(false);
+const total = ref(0);
+const page = ref(1);
+const limit = 10;
+
 const dialogVisible = ref(false);
 const editando = ref(false);
 const editandoId = ref<number | null>(null);
@@ -56,27 +57,55 @@ onMounted(() => cargar());
 
 async function cargar() {
   loading.value = true;
-  try { const { data } = await api.get('/profesores'); profesores.value = data; } finally { loading.value = false; }
+  try {
+    const { data: res } = await api.get('/profesores', { params: { page: page.value, limit } });
+    items.value = res.data;
+    total.value = res.total;
+  } finally {
+    loading.value = false;
+  }
+}
+
+function onPage(event: any) {
+  page.value = event.page + 1;
+  cargar();
 }
 
 function abrirDialog(data?: any) {
   if (data) {
-    editando.value = true; editandoId.value = data.id;
+    editando.value = true;
+    editandoId.value = data.id;
     form.value = { nombre: data.nombre, apellidos: data.apellidos, dni: data.dni, email: data.email, password: '' };
   } else {
-    editando.value = false; editandoId.value = null;
+    editando.value = false;
+    editandoId.value = null;
     form.value = { nombre: '', apellidos: '', dni: '', email: '', password: '' };
   }
   dialogVisible.value = true;
 }
 
 async function guardar() {
-  if (editando.value) { await api.patch(`/profesores/${editandoId.value}`, form.value); }
-  else { await api.post('/profesores', form.value); }
-  dialogVisible.value = false; cargar();
+  if (editando.value) {
+    const payload: Record<string, any> = { nombre: form.value.nombre, apellidos: form.value.apellidos, dni: form.value.dni, email: form.value.email };
+    if (form.value.password) payload.password = form.value.password;
+    await api.patch(`/profesores/${editandoId.value}`, payload);
+  } else {
+    await api.post('/profesores', form.value);
+  }
+  dialogVisible.value = false;
+  editando.value = false;
+  editandoId.value = null;
+  form.value = { nombre: '', apellidos: '', dni: '', email: '', password: '' };
+  page.value = 1;
+  cargar();
 }
-async function eliminar(data: any) { await api.delete(`/profesores/${data.id}`); cargar(); }
+
+async function eliminar(data: any) {
+  await api.delete(`/profesores/${data.id}`);
+  cargar();
+}
 </script>
+
 <style scoped>
 .field { margin-bottom: 1rem; }
 .field label { display: block; margin-bottom: 0.5rem; }

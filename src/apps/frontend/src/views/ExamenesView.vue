@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <Toolbar class="mb-3">
-      <template #start><h1 class="m-0">Exámenes</h1></template>
-      <template #end>
-        <Button label="Generar Exámenes" icon="pi pi-cog" @click="vista = 'generar'" class="mr-2" />
-      </template>
-    </Toolbar>
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Exámenes</h1>
+      <Button label="Generar Exámenes" icon="pi pi-cog" @click="tabIndex = 1" />
+    </div>
 
     <TabView v-model:activeIndex="tabIndex">
       <TabPanel header="Listado" value="listado">
-        <DataTable :value="examenes" :loading="loading">
+        <DataTable :value="items" :loading="loading" :paginator="true" :rows="limit" :totalRecords="total" lazy @page="onPage">
           <Column field="id" header="ID" sortable />
           <Column field="evaluacion" header="Evaluación" />
           <Column field="estado" header="Estado" />
@@ -53,7 +51,7 @@
         <DataTable :value="resultadosExamen">
           <Column field="alumno.nombre" header="Nombre" />
           <Column field="alumno.apellidos" header="Apellidos" />
-          <Column field="nota" header="Nota">
+          <Column header="Nota">
             <template #body="{ data }">{{ data.nota != null ? data.nota.toFixed(1) : 'Pendiente' }}</template>
           </Column>
         </DataTable>
@@ -72,7 +70,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../api/axios';
-import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -83,13 +80,15 @@ import Card from 'primevue/card';
 import Select from 'primevue/select';
 import InputNumber from 'primevue/inputnumber';
 
-const examenes = ref<any[]>([]);
+const items = ref<any[]>([]);
 const asignaturas = ref<any[]>([]);
 const alumnos = ref<any[]>([]);
 const loading = ref(false);
+const total = ref(0);
+const page = ref(1);
+const limit = 10;
 const generando = ref(false);
 const tabIndex = ref(0);
-const vista = ref('listado');
 
 const genForm = ref({
   asignaturaId: null, temas: [], evaluacion: 'PARCIAL_1', numeroExamenes: 1, numeroPreguntas: 10,
@@ -105,9 +104,31 @@ const resultadosExamen = ref<any[] | null>(null);
 
 onMounted(() => { cargar(); cargarAsignaturas(); cargarAlumnos(); });
 
-async function cargar() { loading.value = true; try { const { data } = await api.get('/examenes'); examenes.value = data; } finally { loading.value = false; } }
-async function cargarAsignaturas() { const { data } = await api.get('/asignaturas'); asignaturas.value = data; }
-async function cargarAlumnos() { const { data } = await api.get('/alumnos'); alumnos.value = data; }
+async function cargar() {
+  loading.value = true;
+  try {
+    const { data: res } = await api.get('/examenes', { params: { page: page.value, limit } });
+    items.value = res.data;
+    total.value = res.total;
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function cargarAsignaturas() {
+  const { data: res } = await api.get('/asignaturas', { params: { limit: 200 } });
+  asignaturas.value = res.data;
+}
+
+async function cargarAlumnos() {
+  const { data: res } = await api.get('/alumnos', { params: { limit: 200 } });
+  alumnos.value = res.data;
+}
+
+function onPage(event: any) {
+  page.value = event.page + 1;
+  cargar();
+}
 
 async function generarExamenes() {
   generando.value = true;
@@ -115,7 +136,9 @@ async function generarExamenes() {
     await api.post('/examenes/generar', genForm.value);
     cargar();
     tabIndex.value = 0;
-  } finally { generando.value = false; }
+  } finally {
+    generando.value = false;
+  }
 }
 
 function asignarExamen(data: any) {
@@ -125,7 +148,8 @@ function asignarExamen(data: any) {
 
 async function confirmarAsignacion() {
   await api.post('/examenes/asignar', { examenId: asignarExamenId.value, alumnoIds: alumnosSeleccionados.value });
-  asignarDialog.value = false; cargar();
+  asignarDialog.value = false;
+  cargar();
 }
 
 async function verExamen(data: any) {
@@ -140,6 +164,7 @@ async function verResultados(data: any) {
   tabIndex.value = 2;
 }
 </script>
+
 <style scoped>
 .field { margin-bottom: 1rem; }
 .field label { display: block; margin-bottom: 0.5rem; }

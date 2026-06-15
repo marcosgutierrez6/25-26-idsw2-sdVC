@@ -1671,3 +1671,57 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Build verificado sin errores
 
 **Decisión:** Aceptado todo bajo la guía del usuario. El usuario proporcionó los templates exactos para ambos layouts y la estructura del router. Se adaptaron los menús a nuestras entidades reales (traduciendo "Your Networks" → "Academia", "Bookmarks" → "Grados", etc.) y se filtró Profesores solo para ADMIN. El lazy loading con `() => import()` mejora el rendimiento al cargar vistas bajo demanda.
+
+---
+
+## [17:47] Reestructurar vistas: AppLayout + paginación + adaptación a API paginada
+
+**Prompt:** Continuar adaptando las vistas de entidades (GradosView, AsignaturasView, ExamenesView, ProfesoresView, PreguntasView, AlumnosView) para que encajen dentro del AppLayout. Se pidió quitar el Toolbar standalone y usar un div con padding, añadir paginación lazy al DataTable, usar las respuestas paginadas de la API (page, limit, totalRecords), y añadir useToast para notificaciones.
+
+**Resultado:**
+- Las 6 vistas fueron reescritas: reemplazado `<Toolbar>` por `<div class="p-6">` con título y botón en flex.
+- Añadida paginación lazy: `:paginator="true"`, `:rows="limit"`, `:totalRecords="total"`, `@page` handler con `page.value = event.page + 1`.
+- API calls actualizadas: `api.get('/ruta', { params: { page, limit } })` y respuesta desestructurada como `res.data` (array) y `res.total` (total de registros).
+- Añadido `useToast()` para success/error en CRUD.
+
+**Decisión:** Build exitoso. Aceptado inicialmente, pero el usuario luego pidió eliminar el useToast de las vistas porque el Toast ya está en los layouts y no tiene sentido duplicar el código.
+
+---
+
+## [18:50] Eliminar useToast de las vistas
+
+**Prompt:** El usuario dijo: "pq pones el toast si te dije de poner un layout bueno 2 uno para auth y otro para la app no tiene sentido duplicar codigo de toast".
+
+**Resultado:**
+- Eliminado `import { useToast } from 'primevue/usetoast'` de las 6 vistas.
+- Eliminados los bloques try/catch con toast.add() en guardar() y eliminar().
+- Restaurado el patrón simple original (sin try/catch, sin toast) pero manteniendo la paginación y el layout fit.
+- En ProfesoresView, se cambió el manejo del password condicional: en lugar de `delete payload.password`, se construye un objeto explícito con solo los campos que van.
+
+**Decisión:** Aceptado. Las vistas quedan más limpias. El `<Toast>` está en los layouts y cualquier error HTTP se muestra automáticamente vía el interceptor de axios (que redirige a /auth/login en 401).
+
+---
+
+## [18:55] Añadir menú Batería + menú dinámico desde JSON
+
+**Prompt:** El usuario pidió: "Falta una opcion en el menu q sea bateria haz q sea dinamico el path el texto y el icono y donde va q hay como 2 tipos de menu q sea un json lib sabes?"
+
+**Resultado:**
+- Creado `BateriaView.vue` con tabla paginada (id, asignatura, activo, conteo de preguntas) y CRUD básico.
+- Añadida ruta `/bateria` en el router con lazy import.
+- Reescrito `AppLayout.vue`: el menú ahora se renderiza desde un array `menuConfig` en el script, definido como `MenuSection[]` con `title`, `style` (`'simple'` | `'badge'`) e `items` (`{ path, text, icon, adminOnly? }`).
+- Sección Home (style simple): Dashboard, Grados, Asignaturas.
+- Sección Academia (style badge con fondo violeta): Alumnos, Profesores (adminOnly), Preguntas, Batería, Exámenes.
+- Para añadir/quitarelementos solo se edita el array menuConfig.
+
+**Decisión:** Aceptado. Build exitoso.
+
+---
+
+## [18:15] Añadir conversation-log.md al repositorio
+
+**Prompt:** "añade el conversation log". Se pidió registrar la sesión actual en el archivo conversation-log.md.
+
+**Resultado:** Añadidas las entradas de esta sesión al conversation-log.md.
+
+**Decisión:** Aceptado.
