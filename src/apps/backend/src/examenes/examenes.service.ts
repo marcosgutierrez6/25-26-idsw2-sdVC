@@ -237,6 +237,13 @@ export class ExamenesService {
     return { nota, aciertos, total, detalles };
   }
 
+  async cancelarGeneracion() {
+    const eliminados = await this.prisma.examen.deleteMany({
+      where: { estado: EstadoExamen.GENERADO },
+    });
+    return { message: `Generación cancelada: ${eliminados.count} examen(es) eliminado(s)` };
+  }
+
   async resultados(examenId: number) {
     return this.prisma.alumnoExamen.findMany({
       where: { examenId },

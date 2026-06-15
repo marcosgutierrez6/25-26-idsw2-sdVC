@@ -67,6 +67,12 @@ export class ExamenesController {
     return this.examenesService.corregir(+examenId, +alumnoId, body.respuestas);
   }
 
+  @Post('cancelar-generacion')
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  cancelarGeneracion() {
+    return this.examenesService.cancelarGeneracion();
+  }
+
   @Get(':id/resultados')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
   resultados(@Param('id') id: string) {

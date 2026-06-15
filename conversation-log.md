@@ -1543,3 +1543,31 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Se conserva la regla de negocio en `create()`: count de respuestas por `preguntaId`, lanza `BadRequestException` si ya hay 5.
 
 **Decisión:** Compilación exitosa. Respuestas tiene una particularidad frente a los demás módulos: el endpoint `findByPregunta` específico, y la validación de máximo 5 respuestas en creación. El resto del patrón es idéntico.
+
+---
+
+## [17:07] Backend de Examenes — implementación de cancelarGeneracion
+
+**Prompt:** El usuario preguntó si `cancelarGeneracion()` estaba implementado. Se revisó la documentación en `documents/{analisis,diseño}/cancelarGeneracion/README.md`.
+
+**Análisis de la documentación:**
+
+*Documento de análisis:*
+- El caso de uso `cancelarGeneracion()` elimina exámenes en estado `GENERADO`
+- Proponía dos vías: `DELETE /examenes/:id` por cada examen, o un endpoint batch `POST /examenes/cancelar-generacion`
+- La trazabilidad mencionaba `examenes.controller.ts` y `examenes.service.ts` como destino
+
+*Documento de diseño:*
+- Propone `POST /api/sistema/cancelar-generacion` con `SistemaController`/`SistemaService`
+- "Elimina exámenes, baterías y actualiza estado" con "Sistema vuelve a ASIGNATURA_ABIERTO"
+- **Problema detectado:** No existe tabla "sistema" en el esquema Prisma, ni concepto de "estado del sistema" en la BD. El diseño asumía una entidad que nunca se materializó en el esquema.
+- **Decisión:** No se crea un módulo Sistema porque no hay tabla que lo respalde. Se implementa en Examenes, que es el módulo que posee los exámenes y su estado.
+
+**Implementación:**
+- Endpoint: `POST /examenes/cancelar-generacion` (ya existe `POST /examenes/generar`, consistencia REST)
+- Service: `deleteMany` con `where: { estado: EstadoExamen.GENERADO }` — solo afecta exámenes no asignados
+- Retorna `{ message: 'Generación cancelada: N examen(es) eliminado(s)', count: N }`
+- No se eliminan baterías (son pools de preguntas reutilizables, no "generadas" por sesión)
+- No se actualiza estado de sistema (no existe en la BD)
+
+**Decisión:** Compilación exitosa. Queda pendiente si en el futuro se añade una entidad "SesionDeGeneracion" o similar para trackear generaciones. Por ahora, `deleteMany` con filtro por estado es suficiente y sigue el principio de mínima sorpresa.
