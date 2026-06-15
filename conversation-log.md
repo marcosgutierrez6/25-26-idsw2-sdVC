@@ -1439,3 +1439,24 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Refactorizado `AsignaturasService.findAll()`: mismo patrón de paginación con `skip`/`take`, `Promise.all` con `count`, devolviendo `{ data, total, page, limit, totalPages }`. Los includes existentes (grado, profesor) se mantienen.
 
 **Decisión:** Compilación exitosa. Es el CRUD más sencillo del sistema — Asignaturas no tiene filtros de búsqueda ni lógica de negocio compleja en el listado, solo paginación y relaciones. Se mantiene el `include: { grado: true, profesor: true }` del original. La paginación sigue el mismo `orderBy: { createdAt: 'desc' }` que los demás módulos para mantener consistencia.
+
+---
+
+## [16:37] Backend de Profesores — refactor a patrón limpio
+
+**Prompt:** El usuario pidió refactorizar Profesores al mismo patrón que Examenes, Preguntas y Asignaturas: controlador con `index` paginado, `show`, `create`, `update`, `delete` y toda la lógica en el service.
+
+**Resultado:**
+
+*Iteración 1 — refactor del controlador:*
+- Renombrados métodos: `findAll` → `index`, `findOne` → `show`, `remove` → `delete`
+- `index` ahora acepta `PaginationDto` y devuelve `{ data, total, page, limit, totalPages }`
+- Se mantiene el guard `@Roles(Rol.ADMIN)` en todos los endpoints (solo administradores pueden gestionar docentes)
+
+*Iteración 2 — refactor del service:*
+- `findAll()`: misma mecánica de paginación con `skip`/`take` y `Promise.all` con `count`. Se preserva `omit: { password: true }` para no exponer hashes en el listado.
+- `create()`: se mantiene el bcrypt con salt rounds 10 antes de persistir
+- `update()`: bcrypt condicional — solo aplica hash si el DTO incluye un nuevo `password`
+- `remove()`: verificación de existencia via `findOne` antes de eliminar
+
+**Decisión:** Compilación exitosa. Es el único módulo con restricción `@Roles(Rol.ADMIN)` exclusiva (los demás permiten DOCENTE y ADMIN). El `omit: { password: true }` se mantiene en `findAll`, `findOne` y `update` para seguridad. El hashing condicional en `update` evita re-hashear la contraseña actual si no se está cambiando.
