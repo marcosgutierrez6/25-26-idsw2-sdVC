@@ -38,11 +38,9 @@
         <h2 class="text-lg font-semibold mb-4">Seleccionar Preguntas</h2>
 
         <!-- Barra de búsqueda -->
-        <div class="mb-4 max-w-md">
-          <span class="p-input-icon-left w-full">
-            <i class="pi pi-search" />
-            <InputText v-model="searchText" placeholder="Buscar preguntas..." class="w-full" />
-          </span>
+        <div class="mb-4">
+          <InputText v-model="searchText" placeholder="Buscar preguntas..." class="w-full p-input-icon-left" style="padding-left: 2.5rem;" />
+          <i class="pi pi-search" style="position: absolute; left: 0.75rem; top: 0.5rem; color: var(--text-color-secondary);" />
         </div>
 
         <!-- DataTable con preguntas -->
@@ -145,10 +143,8 @@ async function cargarPreguntas() {
   if (!form.value.asignaturaId) return;
   loadingPreguntas.value = true;
   try {
-    const { data } = await api.get('/preguntas', {
-      params: { page: 1, limit: 1000 }
-    });
-    preguntas.value = data.data || [];
+    const { data } = await api.get('/preguntas');
+    preguntas.value = Array.isArray(data) ? data : data.data || [];
   } catch (error) {
     console.error('Error cargando preguntas:', error);
     preguntas.value = [];

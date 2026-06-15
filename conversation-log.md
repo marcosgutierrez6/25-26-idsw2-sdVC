@@ -1902,3 +1902,67 @@ mysql -u root -p'password' -h localhost jorgestor < prisma/seed.sql
 Este dataset permite probar la generación, asignación y corrección de exámenes de forma realista.
 
 ---
+
+## [21:55] Correcciones de endpoints y frontend para N:M relationship en Preguntas
+
+**Prompt:** El usuario reportó que las preguntas no aparecían en las tablas del frontend. Se investigó y se encontró que hay un desajuste entre el formato de respuesta del endpoint y lo que el frontend esperaba.
+
+**Resultado:**
+
+*Problema 1: Destructuring incorrecto en frontend*
+- PreguntasView.vue línea 81: `const { data: res }` seguido de `res.data` estaba duplicando la desestructuración
+- Corregido a `const { data }` y luego `data.data` consistentemente en todas las vistas
+- Arreglados 20+ archivos .vue que tenían el mismo patrón
+
+*Problema 2: Schema mismatch en backend*
+- Pregunta.model cambió a N:M relationship con BateriaDePreguntas a través de tabla intermedia
+- PreguntasService.findAll() intentaba incluir `bateria` que ya no existe
+- Corregido a incluir `baterias` con nested include: `{ bateria: { include: { asignatura: true } } }`
+- Corregido filtro `bateriaId` que usaba sintaxis incorrecta: `baterias: { some: { bateriaId } }`
+
+*Problema 3: Migraciones Prisma fallidas*
+- Migración `0_init` tenía una línea de npm warning al inicio que causaba error SQL syntax 1064
+- Eliminada línea de npm warning y se ejecutó `prisma migrate reset --force`
+- Aplicadas migraciones exitosamente con `prisma db push`
+
+**Decisión:** Aceptado. Las preguntas ahora se cargan correctamente en todas las vistas. El cambio a tabla intermedia para N:M es correcto estructuralmente.
+
+---
+
+## [22:00] Refactor de PreguntasView: Dialog → Form separado + números de respuestas
+
+**Prompt:** El usuario pidió que:
+1. Reemplace el Dialog inline de PreguntasView por un Form separado (como en otras entidades)
+2. En lugar de mostrar las opciones de respuesta, mostrar números (1, 2, 3, +N)
+3. Mejore los colores
+
+**Resultado:**
+- PreguntasView.vue simplificada a listado puro sin Dialog
+- Botón "Nueva Pregunta" navega a `/preguntas/nuevo`
+- Botones Editar navegan a `/preguntas/:id/editar`
+- Columna "Respuestas" ahora muestra solo el contador: `data.respuestas.length`
+- Estilos nuevos: números en círculos con gradiente morado; números correctos con gradiente azul-verde
+- Dialog de confirmación solo para eliminar (consistente con otras entidades)
+
+**Decisión:** Aceptado. La vista es ahora consistente con el patrón View/Form separado de Grados, Asignaturas, Alumnos, Profesores.
+
+---
+
+## [22:05] Correcciones en BateriaView y BateriaFormView
+
+**Prompt:** El usuario reportó que las baterías muestran 0 preguntas, no aparecen las preguntas en el formulario, y el maquetado está mal.
+
+**Resultado:**
+
+*BateriaView.vue:*
+- Línea 13: Cambió de `data.preguntas.length` a `data._count?.preguntas || 0` (el conteo real está en _count)
+
+*BateriaFormView.vue:*
+- Maquetado: Cambió de `max-w-md` a `grid grid-cols-2` para mejor distribución del formulario
+- Carga de preguntas al editar: Extraer IDs de tabla intermedia: `data.preguntas?.map(p => p.preguntaId)`
+- Icono de lupa: Cambió de PrimeVue InputIcon a posicionamiento absoluto para alineación correcta
+- Endpoint `/preguntas?page=1&limit=1000` devolvía 400: Removidos parámetros, ahora carga sin filtros
+
+**Decisión:** Aceptado. Las baterías muestran ahora el conteo correcto y el formulario carga las preguntas.
+
+---
