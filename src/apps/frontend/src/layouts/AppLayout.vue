@@ -15,22 +15,45 @@
       </div>
 
       <div class="overflow-y-auto flex-1 p-2 flex flex-col gap-4">
-        <ul v-for="(section, si) in menuConfig" :key="si" class="list-none m-0 flex flex-col">
+        <!-- Elementos fijos superiores -->
+        <ul class="list-none m-0 flex flex-col gap-1">
+          <li>
+            <router-link
+              to="/dashboard"
+              class="menu-link"
+              :class="{ 'menu-active': $route.path === '/dashboard' }"
+            >
+              <i class="pi pi-home text-base! leading-none!" />
+              <span class="font-medium text-base leading-tight">Inicio</span>
+              <span v-if="$route.path === '/dashboard'" class="menu-indicator" />
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/examenes"
+              class="menu-link"
+              :class="{ 'menu-active': $route.path === '/examenes' }"
+            >
+              <i class="pi pi-file text-base! leading-none!" />
+              <span class="font-medium text-base leading-tight">Exámenes</span>
+              <span v-if="$route.path === '/examenes'" class="menu-indicator" />
+            </router-link>
+          </li>
+        </ul>
+
+        <hr class="border-t border-surface-800 my-0" />
+
+        <!-- Secciones colapsables -->
+        <ul v-for="(section, si) in collapsibleSections" :key="si" class="list-none m-0 flex flex-col">
           <li>
             <div
-              v-styleclass="{
-                selector: '@next',
-                enterFromClass: 'hidden',
-                enterActiveClass: 'animate-slidedown',
-                leaveToClass: 'hidden',
-                leaveActiveClass: 'animate-slideup'
-              }"
+              @click="toggleSection(si)"
               class="flex items-center cursor-pointer p-3 gap-4 rounded-lg section-header"
             >
               <span class="font-semibold text-base leading-tight">{{ section.title }}</span>
-              <i class="pi pi-angle-down text-base! leading-none! text-surface-400 ml-auto" />
+              <i :class="{ 'pi pi-angle-down': !openSections[si], 'pi pi-angle-up': openSections[si] }" class="text-base! leading-none! text-surface-400 ml-auto" />
             </div>
-            <ul class="list-none m-0 overflow-hidden flex flex-col gap-1" :class="{ 'mt-1': section.style === 'badge' }">
+            <ul v-show="openSections[si]" class="list-none m-0 flex flex-col gap-1 mt-1">
               <li v-for="(item, ii) in section.items" :key="ii">
                 <router-link
                   v-if="!item.adminOnly || auth.isAdmin"
@@ -38,17 +61,16 @@
                   class="menu-link"
                   :class="{ 'menu-active': $route.path === item.path }"
                 >
-                  <span v-if="section.style === 'badge'" class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
+                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
                     <i :class="item.icon + ' text-xs! leading-none! text-violet-200'" />
                   </span>
-                  <i v-else :class="item.icon + ' text-base! leading-none!'" />
                   <span class="font-medium text-base leading-tight">{{ item.text }}</span>
                   <span v-if="$route.path === item.path" class="menu-indicator" />
                 </router-link>
               </li>
             </ul>
           </li>
-          <li v-if="si < menuConfig.length - 1">
+          <li v-if="si < collapsibleSections.length - 1">
             <hr class="border-t border-surface-800 my-0" />
           </li>
         </ul>
@@ -99,11 +121,18 @@
 import 'primeicons/primeicons.css';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { ref } from 'vue';
 import Toast from 'primevue/toast';
 
 const auth = useAuthStore();
 const router = useRouter();
 const $route = useRoute();
+
+const openSections = ref<boolean[]>([true, true]); // Todas las secciones abiertas por defecto
+
+function toggleSection(index: number) {
+  openSections.value[index] = !openSections.value[index];
+}
 
 function cerrarSesion() {
   auth.logout();
@@ -119,29 +148,26 @@ interface MenuItem {
 
 interface MenuSection {
   title: string
-  style: 'simple' | 'badge'
   items: MenuItem[]
 }
 
-const menuConfig: MenuSection[] = [
-  {
-    title: 'Home',
-    style: 'simple',
-    items: [
-      { path: '/dashboard', text: 'Dashboard', icon: 'pi pi-home' },
-      { path: '/grados', text: 'Grados', icon: 'pi pi-book' },
-      { path: '/asignaturas', text: 'Asignaturas', icon: 'pi pi-bookmark' },
-    ],
-  },
+const collapsibleSections: MenuSection[] = [
   {
     title: 'Academia',
-    style: 'badge',
     items: [
       { path: '/alumnos', text: 'Alumnos', icon: 'pi pi-users' },
       { path: '/profesores', text: 'Profesores', icon: 'pi pi-user', adminOnly: true },
       { path: '/preguntas', text: 'Preguntas', icon: 'pi pi-question-circle' },
       { path: '/bateria', text: 'Batería', icon: 'pi pi-database' },
-      { path: '/examenes', text: 'Exámenes', icon: 'pi pi-file' },
+    ],
+  },
+  {
+    title: 'Configuración',
+    items: [
+      { path: '/grados', text: 'Grados', icon: 'pi pi-book' },
+      { path: '/asignaturas', text: 'Asignaturas', icon: 'pi pi-bookmark' },
+      { path: '#', text: 'Exportar', icon: 'pi pi-download' },
+      { path: '#', text: 'Importar', icon: 'pi pi-upload' },
     ],
   },
 ];
