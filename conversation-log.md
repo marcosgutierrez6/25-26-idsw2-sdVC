@@ -1394,3 +1394,48 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - Toda la lógica pesada (Fisher-Yates shuffle, hash SHA-256, cálculo de nota, transición de estado) permanece en `ExamenesService`
 
 **Decisión:** Compilación exitosa. El patrón está listo para aplicarse al resto de módulos.
+
+---
+
+## [16:31] Backend de Configuracion — importar/exportar
+
+**Prompt:** El usuario pidió continuar con la siguiente entidad de la priorización (tras corregirExamenes). Tocaba Configuracion, que agrupa los casos de uso `importarConfiguracionGlobal` (#3) y `exportarConfiguracionGlobal` (#4). Ambos estaban marcados como "propuesta sin implementar" en los documentos de diseño. Había que implementarlos desde cero siguiendo el patrón de controlador limpio + lógica en servicio, alineados con los diagramas de secuencia de `modelosUML/diseño/importarConfiguracionGlobal/secuencia.puml` y `exportarConfiguracionGlobal/secuencia.puml`.
+
+**Resultado:**
+
+*Iteración 1 — creación inicial:*
+- Creado `ConfiguracionModule` con `ConfiguracionController` y `ConfiguracionService`
+- `POST /configuracion/importar`: endpoint que recibe un JSON con arrays de grados, asignaturas, alumnos y baterías. La importación sigue el orden jerárquico estricto del diseño: primero grados (sin FK), luego asignaturas (FK→grado con resolución por `codigo`), luego alumnos (FK→grado resuelto por `codigo`), por último baterías con preguntas y respuestas anidadas (FK→asignatura resuelto por `codigo`). Usa `createMany` con `skipDuplicates: true` para ser idempotente en reimportaciones. En baterías, al tener que crear preguntas anidadas (no soportado por `createMany`), se usa `create` individual con nested `preguntas: { create: [...] }` y verificación previa de existencia. Devuelve `{ entidad: { creados, omitidos } }`.
+- `GET /configuracion/exportar`: tres consultas en paralelo con `Promise.all` — grados con asignaturas, alumnos con grado, baterías con preguntas y respuestas. Compila todo en una estructura JSON jerárquica limpia (grados → asignaturas, alumnos → código de grado, baterías → preguntas → respuestas). Sin paginación: es una exportación completa del sistema.
+- Creado `ImportarConfigDto` con 4 sub-DTOs anidados: `GradoImport`, `AsignaturaImport` (con `gradoCodigo` y opcional `profesorDni`), `AlumnoImport` (con `gradoCodigo`), `BateriaImport` (con `asignaturaCodigo` y array de `PreguntaImport` que a su vez contiene array de `RespuestaImport`). Las propiedades son `@IsOptional` para permitir importar solo ciertas entidades.
+
+*Iteración 2 — corrección de error de compilación:*
+- TypeScript marcó error TS2339: `Property 'preguntas' does not exist on type` al intentar acceder a `bd.preguntas.length` tras un `create` de BateriaDePreguntas. El tipo de retorno de `prisma.bateriaDePreguntas.create()` sin `include` solo devuelve los campos escalares del modelo, no las relaciones. Se corrigió eliminando la asignación a `bd` y usando directamente `bateria.preguntas.length` (el array original del DTO), que es el contador real de preguntas que se intentaron crear.
+- `ConfiguracionModule` registrado en `app.module.ts` junto al resto de módulos.
+
+**Decisión:** Aceptado. Se validó que el orden jerárquico de importación respeta el diseño (grados → asignaturas → alumnos → baterías/preguntas). La resolución de FKs por código/DNI es correcta porque esos campos son únicos en la BD. Se decidió no usar `$transaction` global para mantener cada `createMany` como operación atómica individual, permitiendo que incluso si una entidad falla, las anteriores ya están persistidas. La exportación sin paginación es deliberada: es una operación administrativa poco frecuente que requiere el volumen completo de datos.
+
+---
+
+## [16:32] Backend de Preguntas — refactor a patrón limpio
+
+**Prompt:** El usuario pidió refactorizar el módulo de Preguntas para que siguiera exactamente el mismo patrón que Examenes: controlador con `index` (paginated), `show`, `create`, `update`, `delete` y toda la lógica en el service. El controlador existente ya estaba relativamente limpio pero usaba `findAll`/`findOne`/`remove` y no tenía paginación.
+
+**Resultado:**
+- Refactorizado `PreguntasController`: renombrados métodos a `index` (GET con `PaginationDto` + query params `tema`, `dificultad`, `bateriaId` para filtros), `show` (GET :id), `create` (POST), `update` (PATCH), `delete` (DELETE).
+- Refactorizado `PreguntasService.findAll()`: ahora acepta `PaginationDto` extendido con los filtros opcionales. Calcula `skip = (page - 1) * limit`, ejecuta `findMany` y `count` en paralelo con `Promise.all`. Devuelve `{ data, total, page, limit, totalPages }`.
+- Los filtros existentes (tema, dificultad, bateriaId) se mantienen y se combinan con la paginación: el `where` se construye condicionalmente, y tanto `findMany` como `count` usan el mismo `where` para que el total refleje los filtros aplicados.
+
+**Decisión:** Compilación exitosa. El cambio más relevante respecto al CRUD original es que ahora el `index` devuelve metadata de paginación que el frontend puede usar para renderizar controles de página. Los filtros y la paginación conviven correctamente: si filtras por `tema`, el `total` refleja solo las preguntas de ese tema. El `orderBy: { createdAt: 'desc' }` asegura que las preguntas más recientes aparezcan primero.
+
+---
+
+## [16:35] Backend de Asignaturas — refactor a patrón limpio
+
+**Prompt:** El usuario pidió refactorizar Asignaturas al mismo patrón que Examenes y Preguntas.
+
+**Resultado:**
+- Refactorizado `AsignaturasController`: `index` (GET con `PaginationDto`), `show` (GET :id), `create` (POST), `update` (PATCH), `delete` (DELETE).
+- Refactorizado `AsignaturasService.findAll()`: mismo patrón de paginación con `skip`/`take`, `Promise.all` con `count`, devolviendo `{ data, total, page, limit, totalPages }`. Los includes existentes (grado, profesor) se mantienen.
+
+**Decisión:** Compilación exitosa. Es el CRUD más sencillo del sistema — Asignaturas no tiene filtros de búsqueda ni lógica de negocio compleja en el listado, solo paginación y relaciones. Se mantiene el `include: { grado: true, profesor: true }` del original. La paginación sigue el mismo `orderBy: { createdAt: 'desc' }` que los demás módulos para mantener consistencia.
