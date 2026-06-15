@@ -8,8 +8,8 @@ import { PaginationDto } from '../Common/dto/pagination.dto';
 export class AsignaturasService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createAsignaturaDto: CreateAsignaturaDto) {
-    return this.prisma.asignatura.create({ data: createAsignaturaDto });
+  create(createAsignaturaDto: CreateAsignaturaDto, profesorId: number) {
+    return this.prisma.asignatura.create({ data: { ...createAsignaturaDto, profesorId } });
   }
 
   async findAll(pagination?: PaginationDto) {

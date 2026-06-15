@@ -116,12 +116,12 @@ async function cargar() {
 }
 
 async function cargarAsignaturas() {
-  const { data: res } = await api.get('/asignaturas', { params: { limit: 200 } });
+  const { data: res } = await api.get('/asignaturas', { params: { limit: 100 } });
   asignaturas.value = res.data;
 }
 
 async function cargarAlumnos() {
-  const { data: res } = await api.get('/alumnos', { params: { limit: 200 } });
+  const { data: res } = await api.get('/alumnos', { params: { limit: 100 } });
   alumnos.value = res.data;
 }
 

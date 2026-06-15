@@ -15,7 +15,4 @@ export class CreateAsignaturaDto {
 
   @IsInt()
   gradoId: number;
-
-  @IsInt()
-  profesorId?: number;
 }

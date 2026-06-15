@@ -15,19 +15,21 @@ export class ExamenesService {
     return this.prisma.examen.create({ data: createExamenDto });
   }
 
-  async findAll(pagination?: { page?: number; limit?: number }) {
+  async findAll(pagination?: { page?: number; limit?: number; asignaturaId?: number }) {
     const page = pagination?.page ?? 1;
     const limit = pagination?.limit ?? 10;
     const skip = (page - 1) * limit;
+    const where = pagination?.asignaturaId ? { asignaturaId: pagination.asignaturaId } : {};
 
     const [data, total] = await Promise.all([
       this.prisma.examen.findMany({
+        where,
         skip,
         take: limit,
         include: { asignatura: true, _count: { select: { preguntas: true, alumnos: true } } },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.examen.count(),
+      this.prisma.examen.count({ where }),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };

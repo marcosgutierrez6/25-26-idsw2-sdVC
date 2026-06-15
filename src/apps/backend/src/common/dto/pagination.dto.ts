@@ -19,4 +19,9 @@ export class PaginationDto {
   @Type(() => Number)
   @IsInt()
   gradoId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  asignaturaId?: number;
 }

@@ -18,7 +18,7 @@ export class ExamenesController {
   @Get()
   @Roles(Rol.DOCENTE, Rol.ADMIN)
   index(@Query() pagination: PaginationDto) {
-    return this.examenesService.findAll(pagination);
+    return this.examenesService.findAll({ ...pagination, asignaturaId: pagination.asignaturaId });
   }
 
   @Get(':id')

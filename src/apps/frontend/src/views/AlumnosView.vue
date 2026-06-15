@@ -69,7 +69,7 @@ async function cargar() {
 }
 
 async function cargarGrados() {
-  const { data: res } = await api.get('/grados', { params: { limit: 200 } });
+  const { data: res } = await api.get('/grados', { params: { limit: 100 } });
   grados.value = res.data;
 }
 

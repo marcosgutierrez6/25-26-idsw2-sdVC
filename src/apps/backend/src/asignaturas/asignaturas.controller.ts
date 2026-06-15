@@ -6,6 +6,7 @@ import { PaginationDto } from '../Common/dto/pagination.dto';
 import { JwtAuthGuard } from '../Common/jwt-auth.guard';
 import { RolesGuard } from '../Common/roles.guard';
 import { Roles } from '../Common/roles.decorator';
+import { CurrentUser } from '../Common/current-user.decorator';
 import { Rol } from '@prisma/client';
 
 @Controller('asignaturas')
@@ -27,8 +28,8 @@ export class AsignaturasController {
 
   @Post()
   @Roles(Rol.DOCENTE, Rol.ADMIN)
-  create(@Body() createAsignaturaDto: CreateAsignaturaDto) {
-    return this.asignaturasService.create(createAsignaturaDto);
+  create(@Body() createAsignaturaDto: CreateAsignaturaDto, @CurrentUser() user: any) {
+    return this.asignaturasService.create(createAsignaturaDto, user.id);
   }
 
   @Patch(':id')
