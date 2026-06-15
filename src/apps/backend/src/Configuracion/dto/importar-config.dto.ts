@@ -35,7 +35,9 @@ class PreguntaImport {
 }
 
 class BateriaImport {
+  nombre: string;
   asignaturaCodigo: string;
+  asignaturaCursoAcademico: string;
   preguntas: PreguntaImport[];
 }
 

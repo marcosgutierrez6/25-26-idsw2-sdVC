@@ -64,34 +64,44 @@ export class ConfiguracionService {
 
     if (dto.baterias?.length) {
       const asignaturas = await this.prisma.asignatura.findMany({
-        where: { codigo: { in: [...new Set(dto.baterias.map((b) => b.asignaturaCodigo))] } },
+        where: {
+          OR: dto.baterias.map((b) => ({
+            codigo: b.asignaturaCodigo,
+            cursoAcademico: b.asignaturaCursoAcademico,
+          })),
+        },
       });
-      const asigMap = new Map(asignaturas.map((a) => [a.codigo, a.id]));
+      const asigMap = new Map(asignaturas.map((a) => [`${a.codigo}|${a.cursoAcademico}`, a.id]));
 
       let creadas = 0;
       let omitidas = 0;
       for (const bateria of dto.baterias) {
-        const asignaturaId = asigMap.get(bateria.asignaturaCodigo);
+        const asignaturaId = asigMap.get(`${bateria.asignaturaCodigo}|${bateria.asignaturaCursoAcademico}`);
         if (!asignaturaId) { omitidas++; continue; }
 
-        const existente = await this.prisma.bateriaDePreguntas.findUnique({
+        const existente = await this.prisma.bateriaDePreguntas.findFirst({
           where: { asignaturaId },
         });
         if (existente) { omitidas++; continue; }
 
         await this.prisma.bateriaDePreguntas.create({
           data: {
+            nombre: bateria.nombre,
             asignaturaId,
             preguntas: {
               create: bateria.preguntas.map((p) => ({
-                enunciado: p.enunciado,
-                tema: p.tema,
-                dificultad: p.dificultad,
-                respuestas: {
-                  create: p.respuestas.map((r) => ({
-                    opcion: r.opcion,
-                    esCorrecta: r.esCorrecta,
-                  })),
+                pregunta: {
+                  create: {
+                    enunciado: p.enunciado,
+                    tema: p.tema,
+                    dificultad: p.dificultad,
+                    respuestas: {
+                      create: p.respuestas.map((r) => ({
+                        opcion: r.opcion,
+                        esCorrecta: r.esCorrecta,
+                      })),
+                    },
+                  },
                 },
               })),
             },
@@ -119,8 +129,12 @@ export class ConfiguracionService {
         include: {
           asignatura: true,
           preguntas: {
-            include: { respuestas: true },
-            orderBy: { id: 'asc' },
+            include: {
+              pregunta: {
+                include: { respuestas: true },
+              },
+            },
+            orderBy: { preguntaId: 'asc' },
           },
         },
         orderBy: { id: 'asc' },
@@ -145,12 +159,14 @@ export class ConfiguracionService {
         grado: a.grado.codigo,
       })),
       baterias: baterias.map((b) => ({
-        asignatura: b.asignatura.codigo,
+        nombre: b.nombre,
+        asignaturaCodigo: b.asignatura.codigo,
+        asignaturaCursoAcademico: b.asignatura.cursoAcademico,
         preguntas: b.preguntas.map((p) => ({
-          enunciado: p.enunciado,
-          tema: p.tema,
-          dificultad: p.dificultad,
-          respuestas: p.respuestas.map((r) => ({
+          enunciado: p.pregunta.enunciado,
+          tema: p.pregunta.tema,
+          dificultad: p.pregunta.dificultad,
+          respuestas: p.pregunta.respuestas.map((r) => ({
             opcion: r.opcion,
             esCorrecta: r.esCorrecta,
           })),

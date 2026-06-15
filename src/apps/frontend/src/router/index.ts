@@ -35,6 +35,8 @@ const router = createRouter({
         { path: 'bateria', name: 'Bateria', component: () => import('../views/Bateria/BateriaView/BateriaView.vue') },
         { path: 'bateria/nueva', name: 'BateriaNueva', component: () => import('../views/Bateria/BateriaForm/BateriaFormView.vue') },
         { path: 'bateria/:id/editar', name: 'BateriaEditar', component: () => import('../views/Bateria/BateriaForm/BateriaFormView.vue') },
+        { path: 'configuracion/exportar', name: 'Exportar', component: () => import('../views/Configuracion/ConfiguracionExportar/ConfiguracionExportarView.vue') },
+        { path: 'configuracion/importar', name: 'Importar', component: () => import('../views/Configuracion/ConfiguracionImportar/ConfiguracionImportarView.vue') },
       ],
     },
     {

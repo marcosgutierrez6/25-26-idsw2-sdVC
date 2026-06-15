@@ -61,11 +61,16 @@ export class ExamenesService {
   async generar(generarDto: GenerarExamenesDto) {
     const { asignaturaId, temas, numeroExamenes, numeroPreguntas, evaluacion, proporcionFacil, proporcionMedia, proporcionDificil } = generarDto;
 
-    const bateria = await this.prisma.bateriaDePreguntas.findUnique({
+    const bateria = await this.prisma.bateriaDePreguntas.findFirst({
       where: { asignaturaId },
       include: {
         preguntas: {
-          where: { tema: { in: temas }, estado: 'HABILITADA' },
+          where: {
+            pregunta: { tema: { in: temas }, estado: 'HABILITADA' },
+          },
+          include: {
+            pregunta: true,
+          },
         },
       },
     });
@@ -76,9 +81,9 @@ export class ExamenesService {
     }
 
     const preguntasPorDificultad = {
-      BAJA: bateria.preguntas.filter((p) => p.dificultad === 'BAJA'),
-      MEDIA: bateria.preguntas.filter((p) => p.dificultad === 'MEDIA'),
-      ALTA: bateria.preguntas.filter((p) => p.dificultad === 'ALTA'),
+      BAJA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'BAJA'),
+      MEDIA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'MEDIA'),
+      ALTA: bateria.preguntas.filter((p) => p.pregunta.dificultad === 'ALTA'),
     };
 
     const totalProporcion = proporcionFacil + proporcionMedia + proporcionDificil;
@@ -106,8 +111,9 @@ export class ExamenesService {
       preguntasSeleccionadas.push(...seleccionFacil, ...seleccionMedia, ...seleccionDificil);
 
       if (preguntasSeleccionadas.length < numeroPreguntas) {
+        const seleccionadosIds = preguntasSeleccionadas.map((p) => p.preguntaId);
         const restantes = shuffle(
-          bateria.preguntas.filter((p) => !preguntasSeleccionadas.includes(p)),
+          bateria.preguntas.filter((p) => !seleccionadosIds.includes(p.preguntaId)),
         );
         preguntasSeleccionadas.push(
           ...restantes.slice(0, numeroPreguntas - preguntasSeleccionadas.length),
@@ -121,7 +127,7 @@ export class ExamenesService {
           estado: EstadoExamen.GENERADO,
           preguntas: {
             create: preguntasSeleccionadas.slice(0, numeroPreguntas).map((p) => ({
-              preguntaId: p.id,
+              preguntaId: p.preguntaId,
             })),
           },
         },

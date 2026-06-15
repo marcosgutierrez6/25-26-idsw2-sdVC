@@ -1966,3 +1966,41 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado. Las baterías muestran ahora el conteo correcto y el formulario carga las preguntas.
 
 ---
+
+## [22:15] Arreglo del endpoint /configuracion/exportar (error 500)
+
+**Prompt:** El usuario reportó error 500 en GET /configuracion/exportar cuando intenta descargar la configuración.
+
+**Resultado:**
+
+*Problema 1: Include incorrecto en tabla intermedia*
+- El endpoint intentaba hacer `include: { respuestas: true }` en BateriaDePreguntas_Pregunta
+- Cambio: Anidó el include correctamente: `preguntas: { include: { pregunta: { include: { respuestas: true } } } }`
+- Además cambió `orderBy: { id: 'asc' }` a `orderBy: { preguntaId: 'asc' }` para la tabla intermedia
+
+*Problema 2: Mapeo de datos faltaba `pregunta`*
+- El mapeo accedía a `p.enunciado` pero `p` es BateriaDePreguntas_Pregunta (tabla intermedia)
+- Cambio: Modificó a `p.pregunta.enunciado`, `p.pregunta.tema`, `p.pregunta.dificultad`, `p.pregunta.respuestas`
+
+*Problema 3: Falta información para reimportar*
+- Export solo enviaba `asignatura: b.asignatura.codigo` pero ese código es único solo con `cursoAcademico`
+- Cambio: Agregó `asignaturaCodigo` y `asignaturaCursoAcademico` en export; actualizó BateriaImport DTO
+- También agregó `nombre` en export de baterías (era field requerido que faltaba)
+
+*Problema 4: Búsqueda de asignaturas en importar*
+- Usaba `findUnique` con solo `asignaturaId` pero ese no es único
+- Cambio: Usó `findFirst` y búsqueda por `codigo` + `cursoAcademico` con clave compuesta en Map
+
+*Problema 5: CreateBateriaDto faltaba campo `nombre`*
+- Cambio: Agregó `nombre: string` al DTO (requerido por schema Prisma)
+
+*Problema 6: ExamenesService con acceso incorrecto a tabla intermedia*
+- Usaba `findUnique` con `asignaturaId` (no único)
+- Cambio: Cambió a `findFirst` y agregó `include: { pregunta: true }` en preguntas
+- Cambio: Where en BateriaDePreguntas_Pregunta: `pregunta: { tema: { in: temas }, estado: 'HABILITADA' }`
+- Cambio: Filtros de dificultad: `p.pregunta.dificultad` en lugar de `p.dificultad`
+- Cambio: Acceso a ID de pregunta: `p.preguntaId` en lugar de `p.id`
+
+**Decisión:** Aceptado. Todos los cambios mantienen coherencia con el esquema N:M usando tabla intermedia.
+
+---

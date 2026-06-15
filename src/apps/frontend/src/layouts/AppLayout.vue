@@ -166,8 +166,8 @@ const collapsibleSections: MenuSection[] = [
     items: [
       { path: '/grados', text: 'Grados', icon: 'pi pi-book' },
       { path: '/asignaturas', text: 'Asignaturas', icon: 'pi pi-bookmark' },
-      { path: '#', text: 'Exportar', icon: 'pi pi-download' },
-      { path: '#', text: 'Importar', icon: 'pi pi-upload' },
+      { path: '/configuracion/exportar', text: 'Exportar', icon: 'pi pi-download' },
+      { path: '/configuracion/importar', text: 'Importar', icon: 'pi pi-upload' },
     ],
   },
 ];
