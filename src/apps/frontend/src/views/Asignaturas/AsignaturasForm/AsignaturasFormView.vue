@@ -114,8 +114,8 @@ async function cargarPreguntas() {
   if (!asignaturaId.value) return;
   loadingPre.value = true;
   try {
-    const baterias = await api.get('/bateria');
-    const bateria = baterias.data.find((b: any) => b.asignaturaId === asignaturaId.value);
+    const { data: baterias } = await api.get('/bateria');
+    const bateria = (Array.isArray(baterias) ? baterias : baterias.data || []).find((b: any) => b.asignaturaId === asignaturaId.value);
     if (bateria) {
       const { data: res } = await api.get('/preguntas', { params: { page: pagePre.value, limit: 10, bateriaId: bateria.id } });
       preguntas.value = res.data;

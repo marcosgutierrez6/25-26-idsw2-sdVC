@@ -1779,3 +1779,19 @@ User → View (clic en botón) → Form (modal) → Controller → Service → P
 - DashboardView.vue se mantiene en la raíz de views (no tiene formulario separado).
 
 **Decisión:** Aceptado. Build exitoso. Esto mejora la organización y escalabilidad: cada entidad tiene su propio espacio, es fácil ubicar componentes View/Form, y facilita agregar nuevas funcionalidades por entidad sin contaminar la raíz. La estructura es consistente con el precedente de Preguntas.
+
+---
+
+## [21:18] Crear formulario de preguntas normales + pasar asignaturaId por props (store)
+
+**Prompt:** El usuario señaló que la ruta `/preguntas/nuevo?asignaturaId=2` no existe. Pidió crear PreguntasFormView.vue reutilizable que use el mismo formulario para preguntas normales, con asignaturaId pasado por props de Vue (no query string), y el Select de asignatura en readOnly cuando viene precargado.
+
+**Resultado:**
+- Creado `Preguntas/PreguntasForm/PreguntasFormView.vue` con formulario básico de preguntas (enunciado/tema/dificultad/respuestas sin contexto/recursos/tiempoEstimado).
+- Crea store `preguntasForm.ts` con Pinia para almacenar temporalmente el asignaturaId (`setAsignaturaId`, `getAsignaturaId`, `clearAsignaturaId`).
+- Rutas añadidas: `/preguntas/nuevo` y `/preguntas/:id/editar`.
+- AsignaturasFormView actualizada: botón "Nueva Pregunta" llama a `irANuevaPregunta()` que guarda el asignaturaId en la store y navega a `/preguntas/nuevo`.
+- El Select de asignatura en PreguntasFormView se deshabilita (`:disabled="!!asignaturaIdProp"`) cuando `asignaturaIdProp` viene de la store.
+- Build verificado sin errores.
+
+**Decisión:** Aceptado. La solución usa Pinia para pasar props entre navegaciones de router sin necesidad de query params. El store se limpia después de guardar/volver para evitar contaminación de estado. El patrón es reutilizable para otros formularios que necesiten parámetros contextuales entre vistas.

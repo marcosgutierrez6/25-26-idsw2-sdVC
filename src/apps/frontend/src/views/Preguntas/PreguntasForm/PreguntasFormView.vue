@@ -129,7 +129,7 @@ const asignaturaIdProp = computed(() => props.asignaturaId || preguntasFormStore
 const preguntaId = computed(() => route.params.id ? Number(route.params.id) : null);
 
 const form = ref({
-  asignaturaId: props.asignaturaId || null,
+  asignaturaId: null as number | null,
   enunciado: '',
   tema: '',
   dificultad: 'MEDIA',
@@ -144,6 +144,13 @@ const asignaturas = ref<any[]>([]);
 
 onMounted(async () => {
   await cargarAsignaturas();
+
+  // Inicializar asignaturaId desde props o store
+  const asigId = asignaturaIdProp.value;
+  if (asigId) {
+    form.value.asignaturaId = asigId;
+  }
+
   if (preguntaId.value) {
     const { data } = await api.get(`/preguntas/${preguntaId.value}`);
     pregunta.value = data;
@@ -174,8 +181,8 @@ async function guardar() {
         dificultad: form.value.dificultad,
       });
     } else {
-      const baterias = await api.get('/bateria');
-      let bateria = baterias.data.find((b: any) => b.asignaturaId === form.value.asignaturaId);
+      const { data: baterias } = await api.get('/bateria');
+      let bateria = (Array.isArray(baterias) ? baterias : baterias.data || []).find((b: any) => b.asignaturaId === form.value.asignaturaId);
       if (!bateria) {
         bateria = (await api.post('/bateria', { asignaturaId: form.value.asignaturaId })).data;
       }
