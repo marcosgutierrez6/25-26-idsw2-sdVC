@@ -25,7 +25,7 @@
     <div v-if="active === 1">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0">Preguntas</h2>
-        <Button label="Nueva Pregunta" icon="pi pi-plus" size="small" @click="router.push(`/preguntas/nuevo?asignaturaId=${asignatura?.id}`)" />
+        <Button label="Nueva Pregunta" icon="pi pi-plus" size="small" @click="irANuevaPregunta()" />
       </div>
       <DataTable :value="preguntas" :loading="loadingPre" :paginator="true" :rows="10" :totalRecords="totalPre" lazy @page="onPagePre">
         <Column field="id" header="ID" sortable />
@@ -67,9 +67,11 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import { usePreguntasFormStore } from '../../../stores/preguntasForm';
 
 const route = useRoute();
 const router = useRouter();
+const preguntasFormStore = usePreguntasFormStore();
 
 const asignaturaId = computed(() => route.params.id ? Number(route.params.id) : null);
 
@@ -154,6 +156,13 @@ async function guardar() {
     await api.post('/asignaturas', form.value);
   }
   router.push('/asignaturas');
+}
+
+function irANuevaPregunta() {
+  if (asignatura.value?.id) {
+    preguntasFormStore.setAsignaturaId(asignatura.value.id);
+    router.push('/preguntas/nuevo');
+  }
 }
 </script>
 
