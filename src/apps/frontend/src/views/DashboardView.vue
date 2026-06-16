@@ -1,169 +1,141 @@
 <template>
-  <div class="w-full bg-surface-50 dark:bg-surface-950 font-sans antialiased text-surface-700 dark:text-surface-200 select-none p-8 flex flex-col gap-8">
+  <div class="dashboard" style="background: var(--color-bg-base); color: var(--color-text-primary);">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="flex flex-col gap-0.5">
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 tracking-tight">Dashboard</h1>
-        <p class="text-sm text-surface-500 dark:text-surface-400 font-medium">Resumen del sistema</p>
+    <div class="dashboard__header">
+      <div class="dashboard__title-group">
+        <h1 class="dashboard__title">Dashboard</h1>
+        <p class="dashboard__subtitle">Resumen del sistema</p>
       </div>
 
-      <div class="flex items-center gap-3 self-end md:self-auto">
-        <div class="relative">
-          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 dark:text-surface-500 text-sm" />
+      <div class="dashboard__toolbar">
+        <div class="dashboard__search-wrapper">
+          <i class="pi pi-search dashboard__search-icon" />
           <input
             v-model="search"
             type="text"
             placeholder="Buscar..."
-            class="w-64 pl-9 pr-4 py-2 bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-600 rounded-xl text-sm focus:outline-none focus:border-primary transition-colors shadow-sm placeholder-surface-400 dark:placeholder-surface-500 text-surface-700 dark:text-surface-200"
+            class="dashboard__search-input"
           />
         </div>
-        <button class="w-10 h-10 bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-600 rounded-xl flex items-center justify-center text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 shadow-sm cursor-pointer transition-colors">
+        <button class="dashboard__notify-btn">
           <i class="pi pi-bell" />
         </button>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+    <div class="dashboard__kpi-grid">
+      <DashboardKpiCard
+        label="Grados"
+        :value="stats.grados"
+        icon="pi pi-book"
+        badge="Grados"
+        :accent-color="'var(--color-primary)'"
+      />
 
-      <div class="p-5 bg-cyan-50 dark:bg-cyan-400/10 rounded-2xl border border-cyan-100 dark:border-cyan-400/20 flex flex-col gap-5 relative overflow-hidden">
-        <div class="flex justify-between items-center">
-          <div class="flex justify-center items-center h-10 w-10 bg-cyan-500 text-surface-0 rounded-xl shadow-sm">
-            <i class="pi pi-book text-lg" />
-          </div>
-          <span class="text-xs font-semibold text-cyan-500/80 bg-surface-0/80 dark:bg-surface-900/80 px-2 py-1 rounded-md shadow-sm">Grados</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-sm text-cyan-600 dark:text-cyan-300 font-semibold tracking-wide">Grados</span>
-          <div class="text-3xl font-bold text-cyan-900 dark:text-cyan-100 tracking-tight">{{ stats.grados }}</div>
-        </div>
-      </div>
+      <DashboardKpiCard
+        label="Asignaturas"
+        :value="stats.asignaturas"
+        icon="pi pi-bookmark"
+        badge="Asignaturas"
+        :accent-color="'var(--color-primary-light)'"
+      />
 
-      <div class="p-5 bg-orange-50 dark:bg-orange-400/10 rounded-2xl border border-orange-100 dark:border-orange-400/20 flex flex-col gap-5 relative overflow-hidden">
-        <div class="flex justify-between items-center">
-          <div class="flex justify-center items-center h-10 w-10 bg-orange-500 text-surface-0 rounded-xl shadow-sm">
-            <i class="pi pi-bookmark text-lg" />
-          </div>
-          <span class="text-xs font-semibold text-orange-500/80 bg-surface-0/80 dark:bg-surface-900/80 px-2 py-1 rounded-md shadow-sm">Asignaturas</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-sm text-orange-600 dark:text-orange-300 font-semibold tracking-wide">Asignaturas</span>
-          <div class="text-3xl font-bold text-orange-900 dark:text-orange-100 tracking-tight">{{ stats.asignaturas }}</div>
-        </div>
-      </div>
+      <DashboardKpiCard
+        label="Alumnos"
+        :value="stats.alumnos"
+        icon="pi pi-users"
+        badge="Alumnos"
+        :accent-color="'var(--color-neutral)'"
+      />
 
-      <div class="p-5 bg-slate-100 dark:bg-slate-400/10 rounded-2xl border border-slate-200 dark:border-slate-400/20 flex flex-col gap-5 relative overflow-hidden">
-        <div class="flex justify-between items-center">
-          <div class="flex justify-center items-center h-10 w-10 bg-slate-600 dark:bg-slate-500 text-surface-0 rounded-xl shadow-sm">
-            <i class="pi pi-users text-lg" />
-          </div>
-          <span class="text-xs font-semibold text-slate-500/80 bg-surface-0/80 dark:bg-surface-900/80 px-2 py-1 rounded-md shadow-sm">Alumnos</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-sm text-slate-600 dark:text-slate-300 font-semibold tracking-wide">Alumnos</span>
-          <div class="text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">{{ stats.alumnos }}</div>
-        </div>
-      </div>
-
-      <div class="p-5 bg-purple-50 dark:bg-purple-400/10 rounded-2xl border border-purple-100 dark:border-purple-400/20 flex flex-col gap-5 relative overflow-hidden">
-        <div class="flex justify-between items-center">
-          <div class="flex justify-center items-center h-10 w-10 bg-purple-500 text-surface-0 rounded-xl shadow-sm">
-            <i class="pi pi-question-circle text-lg" />
-          </div>
-          <span class="text-xs font-semibold text-purple-500/80 bg-surface-0/80 dark:bg-surface-900/80 px-2 py-1 rounded-md shadow-sm">Preguntas</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <span class="text-sm text-purple-600 dark:text-purple-300 font-semibold tracking-wide">Preguntas</span>
-          <div class="text-3xl font-bold text-purple-900 dark:text-purple-100 tracking-tight">{{ stats.preguntas }}</div>
-        </div>
-      </div>
+      <DashboardKpiCard
+        label="Preguntas"
+        :value="stats.preguntas"
+        icon="pi pi-question-circle"
+        badge="Preguntas"
+        :accent-color="'var(--accent-info)'"
+      />
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full items-start">
+    <div class="dashboard__content-grid">
 
-      <div class="bg-surface-0 dark:bg-surface-900 rounded-3xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 lg:col-span-2 flex flex-col gap-6">
-        <span class="text-lg font-bold text-surface-900 dark:text-surface-0 tracking-tight">Últimos Exámenes</span>
+      <div class="dashboard__panel dashboard__panel--large">
+        <span class="dashboard__panel-title">Últimos Exámenes</span>
 
-        <div class="flex flex-col gap-3">
+        <div class="dashboard__exam-list">
           <div
             v-for="examen in ultimosExamenes"
             :key="examen.id"
-            class="flex items-center justify-between p-3 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer shadow-sm"
+            class="dashboard__exam-item"
           >
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-blue-500 text-surface-0 rounded-xl flex items-center justify-center shadow-sm">
-                <i class="pi pi-file text-lg" />
+            <div class="dashboard__exam-left">
+              <div class="dashboard__exam-icon">
+                <i class="pi pi-file" />
               </div>
-              <div class="flex flex-col">
-                <span class="font-semibold text-surface-900 dark:text-surface-0 text-base">{{ examen.asignatura?.titulo || 'Sin asignatura' }}</span>
-                <span class="text-xs text-surface-500 dark:text-surface-400 font-medium">{{ formatDate(examen.createdAt) }}</span>
+              <div class="dashboard__exam-info">
+                <span class="dashboard__exam-title">{{ examen.asignatura?.titulo || 'Sin asignatura' }}</span>
+                <span class="dashboard__exam-date">{{ formatDate(examen.createdAt) }}</span>
               </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="dashboard__exam-right">
               <Tag :value="examen.estado" :severity="estadoSeverity(examen.estado)" class="rounded-lg px-2.5 py-1 text-xs font-bold" />
-              <i class="pi pi-chevron-right text-surface-300 dark:text-surface-600 pr-1" />
+              <i class="pi pi-chevron-right dashboard__exam-chevron" />
             </div>
           </div>
 
-          <div v-if="ultimosExamenes.length === 0" class="text-center py-12 text-surface-400 dark:text-surface-500 font-medium flex flex-col items-center gap-2">
-            <i class="pi pi-folder-open text-3xl text-surface-300 dark:text-surface-600" />
-            No hay exámenes recientes
+          <div v-if="ultimosExamenes.length === 0" class="dashboard__empty-state">
+            <i class="pi pi-folder-open" />
+            <span>No hay exámenes recientes</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 shadow-sm rounded-3xl p-6 border border-surface-200 dark:border-surface-700 flex flex-col gap-6">
-        <span class="text-lg font-bold text-surface-900 dark:text-surface-0 tracking-tight">Exámenes por Estado</span>
+      <div class="dashboard__panel">
+        <span class="dashboard__panel-title">Exámenes por Estado</span>
 
-        <div class="flex flex-col gap-3">
-          <div class="flex justify-between items-end">
-            <span class="text-4xl font-extrabold text-surface-900 dark:text-surface-0 tracking-tight">{{ stats.examenes }}</span>
-            <span class="text-sm font-semibold text-surface-500 dark:text-surface-400 pb-1">Total exámenes</span>
+        <div class="dashboard__stats">
+          <div class="dashboard__stats-header">
+            <span class="dashboard__stats-value">{{ stats.examenes }}</span>
+            <span class="dashboard__stats-label">Total exámenes</span>
           </div>
 
           <MeterGroup
             :value="meterItems"
             :pt="{
-              meters: { class: 'h-3 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden' },
+              meters: { class: 'h-3 rounded-full overflow-hidden' },
               meter: { class: 'h-3 first:rounded-l-full last:rounded-r-full' },
               labellist: { class: 'hidden!' }
             }"
+            style="background: var(--color-bg-row);"
           />
         </div>
 
-        <div class="flex flex-col gap-4 pt-2">
-          <span class="text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Detalles</span>
+        <div class="dashboard__details">
+          <span class="dashboard__details-title">Detalles</span>
 
-          <div class="flex flex-col gap-3.5">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="w-3 h-3 bg-cyan-500 rounded-full shadow-sm" />
-                <span class="text-sm text-surface-700 dark:text-surface-200 font-medium">Generados</span>
-              </div>
-              <span class="text-sm font-bold text-surface-800 dark:text-surface-100">{{ stats.examenesGenerados }}</span>
+          <div class="dashboard__details-grid">
+            <div class="dashboard__detail-item">
+              <div class="dashboard__detail-indicator" style="background: var(--accent-info);"></div>
+              <span class="dashboard__detail-label">Generados</span>
+              <span class="dashboard__detail-value">{{ stats.examenesGenerados }}</span>
             </div>
 
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="w-3 h-3 bg-amber-500 rounded-full shadow-sm" />
-                <span class="text-sm text-surface-700 dark:text-surface-200 font-medium">Asignados</span>
-              </div>
-              <span class="text-sm font-bold text-surface-800 dark:text-surface-100">{{ stats.examenesAsignados }}</span>
+            <div class="dashboard__detail-item">
+              <div class="dashboard__detail-indicator" style="background: var(--accent-warning);"></div>
+              <span class="dashboard__detail-label">Asignados</span>
+              <span class="dashboard__detail-value">{{ stats.examenesAsignados }}</span>
             </div>
 
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="w-3 h-3 bg-purple-500 rounded-full shadow-sm" />
-                <span class="text-sm text-surface-700 dark:text-surface-200 font-medium">Resueltos</span>
-              </div>
-              <span class="text-sm font-bold text-surface-800 dark:text-surface-100">{{ stats.examenesResueltos }}</span>
+            <div class="dashboard__detail-item">
+              <div class="dashboard__detail-indicator" style="background: var(--accent-info);"></div>
+              <span class="dashboard__detail-label">Resueltos</span>
+              <span class="dashboard__detail-value">{{ stats.examenesResueltos }}</span>
             </div>
 
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="w-3 h-3 bg-pink-500 rounded-full shadow-sm" />
-                <span class="text-sm text-surface-700 dark:text-surface-200 font-medium">Corregidos</span>
-              </div>
-              <span class="text-sm font-bold text-surface-800 dark:text-surface-100">{{ stats.examenesCorregidos }}</span>
+            <div class="dashboard__detail-item">
+              <div class="dashboard__detail-indicator" style="background: var(--accent-error);"></div>
+              <span class="dashboard__detail-label">Corregidos</span>
+              <span class="dashboard__detail-value">{{ stats.examenesCorregidos }}</span>
             </div>
           </div>
         </div>
@@ -177,6 +149,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../api/axios';
+import DashboardKpiCard from '../components/DashboardKpiCard.vue';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
 import IconField from 'primevue/iconfield';
@@ -266,3 +239,337 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.dashboard {
+  width: 100%;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-height: 100vh;
+}
+
+.dashboard__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+.dashboard__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard__title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.dashboard__subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.dashboard__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard__search-wrapper {
+  position: relative;
+  width: 16rem;
+}
+
+.dashboard__search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.dashboard__search-input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.25rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-base);
+}
+
+.dashboard__search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dashboard__search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.dashboard__notify-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.dashboard__notify-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.dashboard__kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 1536px) {
+  .dashboard__kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard__kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard__kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard__content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .dashboard__content-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.dashboard__panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard__panel--large {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .dashboard__panel--large {
+    grid-column: 1;
+  }
+}
+
+.dashboard__panel-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.dashboard__exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dashboard__exam-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dashboard__exam-item:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary-border);
+}
+
+.dashboard__exam-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard__exam-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 1.125rem;
+}
+
+.dashboard__exam-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard__exam-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+.dashboard__exam-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.dashboard__exam-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard__exam-chevron {
+  color: var(--color-text-muted);
+  padding-right: 0.25rem;
+}
+
+.dashboard__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  gap: 0.5rem;
+}
+
+.dashboard__empty-state i {
+  font-size: 1.875rem;
+  opacity: 0.6;
+}
+
+.dashboard__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dashboard__stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.dashboard__stats-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.dashboard__stats-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.dashboard__details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.dashboard__details-title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dashboard__details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.dashboard__detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard__detail-indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard__detail-label {
+  flex: 1;
+  margin-left: 0.75rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.dashboard__detail-value {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+</style>

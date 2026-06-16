@@ -2277,3 +2277,18 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 - Implementar estadísticas por alumno en dashboard
 
 ---
+
+## [09:50] Sistema de tokens CSS y componente KPI Card reutilizable
+
+**Prompt:** Actualizar la paleta de colores del dashboard a los colores de marca (#08A0D8 azul, #4C4C4C gris). Crear tokens.css con variables globales, un componente DashboardKpiCard.vue reutilizable que acepte accentColor como prop, aplicar las variables en DashboardView.vue con grid de 4 columnas, y aumentar separación de botones de acciones en datatables.
+
+**Resultado:**
+- Creado `tokens.css` con variables globales: colores primarios (--color-primary, --color-primary-light, --color-primary-muted, --color-primary-border), neutral (#4C4C4C), fondos oscuros (base, surface, elevated, row), texto, bordes, estados (success, warning, error, info), tokens de componentes (botones, cards, inputs, badges, tipografía, espaciado, transiciones)
+- Creado `DashboardKpiCard.vue` con props: label, value, icon, badge, trend, trendDirection, accentColor (default var(--color-primary)). Incluye borde superior luminoso, efecto hover, ícono con fondo muted, badge uppercase, soporte para tendencias con íconos dinámicos
+- Actualizado `DashboardView.vue`: reemplazadas 4 KPI cards hardcodeadas con componente, grid 4 columnas (responsive: 2 tablets, 1 móvil), cada card con acento diferente (primary, primary-light, neutral, info). Agregados estilos CSS scoped usando variables de tokens
+- Agregado CSS global en `main.css` para datatables: `gap: 0.75rem` entre botones de acciones, display flex automático en celda. Aplica a todas las vistas sin edición individual
+- Importado `tokens.css` automáticamente en `main.css`
+
+**Decisión:** Aceptado todo. Las variables de tokens centralizan estilos evitando duplicación. El componente KPI Card es reutilizable y acepta colores como props. Grid de 4 columnas sigue el diseño solicitado. Separación global en datatables aplica sin modificar 10+ vistas. Validado que todas las variables están disponibles via `:root`.
+
+---
