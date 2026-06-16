@@ -2048,3 +2048,34 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado. Ahora el usuario debe seleccionar explícitamente las baterías de preguntas que desea usar para generar exámenes.
 
 ---
+
+## [09:00] Diagnóstico y arreglo: Error "No hay suficientes preguntas" + Revisión de alcance CRUD Temas
+
+**Prompt:** Usuario reportó error "No hay suficientes preguntas habilitadas en las baterías seleccionadas" a pesar de tener 120 preguntas en BD. Preguntó si debe implementar un CRUD de temas por asignatura.
+
+**Resultado:**
+
+*Diagnóstico:*
+- Usuario intentaba generar exámenes filtrando por `temas: ["TEMA 99"]`
+- TEMA 99 no existe en BD (los temas reales son: Cálculo, Álgebra, Tipos de datos, Funciones, Estructuras de datos, POO, Conceptos, SQL, Relaciones, Optimización)
+- Filtro de WHERE en Prisma encontraba 0 preguntas porque estaba buscando un tema inexistente
+- Verificación en BD: `SELECT COUNT(*) FROM Pregunta GROUP BY estado` confirmó 120 preguntas con estado HABILITADA ✓
+
+*Revisión de Alcance (Diagrama de Entidad + Casos de Uso Priorizados):*
+- Diagrama de entidad: Incluye `enum Tema` como atributo de Pregunta (no como entidad separada)
+- Casos de uso priorizados: 41 casos de uso listados - **NO hay caso de uso para CRUD de Temas**
+- Consideraciones de relaciones: No menciona Tema-Asignatura N:M
+- Conclusión: **Gestionar temas NO está en alcance actual**, solo es un atributo de texto libre en Pregunta
+
+*Arreglos implementados:*
+- examenes.service.ts: Corregí spread operator en WHERE clause: `...(temas && temas.length > 0 ? { tema: { in: temas } } : {})` (antes estaba haciendo spread de `false`)
+- Cambié filtro de WHERE a filtro en memoria: traer todas las preguntas sin filtro de tema en Prisma, luego filtrar en código
+- Removí input de temas de ExamenesView.vue (template, variable `temasText`, y lógica de parse)
+- Formulario de generar exámenes ahora es más simple: Asignatura → Batería → Evaluación → Cantidad/Proporciones
+
+**Decisión:** 
+- ✅ Aceptado: Remover input de temas del frontend para simplificar MVP
+- ✅ Aceptado: Los temas se crean implícitamente cuando se crea una pregunta (sin validación centralizada)
+- ✅ Aceptado: Generación de exámenes sin filtro de temas por ahora (usa todas las preguntas habilitadas de la batería)
+
+---

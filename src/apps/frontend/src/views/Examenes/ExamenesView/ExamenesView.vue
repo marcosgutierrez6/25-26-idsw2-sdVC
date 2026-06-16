@@ -35,7 +35,6 @@
             <form @submit.prevent="generarExamenes">
               <div class="field"><label>Asignatura</label><Select v-model="genForm.asignaturaId" :options="asignaturas" optionLabel="titulo" optionValue="id" class="w-full" required @change="cargarBaterias" placeholder="Seleccionar asignatura" /></div>
               <div class="field"><label>Batería de Preguntas</label><Select v-model="bateriaSeleccionada" :options="baterias" optionLabel="nombre" optionValue="id" class="w-full" :disabled="!genForm.asignaturaId" placeholder="Seleccionar batería" /></div>
-              <div class="field"><label>Temas (separados por coma, opcional)</label><InputText v-model="temasText" placeholder="Ej: Tema 1, Tema 2, Tema 3" class="w-full" /></div>
               <div class="field"><label>Evaluación</label><Select v-model="genForm.evaluacion" :options="evaluaciones" class="w-full" required /></div>
               <div class="field"><label>Número de exámenes</label><InputNumber v-model="genForm.numeroExamenes" class="w-full" :min="1" required /></div>
               <div class="field"><label>Preguntas por examen</label><InputNumber v-model="genForm.numeroPreguntas" class="w-full" :min="1" required /></div>
@@ -98,7 +97,6 @@ const genForm = ref({
   proporcionFacil: 40, proporcionMedia: 40, proporcionDificil: 20,
 });
 const bateriaSeleccionada = ref<number | null>(null);
-const temasText = ref('');
 const evaluaciones = ref(['PARCIAL_1', 'PARCIAL_2', 'PARCIAL_3', 'EXAMEN_FINAL', 'EXAMEN_EXTRAORDINARIO']);
 
 const asignarDialog = ref(false);
@@ -158,7 +156,6 @@ async function generarExamenes() {
 
   generando.value = true;
   try {
-    genForm.value.temas = temasText.value.split(',').map(t => t.trim()).filter(t => t);
     genForm.value.bateriaIds = [bateriaSeleccionada.value];
     await api.post('/examenes/generar', genForm.value);
     cargar();

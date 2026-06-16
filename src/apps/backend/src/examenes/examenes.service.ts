@@ -65,12 +65,6 @@ export class ExamenesService {
       where: { id: { in: bateriaIds } },
       include: {
         preguntas: {
-          where: {
-            pregunta: {
-              ...(temas && temas.length > 0 ? { tema: { in: temas } } : {}),
-              estado: 'HABILITADA',
-            },
-          },
           include: {
             pregunta: true,
           },
@@ -79,9 +73,18 @@ export class ExamenesService {
     });
 
     if (!baterias.length) throw new NotFoundException('Baterías no encontradas');
-    const todasLasPreguntas = baterias.flatMap((b) => b.preguntas);
+
+    let todasLasPreguntas = baterias.flatMap((b) => b.preguntas);
+
+    // Filtrar por tema si se especifica
+    if (temas && temas.length > 0) {
+      todasLasPreguntas = todasLasPreguntas.filter((p) => temas.includes(p.pregunta.tema));
+    }
+
+    // Filtrar por estado
+    todasLasPreguntas = todasLasPreguntas.filter((p) => p.pregunta.estado === 'HABILITADA');
     if (todasLasPreguntas.length < numeroPreguntas) {
-      throw new BadRequestException('No hay suficientes preguntas habilitadas en las baterías seleccionadas');
+      throw new BadRequestException(`No hay suficientes preguntas habilitadas. Se encontraron ${todasLasPreguntas.length}, se necesitan ${numeroPreguntas}`);
     }
 
     const preguntasPorDificultad = {
