@@ -15,7 +15,7 @@ Sistema web para la gestión de exámenes universitarios. Permite a docentes y a
 
 ## Arquitectura
 
-Monorepo con dos aplicaciones:
+Monorepo Turborepo con aplicaciones independientes frontend y backend:
 
 ```
 src/
@@ -42,6 +42,73 @@ src/
 │           ├── router/      # Vue Router con guards
 │           └── layouts/     # MainLayout con toolbar y sesión
 ```
+
+### Diagrama de Arquitectura Completa
+
+![Arquitectura del Sistema](./modelosUML/arquitectura/arquitectura-sistema.svg)
+
+> **Nota:** El diagrama muestra las capas completas del sistema:
+> - **Frontend**: Vue 3, Pinia, Axios, Vue Router
+> - **Backend**: NestJS, Controllers, Services, Prisma
+> - **Database**: MySQL con relaciones N:M
+> - **Seguridad**: JWT, bcrypt, Passport
+
+### Flujo de Datos Ejemplo: Generar Exámenes
+
+```
+1. Usuario (Browser)
+   ↓
+2. ExamenesView (Vue component)
+   - User selecciona asignatura, batería, cantidad
+   ↓
+3. API call (Axios POST /examenes/generar)
+   - Headers: Authorization: Bearer {JWT_TOKEN}
+   ↓
+4. ExamenesController.generar()
+   - Valida rol: @Roles(Rol.DOCENTE)
+   - Recibe GenerarExamenesDto
+   ↓
+5. ExamenesService.generar()
+   - Busca BateriaDePreguntas por ID
+   - Filtra preguntas por dificultad (BAJA/MEDIA/ALTA)
+   - Selecciona aleatoriamente según proporciones
+   - Crea Examen + ExamenPregunta (N:M)
+   ↓
+6. Prisma Queries
+   - SELECT * FROM BateriaDePreguntas_Pregunta WHERE bateriaId = ?
+   - INSERT INTO Examen (...)
+   - INSERT INTO ExamenPregunta (...)
+   ↓
+7. MySQL Database
+   - Almacena registros
+   - Retorna IDs generados
+   ↓
+8. ExamenesService retorna examen creado
+   ↓
+9. ExamenesController retorna JSON
+   ↓
+10. Axios interceptor (token válido)
+    ↓
+11. Pinia store actualiza estado
+    ↓
+12. Vue component re-renderiza tabla
+    ↓
+13. Usuario ve nuevo examen en pantalla
+```
+
+### Tecnologías por Capa
+
+| Capa | Tecnología | Responsabilidad |
+|------|------------|-----------------|
+| **UI/Presentación** | Vue 3 + PrimeVue + Tailwind | Componentes visuales, layouts, interacción usuario |
+| **Estado** | Pinia | Almacenar estado global (autenticación, usuario) |
+| **Comunicación** | Axios + JWT | Requests HTTP, autenticación, interceptores |
+| **Routing** | Vue Router | Navegación, guards, protección de rutas |
+| **API** | NestJS Controllers | Endpoints REST, validación de requests |
+| **Lógica** | NestJS Services | Reglas de negocio, orquestación |
+| **Datos** | Prisma ORM | Queries tipadas, migraciones, relaciones |
+| **Seguridad** | bcrypt + Passport JWT | Hashing de contraseñas, validación de tokens |
+| **DB** | MySQL | Persistencia de datos |
 
 ## Artefactos
 

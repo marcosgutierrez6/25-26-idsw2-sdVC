@@ -1,0 +1,165 @@
+@startuml Arquitectura_Sistema_Examenes
+
+!define FRONTEND_COLOR #E3F2FD
+!define BACKEND_COLOR #F3E5F5
+!define DATABASE_COLOR #E8F5E9
+!define ARROW_COLOR #08A0D8
+
+skinparam backgroundColor #FFFFFF
+skinparam arrowColor ARROW_COLOR
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #08A0D8
+skinparam classHeaderBackgroundColor #08A0D8
+skinparam classHeaderTextColor #FFFFFF
+
+rectangle "CLIENTE - NAVEGADOR" as CLIENT_LAYER {
+    rectangle "FRONTEND - Vue 3 + TypeScript" as FRONTEND {
+        component [UI Components\n(PrimeVue)] as UI_COMP <<Frontend>>
+        component [Vistas\n(Views)] as VIEWS <<Frontend>>
+        component [Layouts] as LAYOUTS <<Frontend>>
+
+        UI_COMP -down-> VIEWS
+        LAYOUTS -down-> UI_COMP
+    }
+
+    rectangle "Gestión de Estado" as STATE_MGMT {
+        component [Pinia Store\n(auth, user)] as PINIA <<State>>
+    }
+
+    rectangle "Comunicación" as COMMUNICATION {
+        component [Axios\n(HTTP Client)] as AXIOS <<API>>
+        component [Interceptores\n(JWT Token)] as INTERCEPTORS <<Security>>
+    }
+
+    rectangle "Utilidades" as UTILITIES {
+        component [Vue Router\n(Navegación)] as ROUTER <<Navigation>>
+        component [Toast\n(Notificaciones)] as TOAST <<UI>>
+    }
+
+    VIEWS -down-> PINIA
+    PINIA -down-> AXIOS
+    AXIOS -down-> INTERCEPTORS
+    ROUTER -right-> VIEWS
+    TOAST -left-> VIEWS
+}
+
+FRONTEND -down-> STATE_MGMT
+STATE_MGMT -down-> COMMUNICATION
+COMMUNICATION -down-> UTILITIES
+
+rectangle "HTTP/HTTPS JSON" as TRANSPORT {
+    note right : POST/GET/PUT/DELETE\nwith JWT Bearer Token
+}
+
+rectangle "SERVIDOR - NestJS + Node.js" as SERVER_LAYER {
+    rectangle "API Controllers Layer" as CONTROLLERS {
+        component [AuthController] as AUTH_CTRL <<Controller>>
+        component [GradosController] as GRADOS_CTRL <<Controller>>
+        component [AsignaturasController] as ASIG_CTRL <<Controller>>
+        component [AlumnosController] as ALUMNOS_CTRL <<Controller>>
+        component [PreguntasController] as PREGUNTAS_CTRL <<Controller>>
+        component [ExamenesController] as EXAMENES_CTRL <<Controller>>
+        component [ConfiguracionController] as CONFIG_CTRL <<Controller>>
+    }
+
+    rectangle "Guards & Decorators" as SECURITY {
+        component [JwtAuthGuard] as JWT_GUARD <<Security>>
+        component [RolesGuard] as ROLES_GUARD <<Security>>
+        component [@Roles decorator] as ROLES_DEC <<Security>>
+    }
+
+    rectangle "Business Logic Layer" as SERVICES {
+        component [AuthService\n(bcrypt, JWT)] as AUTH_SRV <<Service>>
+        component [GradosService] as GRADOS_SRV <<Service>>
+        component [AsignaturasService] as ASIG_SRV <<Service>>
+        component [AlumnosService] as ALUMNOS_SRV <<Service>>
+        component [PreguntasService] as PREGUNTAS_SRV <<Service>>
+        component [ExamenesService\n(Generación)] as EXAMENES_SRV <<Service>>
+        component [ConfiguracionService\n(Import/Export)] as CONFIG_SRV <<Service>>
+    }
+
+    rectangle "Data Transfer Objects" as DTOs {
+        component [DTOs\n(Create/Update)] as DTO_COMP <<DTO>>
+    }
+
+    rectangle "Data Access Layer" as DATA_ACCESS {
+        component [PrismaService\n(ORM)] as PRISMA_SRV <<ORM>>
+    }
+
+    rectangle "Security Utils" as SEC_UTILS {
+        component [bcrypt\n(Password Hashing)] as BCRYPT <<Security>>
+        component [Passport JWT\n(Token Strategy)] as PASSPORT <<Security>>
+    }
+
+    AUTH_CTRL -down-> JWT_GUARD
+    GRADOS_CTRL -down-> ROLES_GUARD
+    ASIG_CTRL -down-> ROLES_GUARD
+    ALUMNOS_CTRL -down-> ROLES_GUARD
+    PREGUNTAS_CTRL -down-> ROLES_GUARD
+    EXAMENES_CTRL -down-> ROLES_GUARD
+    CONFIG_CTRL -down-> ROLES_GUARD
+
+    ROLES_GUARD -down-> ROLES_DEC
+
+    AUTH_CTRL -down-> AUTH_SRV
+    GRADOS_CTRL -down-> GRADOS_SRV
+    ASIG_CTRL -down-> ASIG_SRV
+    ALUMNOS_CTRL -down-> ALUMNOS_SRV
+    PREGUNTAS_CTRL -down-> PREGUNTAS_SRV
+    EXAMENES_CTRL -down-> EXAMENES_SRV
+    CONFIG_CTRL -down-> CONFIG_SRV
+
+    AUTH_SRV -down-> DTO_COMP
+    GRADOS_SRV -down-> DTO_COMP
+    ASIG_SRV -down-> DTO_COMP
+    ALUMNOS_SRV -down-> DTO_COMP
+    PREGUNTAS_SRV -down-> DTO_COMP
+    EXAMENES_SRV -down-> DTO_COMP
+    CONFIG_SRV -down-> DTO_COMP
+
+    DTO_COMP -down-> PRISMA_SRV
+
+    AUTH_SRV -right-> BCRYPT
+    BCRYPT -down-> PASSPORT
+    PASSPORT -left-> AUTH_SRV
+}
+
+TRANSPORT -down-> CONTROLLERS
+
+rectangle "DATABASE - MySQL" as DATABASE {
+    component [Grado\nProfesor\nAsignatura] as ACADEMIC <<Model>>
+    component [Alumno\nAlumnoAsignatura] as STUDENT <<Model>>
+    component [Pregunta\nRespuesta] as QUESTION <<Model>>
+    component [BateriaDePreguntas\nBateriaDePreguntas_Pregunta\n(N:M)] as BATTERY <<Model>>
+    component [Examen\nExamenPregunta\nAlumnoExamen] as EXAM <<Model>>
+
+    PRISMA_SRV -down-> ACADEMIC
+    PRISMA_SRV -down-> STUDENT
+    PRISMA_SRV -down-> QUESTION
+    PRISMA_SRV -down-> BATTERY
+    PRISMA_SRV -down-> EXAM
+
+    ACADEMIC -right-> STUDENT
+    STUDENT -right-> EXAM
+    QUESTION -down-> BATTERY
+    BATTERY -down-> EXAM
+}
+
+SERVERS -down-> DATABASE
+
+rectangle "FLUJO EJEMPLO: Generar Exámenes" as FLOW {
+    note top
+    1. Usuario selecciona Asignatura + Batería en UI
+    2. ExamenesView envía POST /examenes/generar (Axios)
+    3. ExamenesController valida JWT + Rol (DOCENTE)
+    4. ExamenesService busca preguntas en BD por dificultad
+    5. Selecciona aleatorio según proporciones (BAJA/MEDIA/ALTA)
+    6. Crea registros Examen + ExamenPregunta (Prisma)
+    7. MySQL guarda y retorna datos
+    8. Respuesta JSON vuelve al Frontend
+    9. Pinia actualiza estado
+    10. Vue re-renderiza tabla de exámenes
+    end note
+}
+
+@enduml

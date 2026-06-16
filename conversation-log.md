@@ -2177,3 +2177,103 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 - ✅ Nota importante: Hard refresh necesario (Cmd+Shift+R Mac, Ctrl+Shift+R Windows) para limpiar cache
 
 ---
+
+## [09:47] Diagrama de Arquitectura PUML + Documentación final
+
+**Prompt:** Usuario pidió:
+1. Crear diagrama profesional de arquitectura en PlantUML (PUML)
+2. Generar SVG desde el PUML
+3. Insertar en README.md
+4. Eliminar ASCII art redundante
+5. Agregar conversation log de toda la sesión
+
+**Resultado:**
+
+*Diagrama Architecture (PUML):*
+- Creado: `modelosUML/arquitectura/arquitectura-sistema.puml` (165 líneas)
+- Muestra todas las capas: Frontend, Backend, Database
+- Componentes principales:
+  - Frontend: UI Components, Pinia Store, Axios, Vue Router, Toast
+  - Backend: Controllers, Services, Guards, DTOs, PrismaService
+  - Security: JwtAuthGuard, RolesGuard, bcrypt, Passport JWT
+  - Database: 5 modelos principales (Academic, Student, Question, Battery, Exam)
+- Incluye flujo de ejemplo (Generar Exámenes) con 10 pasos documentados
+- Colores por capa: azul (#E3F2FD - frontend), púrpura (#F3E5F5 - backend), verde (#E8F5E9 - database)
+- Uso de skinparam para estilo corporativo con color primario #08A0D8
+
+*SVG generado:*
+- Ejecutado: `curl POST http://www.plantuml.com/plantuml/svg` con PUML como input
+- Archivo: `modelosUML/arquitectura/arquitectura-sistema.svg` (7.0KB)
+- Visual, profesional, fácil de entender
+- Renderizado correctamente en GitHub
+
+*README.md actualizado:*
+- Eliminado ASCII art redundante (sección "Explicación del Flujo Técnico" - 180+ líneas)
+- Insertado diagrama SVG con ruta relativa `./modelosUML/arquitectura/arquitectura-sistema.svg`
+- Agregado bloque de nota descriptivo explicando qué muestra el diagrama
+- Mantenido flujo de datos específico (Generar Exámenes) con numeración clara
+- Mantenida tabla de tecnologías por capa
+- Sección "Arquitectura" reorganizada con subsecciones:
+  - "Monorepo Turborepo..." (estructura de carpetas)
+  - "Diagrama de Arquitectura Completa" (SVG insertado)
+  - "Flujo de Datos Ejemplo: Generar Exámenes" (detalles del flujo)
+  - "Tecnologías por Capa" (tabla de responsabilidades)
+
+**Decisión:**
+- ✅ Aceptado: Diagrama PUML + SVG es profesional y visual
+- ✅ Aceptado: Eliminar ASCII art redundante (SVG es superior)
+- ✅ Aceptado: Ruta relativa con `./` para mejor compatibilidad con GitHub
+- ✅ Aceptado: Documentación final lista para proyecto
+
+---
+
+## Resumen de Sesión Completa
+
+**Duración:** 2 horas | **Commits:** 1 principal | **Archivos modificados:** 25+
+
+**Objetivos alcanzados:**
+
+1. **Bulk Assignment Redesign** ✅
+   - Cambio de single-exam a multi-exam con checkbox selection
+   - Exam grouping por lotes (fecha de creación)
+   - Round-robin distribution (1:1 exam-to-alumno)
+   - PDF attachment capability por alumno
+
+2. **Corporate Branding** ✅
+   - Color primario: #08A0D8 (azul corporativo)
+   - Color secundario: #4C4C4C (gris corporativo)
+   - Logo Jorgestor en sidebar (h-40, object-cover)
+   - Favicon agregado (JorgestorLogo.png)
+   - Variables CSS con `!important` para máxima especificidad
+   - Botones PrimeVue actualizados (azul corporativo)
+   - Hard refresh necesario para limpiar cache del navegador
+
+3. **Architecture Documentation** ✅
+   - PlantUML diagram (165 líneas, colores por capa)
+   - SVG rendering (compatible GitHub)
+   - README.md reorganizado con secciones claras
+   - ASCII art redundante eliminado
+   - Documentación profesional y mantenible
+
+**Problemas resueltos:**
+- Spread operator silently failing (fixed con ternary operator)
+- CSS variable specificity (fixed con !important flags)
+- Empty preguntas table (fixed con proper include paths)
+- Color theme consistency (fixed en main.css, DashboardView, AppLayout)
+- SVG rendering en README (fixed con ruta relativa `./`)
+
+**Tecnologías utilizadas:**
+- PlantUML para diagramas
+- Tailwind CSS con custom variables
+- PrimeVue components styling
+- Vue 3 Composition API
+- NestJS architecture patterns
+
+**Próximas mejoras sugeridas (no en scope):**
+- Implementar autenticación con OAuth2
+- Agregar dark mode toggle en UI
+- Optimizar carga de preguntas con pagination
+- Agregar más temas a la batería de preguntas
+- Implementar estadísticas por alumno en dashboard
+
+---
