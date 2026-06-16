@@ -2307,3 +2307,18 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado. El dropdown funcionaba en el código pero no estaba conectado correctamente. La animación slidedown/slideup ya estaba lista, solo necesitaba separar la funcionalidad del botón (abrir dropdown) de la acción (cerrar sesión). El menú ahora abre hacia arriba con dos opciones claras.
 
 ---
+
+## [10:00] Accesos directos en KPI cards y exámenes del dashboard
+
+**Prompt:** Agregar accesos directos en los KPI cards y en los exámenes del dashboard para navegar directamente a las secciones correspondientes.
+
+**Resultado:**
+- KPI cards envueltas en `router-link`: Grados → `/grados`, Asignaturas → `/asignaturas`, Alumnos → `/alumnos`, Preguntas → `/preguntas`
+- Items de exámenes envueltos en `router-link` a `/examenes` para acceder al listado de exámenes
+- Agregada clase `.dashboard__kpi-link` con efecto hover: `transform: translateY(-4px)` para elevar la card al pasar el mouse
+- Agregada clase `.dashboard__exam-link` para mantener comportamiento de router-link
+- Agregado `text-decoration: none` y `color: inherit` en `.dashboard__exam-item` para preservar estilos
+
+**Decisión:** Aceptado. Los KPI cards y exámenes ahora son clickeables y navegan a sus respectivas secciones. Los efectos hover (elevación en KPI, cambio de fondo en exámenes) indican que son interactivos.
+
+---

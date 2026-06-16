@@ -24,37 +24,45 @@
     </div>
 
     <div class="dashboard__kpi-grid">
-      <DashboardKpiCard
-        label="Grados"
-        :value="stats.grados"
-        icon="pi pi-book"
-        badge="Grados"
-        :accent-color="'var(--color-primary)'"
-      />
+      <router-link to="/grados" class="dashboard__kpi-link">
+        <DashboardKpiCard
+          label="Grados"
+          :value="stats.grados"
+          icon="pi pi-book"
+          badge="Grados"
+          :accent-color="'var(--color-primary)'"
+        />
+      </router-link>
 
-      <DashboardKpiCard
-        label="Asignaturas"
-        :value="stats.asignaturas"
-        icon="pi pi-bookmark"
-        badge="Asignaturas"
-        :accent-color="'var(--color-primary-light)'"
-      />
+      <router-link to="/asignaturas" class="dashboard__kpi-link">
+        <DashboardKpiCard
+          label="Asignaturas"
+          :value="stats.asignaturas"
+          icon="pi pi-bookmark"
+          badge="Asignaturas"
+          :accent-color="'var(--color-primary-light)'"
+        />
+      </router-link>
 
-      <DashboardKpiCard
-        label="Alumnos"
-        :value="stats.alumnos"
-        icon="pi pi-users"
-        badge="Alumnos"
-        :accent-color="'var(--color-neutral)'"
-      />
+      <router-link to="/alumnos" class="dashboard__kpi-link">
+        <DashboardKpiCard
+          label="Alumnos"
+          :value="stats.alumnos"
+          icon="pi pi-users"
+          badge="Alumnos"
+          :accent-color="'var(--color-neutral)'"
+        />
+      </router-link>
 
-      <DashboardKpiCard
-        label="Preguntas"
-        :value="stats.preguntas"
-        icon="pi pi-question-circle"
-        badge="Preguntas"
-        :accent-color="'var(--accent-info)'"
-      />
+      <router-link to="/preguntas" class="dashboard__kpi-link">
+        <DashboardKpiCard
+          label="Preguntas"
+          :value="stats.preguntas"
+          icon="pi pi-question-circle"
+          badge="Preguntas"
+          :accent-color="'var(--accent-info)'"
+        />
+      </router-link>
     </div>
 
     <div class="dashboard__content-grid">
@@ -63,10 +71,11 @@
         <span class="dashboard__panel-title">Últimos Exámenes</span>
 
         <div class="dashboard__exam-list">
-          <div
+          <router-link
             v-for="examen in ultimosExamenes"
             :key="examen.id"
-            class="dashboard__exam-item"
+            :to="`/examenes`"
+            class="dashboard__exam-item dashboard__exam-link"
           >
             <div class="dashboard__exam-left">
               <div class="dashboard__exam-icon">
@@ -81,7 +90,7 @@
               <Tag :value="examen.estado" :severity="estadoSeverity(examen.estado)" class="rounded-lg px-2.5 py-1 text-xs font-bold" />
               <i class="pi pi-chevron-right dashboard__exam-chevron" />
             </div>
-          </div>
+          </router-link>
 
           <div v-if="ultimosExamenes.length === 0" class="dashboard__empty-state">
             <i class="pi pi-folder-open" />
@@ -353,6 +362,16 @@ onMounted(async () => {
   width: 100%;
 }
 
+.dashboard__kpi-link {
+  text-decoration: none;
+  display: block;
+  transition: transform var(--transition-base);
+}
+
+.dashboard__kpi-link:hover {
+  transform: translateY(-4px);
+}
+
 @media (max-width: 1536px) {
   .dashboard__kpi-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -420,15 +439,18 @@ onMounted(async () => {
 }
 
 .dashboard__exam-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   padding: 0.875rem;
   background: var(--color-bg-base);
   border: 1px solid var(--color-border);
   border-radius: 1rem;
   cursor: pointer;
   transition: all var(--transition-base);
+  text-decoration: none;
+  color: inherit;
+  gap: 0.75rem;
 }
 
 .dashboard__exam-item:hover {
