@@ -5,6 +5,7 @@ import { CreateExamenDto } from './dto/create-examen.dto';
 import { UpdateExamenDto } from './dto/update-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
 import { AsignarExamenesDto } from './dto/asignar-examenes.dto';
+import { AsignarBulkExamenesDto } from './dto/asignar-bulk-examenes.dto';
 import { EstadoExamen } from '@prisma/client';
 
 @Injectable()
@@ -192,6 +193,63 @@ export class ExamenesService {
     return { examenId, hash: ordenRespuestas, alumnosAsignados: alumnoExamenes.length };
   }
 
+  async asignarBulk(asignarBulkDto: AsignarBulkExamenesDto) {
+    const { examenIds, alumnoIds } = asignarBulkDto;
+
+    const examenes = await this.prisma.examen.findMany({
+      where: { id: { in: examenIds } },
+      include: { preguntas: { include: { pregunta: { include: { respuestas: true } } } } },
+    });
+
+    if (examenes.length === 0) throw new NotFoundException('Exámenes no encontrados');
+
+    const asignacionesCreadas: any[] = [];
+    let alumnoIndex = 0;
+
+    // Distribución round-robin: cada examen a un alumno diferente
+    for (const examen of examenes) {
+      const ordenRespuestas = examen.preguntas.map((ep) =>
+        ep.pregunta.respuestas
+          .filter((r) => r.esCorrecta)
+          .map((r) => r.id)
+          .sort(),
+      );
+
+      const alumnoId = alumnoIds[alumnoIndex % alumnoIds.length];
+
+      const hash = crypto
+        .createHash('sha256')
+        .update(`${examen.id}-${alumnoId}-${JSON.stringify(ordenRespuestas)}-${Date.now()}`)
+        .digest('hex');
+
+      await this.prisma.alumnoExamen.create({
+        data: {
+          alumnoId,
+          examenId: examen.id,
+          hashAsignacion: hash,
+        },
+      });
+
+      await this.prisma.examen.update({
+        where: { id: examen.id },
+        data: { estado: EstadoExamen.ASIGNADO, claveCorreccion: JSON.stringify(ordenRespuestas) },
+      });
+
+      asignacionesCreadas.push({
+        examenId: examen.id,
+        alumnoId,
+      });
+
+      alumnoIndex++;
+    }
+
+    return {
+      examenesAsignados: examenIds.length,
+      totalAsignaciones: examenIds.length,
+      detalles: asignacionesCreadas,
+    };
+  }
+
   async corregir(examenId: number, alumnoId: number, respuestas: { preguntaId: number; opcionId: number }[]) {
     const ae = await this.prisma.alumnoExamen.findUnique({
       where: { alumnoId_examenId: { alumnoId, examenId } },
@@ -264,5 +322,24 @@ export class ExamenesService {
       where: { examenId },
       include: { alumno: true },
     });
+  }
+
+  async cargarPdf(examenId: number, alumnoId: number, file: any) {
+    if (!file) throw new BadRequestException('No se proporcionó archivo PDF');
+
+    const timestamp = Date.now();
+    const filename = `examen_${examenId}_alumno_${alumnoId}_${timestamp}.pdf`;
+    const pdfUrl = `/uploads/${filename}`;
+
+    // En producción, aquí guardarías el archivo en S3 o similar
+    // Por ahora, simplemente guardamos la URL en la BD
+    // El archivo se guarda automáticamente por multer en uploads/
+
+    await this.prisma.alumnoExamen.update({
+      where: { alumnoId_examenId: { alumnoId, examenId } },
+      data: { pdfUrl },
+    });
+
+    return { message: 'PDF cargado exitosamente', pdfUrl };
   }
 }

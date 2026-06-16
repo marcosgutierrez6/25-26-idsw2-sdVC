@@ -152,6 +152,7 @@ model AlumnoExamen {
   hashAsignacion String?  @unique
   respuestas     String?
   nota           Float?
+  pdfUrl         String?
   createdAt      DateTime @default(now())
   alumno         Alumno   @relation(fields: [alumnoId], references: [id])
   examen         Examen   @relation(fields: [examenId], references: [id])

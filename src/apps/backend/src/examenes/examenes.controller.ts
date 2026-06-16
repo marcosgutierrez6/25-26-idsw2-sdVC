@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ExamenesService } from './examenes.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
 import { UpdateExamenDto } from './dto/update-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
 import { AsignarExamenesDto } from './dto/asignar-examenes.dto';
+import { AsignarBulkExamenesDto } from './dto/asignar-bulk-examenes.dto';
 import { PaginationDto } from '../Common/dto/pagination.dto';
 import { JwtAuthGuard } from '../Common/jwt-auth.guard';
 import { RolesGuard } from '../Common/roles.guard';
@@ -57,6 +59,12 @@ export class ExamenesController {
     return this.examenesService.asignar(asignarDto);
   }
 
+  @Post('asignar-bulk')
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  asignarBulk(@Body() asignarBulkDto: AsignarBulkExamenesDto) {
+    return this.examenesService.asignarBulk(asignarBulkDto);
+  }
+
   @Post(':examenId/corregir/:alumnoId')
   @Roles(Rol.DOCENTE, Rol.ADMIN)
   corregir(
@@ -77,5 +85,16 @@ export class ExamenesController {
   @Roles(Rol.DOCENTE, Rol.ADMIN)
   resultados(@Param('id') id: string) {
     return this.examenesService.resultados(+id);
+  }
+
+  @Post(':examenId/alumno/:alumnoId/pdf')
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  @UseInterceptors(FileInterceptor('pdf'))
+  cargarPdf(
+    @Param('examenId') examenId: string,
+    @Param('alumnoId') alumnoId: string,
+    @UploadedFile() file: any,
+  ) {
+    return this.examenesService.cargarPdf(+examenId, +alumnoId, file);
   }
 }
