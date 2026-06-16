@@ -90,7 +90,7 @@
             class="flex items-center justify-between p-3 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer shadow-sm"
           >
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-emerald-500 text-surface-0 rounded-xl flex items-center justify-center shadow-sm">
+              <div class="w-12 h-12 bg-blue-500 text-surface-0 rounded-xl flex items-center justify-center shadow-sm">
                 <i class="pi pi-file text-lg" />
               </div>
               <div class="flex flex-col">

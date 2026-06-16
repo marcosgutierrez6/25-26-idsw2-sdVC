@@ -2,16 +2,8 @@
   <div class="flex h-screen w-screen bg-surface-50 dark:bg-surface-950 font-sans antialiased overflow-hidden">
 
     <div class="bg-surface-900 h-screen border-r border-surface-800 flex flex-col w-80 select-none shrink-0 z-50">
-      <div class="p-4 flex items-center gap-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="43" height="43" viewBox="0 0 43 43" fill="none" class="w-10 h-10">
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M21.5 42.0498C33.098 42.0498 42.5 32.6477 42.5 21.0498C42.5 9.45183 33.098 0.0498047 21.5 0.0498047C9.902 0.0498047 0.5 9.45183 0.5 21.0498C0.5 32.6477 9.902 42.0498 21.5 42.0498ZM28.0513 9.83248C28.3702 8.69975 27.2709 8.02994 26.267 8.74516L12.2528 18.7288C11.164 19.5045 11.3353 21.0498 12.51 21.0498H16.2003V21.0212H23.3926L17.5323 23.089L14.9487 32.2671C14.6299 33.3999 15.729 34.0697 16.733 33.3544L30.7472 23.3708C31.836 22.5951 31.6646 21.0498 30.49 21.0498H24.8937L28.0513 9.83248Z"
-            class="fill-surface-0"
-          />
-        </svg>
-        <span class="text-lg font-semibold leading-tight text-surface-0">Generador de Exámenes</span>
+      <div class="p-4 flex items-center justify-center h-40">
+        <img src="../assets/images/JorgestorLogo.png" alt="Jorgestor" class="w-full h-full object-cover" />
       </div>
 
       <div class="overflow-y-auto flex-1 p-2 flex flex-col gap-4">
@@ -61,7 +53,7 @@
                   class="menu-link"
                   :class="{ 'menu-active': $route.path === item.path }"
                 >
-                  <span class="inline-flex items-center justify-center p-1 bg-violet-500/30 rounded-md border border-violet-500/30">
+                  <span class="inline-flex items-center justify-center p-1 bg-blue-500/30 rounded-md border border-blue-500/30">
                     <i :class="item.icon + ' text-xs! leading-none! text-violet-200'" />
                   </span>
                   <span class="font-medium text-base leading-tight">{{ item.text }}</span>

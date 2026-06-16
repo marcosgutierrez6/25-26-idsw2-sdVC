@@ -2133,3 +2133,47 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 - ✅ Problema arreglado: Tipos de Express.Multer.File cambiados a `any` por falta de type definitions
 
 ---
+
+## [09:37] Branding: Logo Jorgestor + Tema corporativo azul/gris
+
+**Prompt:** Usuario pidió:
+1. Agregar logo JorgestorLogo.png arriba de la sidebar
+2. Cambiar tema completo a colores corporativos: #08A0D8 (azul) + #4C4C4C (gris)
+3. Agregar favicon
+
+**Resultado:**
+
+*Frontend - Logo (AppLayout.vue):*
+- Reemplazado SVG icon + texto por `<img src="../assets/images/JorgestorLogo.png">`
+- Contenedor con altura h-40 y propiedades `w-full h-full object-cover`
+- Ruta relativa `../assets/...` para resolver correctamente con Vite
+
+*Frontend - Favicon (index.html):*
+- Agregado: `<link rel="icon" type="image/png" href="src/assets/images/JorgestorLogo.png" />`
+- Título actualizado a "Jorgestor - Generador de Exámenes"
+
+*Frontend - Tema (main.css):*
+- Variables CSS `:root` con `!important` para toda la paleta:
+  - Primarios: #08A0D8 (azul) + tonos (50-950)
+  - Superficie: #4C4C4C (gris) + tonos (0-950)
+- Selectores CSS forzados para botones:
+  - `.p-button { background: #08A0D8 !important; }`
+  - `.p-button-primary { background: #08A0D8 !important; }`
+  - Incluye estados :hover con tono más oscuro (#0680B0)
+
+*Frontend - Colores Tailwind (DashboardView + AppLayout):*
+- DashboardView.vue: `bg-emerald-500` → `bg-blue-500` (icono de exámenes)
+- AppLayout.vue: `bg-violet-500/30` → `bg-blue-500/30` (iconos de menú)
+
+*Diagnóstico - Problemas encontrados:*
+- Variables CSS en `html` selector tenían baja especificidad
+- Selectores Tailwind hardcodeados sobrescribían las variables
+- Cache del navegador mostraba colores antiguos
+
+**Decisión:**
+- ✅ Aceptado: Logo con tamaño suficiente (h-40, object-cover)
+- ✅ Aceptado: Variables CSS `:root` con `!important` para máxima especificidad
+- ✅ Aceptado: Cambio global de colores verde/violeta a azul corporativo
+- ✅ Nota importante: Hard refresh necesario (Cmd+Shift+R Mac, Ctrl+Shift+R Windows) para limpiar cache
+
+---

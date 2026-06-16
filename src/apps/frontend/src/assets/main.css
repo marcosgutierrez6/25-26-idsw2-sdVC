@@ -1,1 +1,70 @@
 @import "tailwindcss";
+
+:root {
+  --p-primary-50: #E0F2F9 !important;
+  --p-primary-100: #B3E0F3 !important;
+  --p-primary-200: #80CDED !important;
+  --p-primary-300: #4DBAE7 !important;
+  --p-primary-400: #26ABE2 !important;
+  --p-primary-500: #08A0D8 !important;
+  --p-primary-600: #0680B0 !important;
+  --p-primary-700: #056088 !important;
+  --p-primary-800: #034060 !important;
+  --p-primary-900: #022838 !important;
+  --p-primary-950: #01141C !important;
+
+  --p-surface-0: #ffffff;
+  --p-surface-50: #f9f9f9;
+  --p-surface-100: #f3f3f3;
+  --p-surface-200: #e8e8e8;
+  --p-surface-300: #d3d3d3;
+  --p-surface-400: #989898;
+  --p-surface-500: #707070;
+  --p-surface-600: #5a5a5a;
+  --p-surface-700: #4C4C4C;
+  --p-surface-800: #3e3e3e;
+  --p-surface-900: #2c2c2c;
+  --p-surface-950: #1f1f1f;
+}
+
+/* Forzar colores en botones */
+.p-button {
+  background-color: #08A0D8 !important;
+  border-color: #08A0D8 !important;
+  color: white !important;
+}
+
+.p-button:hover {
+  background-color: #0680B0 !important;
+  border-color: #0680B0 !important;
+}
+
+.p-button-primary {
+  background: #08A0D8 !important;
+  border-color: #08A0D8 !important;
+  color: white !important;
+}
+
+.p-button-primary:hover {
+  background: #0680B0 !important;
+  border-color: #0680B0 !important;
+}
+
+/* Forzar colores en elementos activos */
+.p-highlighted {
+  background-color: #08A0D8 !important;
+  color: white !important;
+}
+
+/* Clases personalizadas para Jorgestor */
+.bg-jorgestor {
+  background-color: #08A0D8 !important;
+}
+
+.bg-jorgestor-dark {
+  background-color: #0680B0 !important;
+}
+
+.text-jorgestor {
+  color: #08A0D8 !important;
+}
