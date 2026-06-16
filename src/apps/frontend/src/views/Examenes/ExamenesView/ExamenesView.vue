@@ -3,6 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Exámenes</h1>
       <div class="flex gap-2">
+        <Button v-if="examenesSeleccionados.size > 0" label="Exportar PDF" icon="pi pi-download" @click="exportarLotePdf" severity="info" />
         <Button v-if="examenesSeleccionados.size > 0" label="Asignar seleccionados" icon="pi pi-check" @click="abrirAsignacionBulk" severity="success" />
         <Button label="Generar Exámenes" icon="pi pi-cog" @click="tabIndex = 1" />
       </div>
@@ -333,6 +334,32 @@ async function cargarPdf(event: any, alumnoId: number, examenId: number) {
 
 function descargarPdf(pdfUrl: string) {
   window.open(pdfUrl, '_blank');
+}
+
+async function exportarLotePdf() {
+  if (examenesSeleccionados.value.size === 0) {
+    alert('Debes seleccionar al menos un examen');
+    return;
+  }
+
+  try {
+    const response = await api.post(
+      '/examenes/exportar/lote',
+      { examenIds: Array.from(examenesSeleccionados.value) },
+      { responseType: 'blob' }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `examenes_${Date.now()}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error: any) {
+    alert('Error al exportar PDF: ' + (error.response?.data?.message || error.message));
+  }
 }
 </script>
 

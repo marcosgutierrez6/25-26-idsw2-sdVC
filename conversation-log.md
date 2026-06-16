@@ -2322,3 +2322,77 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado. Los KPI cards y exámenes ahora son clickeables y navegan a sus respectivas secciones. Los efectos hover (elevación en KPI, cambio de fondo en exámenes) indican que son interactivos.
 
 ---
+
+## [10:37] Exportar lote de exámenes a PDF con diseño profesional
+
+**Prompt:** Agregar una opción para exportar un lote completo de exámenes a PDF. El PDF debe contener todas las preguntas tipo test con enunciado y opciones, nombre del alumno a la izquierda del footer y hashcode a la derecha.
+
+**Iteración 1 - Primer intento con PDFKit (fallido):**
+- Instalado `pdfkit` para generar PDFs
+- Creado `PdfGeneratorService` que dibuja exámenes directamente usando PDFKit
+- Problema 1: Los estilos CSS @page no funcionaban bien con position fixed en PDFKit
+- Problema 2: El footer aparecía duplicado (CSS + PDFKit template)
+- Problema 3: El código era difícil de mantener y se veía poco profesional
+
+**Decisión iteración 1:** Rechazado el enfoque. PDFKit es muy bajo nivel y hacer un PDF que se vea bien requiere mucho CSS manual. Se decidió usar una plantilla HTML y convertirla a PDF con Puppeteer.
+
+**Iteración 2 - Cambio a HTML templates + Puppeteer:**
+- Instalado `puppeteer` como librería más robusta para HTML→PDF
+- Creado `templates/examen.template.ts` con estructura HTML/CSS similar a Laravel Blade
+- Creado `HtmlPdfGeneratorService` que usa Puppeteer para renderizar HTML y generar PDF
+- Actualizado `ExamenesService.generarPdfLote()` para usar el nuevo servicio
+- Agregado endpoint `POST /examenes/exportar/lote` en `ExamenesController`
+- Agregado botón "Exportar PDF" en `ExamenesView.vue` que descarga el PDF
+
+**Problemas encontrados:**
+1. Error TS7016: Tipos de pdfkit no encontrados → Instalado `@types/pdfkit`
+2. Error TS2749: PDFDocument no es constructible → Cambio de `import * as` a `import default`
+3. Error TS7006: Parámetros sin tipos → Agregados tipos explícitos
+4. Footers duplicados en múltiples páginas → El footerTemplate de Puppeteer aplicaba a todas las páginas
+
+**Decisión iteración 2:** Refactorizar para inyectar footer directamente en HTML en lugar de usar footerTemplate.
+
+**Iteración 3 - Footer en HTML (inyectado):**
+- Removido footerTemplate de Puppeteer
+- Inyectado footer directamente en HTML template de cada examen
+- Usado CSS @page para márgenes y position fixed para footer
+- Problema: El footer no se posicionaba correctamente con page breaks
+
+**Decisión iteración 3:** Usar flexbox con `position: absolute` y márgenes específicos para posicionar correctamente el footer.
+
+**Iteración 4 - Layout con flexbox y páginas separadas:**
+- Refactorizado `examen.template.ts` para remover footer de HTML individual
+- Creado HTML wrapper con estilos CSS consolidados
+- Cada examen como `.page` con `page-break-after: always`
+- Footer como elemento final del flexbox con `flex-shrink: 0`
+- Problema: Footers de todos los exámenes se apilaban en una sola página
+
+**Decisión iteración 4:** Usar layout flex por página y asegurar que cada página tenga su propio footer.
+
+**Iteración 5 - Footer único por página (solución final):**
+- Inyectado footer directamente en cada bloque `<div class="page">`
+- Cada página con su propio HTML que incluye nombre y hashcode
+- CSS con flexbox: `.page { display: flex; flex-direction: column }`
+- Footer con `flex-shrink: 0` para mantener tamaño
+- Contenido con `flex: 1` para ocupar espacio disponible
+- Problema: Espacio en blanco excesivo entre páginas
+
+**Decisión iteración 5:** Remover `height: 297mm` que forzaba un tamaño fijo y causaba espacios en blanco.
+
+**Resultado final:**
+- Creado `templates/examen.template.ts`: Plantilla HTML reutilizable para cada examen
+- Creado `HtmlPdfGeneratorService`: Servicio que convierte HTML a PDF usando Puppeteer
+- Actualizado `ExamenesService.generarPdfLote()`: Recolecta datos de exámenes y genera PDF
+- Actualizado `ExamenesModule`: Registra `HtmlPdfGeneratorService` como proveedor
+- Agregado endpoint `POST /examenes/exportar/lote` con `@Roles(Rol.DOCENTE, Rol.ADMIN)`
+- Actualizado frontend: Botón "Exportar PDF" en vista de exámenes que descarga el PDF
+- PDF profesional con:
+  - Cada examen en su propia página
+  - Encabezado con EXAMEN, Evaluación y Asignatura
+  - Preguntas numeradas con opciones (A, B, C, D)
+  - Footer al pie con nombre del alumno (izquierda) y hashcode (derecha)
+  - Sin espacios en blanco excesivos entre páginas
+
+**Decisión final:** Aceptado todo. La solución usa Puppeteer que es más profesional, fácil de mantener y se parece a un sistema de templates (como Laravel Blade). El PDF se ve como un examen real.
+
+---

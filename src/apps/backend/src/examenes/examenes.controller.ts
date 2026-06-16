@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExamenesService } from './examenes.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
@@ -96,5 +97,14 @@ export class ExamenesController {
     @UploadedFile() file: any,
   ) {
     return this.examenesService.cargarPdf(+examenId, +alumnoId, file);
+  }
+
+  @Post('exportar/lote')
+  @Roles(Rol.DOCENTE, Rol.ADMIN)
+  async exportarLotePdf(@Body() { examenIds }: { examenIds: number[] }, @Res() res: Response) {
+    const pdfBuffer = await this.examenesService.generarPdfLote(examenIds);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="examenes_${Date.now()}.pdf"`);
+    res.send(pdfBuffer);
   }
 }

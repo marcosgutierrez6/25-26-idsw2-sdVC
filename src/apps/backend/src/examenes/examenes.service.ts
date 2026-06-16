@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from '../Prisma/prisma.service';
+import { HtmlPdfGeneratorService } from './html-pdf-generator.service';
 import { CreateExamenDto } from './dto/create-examen.dto';
 import { UpdateExamenDto } from './dto/update-examen.dto';
 import { GenerarExamenesDto } from './dto/generar-examenes.dto';
@@ -10,7 +11,10 @@ import { EstadoExamen } from '@prisma/client';
 
 @Injectable()
 export class ExamenesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly htmlPdfGenerator: HtmlPdfGeneratorService,
+  ) {}
 
   create(createExamenDto: CreateExamenDto) {
     return this.prisma.examen.create({ data: createExamenDto });
@@ -341,5 +345,45 @@ export class ExamenesService {
     });
 
     return { message: 'PDF cargado exitosamente', pdfUrl };
+  }
+
+  async generarPdfLote(examenIds: number[]): Promise<Buffer> {
+    const examenes = await this.prisma.examen.findMany({
+      where: { id: { in: examenIds } },
+      include: {
+        preguntas: { include: { pregunta: { include: { respuestas: true } } } },
+        alumnos: { include: { alumno: true } },
+        asignatura: true,
+      },
+    });
+
+    if (examenes.length === 0) throw new NotFoundException('No se encontraron exámenes');
+
+    const examenesData = examenes.map((examen) => {
+      const alumnoAsignacion = examen.alumnos[0];
+      const alumno = alumnoAsignacion?.alumno;
+      const hashAsignacion = alumnoAsignacion?.hashAsignacion || '';
+      const alumnoNombre = alumno ? `${alumno.nombre} ${alumno.apellidos}` : 'Alumno no asignado';
+
+      return {
+        evaluacion: examen.evaluacion,
+        asignatura: examen.asignatura?.titulo || 'N/A',
+        alumnoNombre,
+        hashAsignacion,
+        preguntas: examen.preguntas.map((ep, preguntaIndex) => {
+          const respuestasOrdenadas = ep.pregunta.respuestas.sort((a, b) => a.id - b.id);
+          return {
+            numero: preguntaIndex + 1,
+            enunciado: ep.pregunta.enunciado,
+            respuestas: respuestasOrdenadas.map((respuesta, respuestaIndex) => ({
+              letra: String.fromCharCode(65 + respuestaIndex),
+              texto: respuesta.opcion,
+            })),
+          };
+        }),
+      };
+    });
+
+    return this.htmlPdfGenerator.generateExamensPdf(examenesData);
   }
 }
