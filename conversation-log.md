@@ -2292,3 +2292,18 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado todo. Las variables de tokens centralizan estilos evitando duplicación. El componente KPI Card es reutilizable y acepta colores como props. Grid de 4 columnas sigue el diseño solicitado. Separación global en datatables aplica sin modificar 10+ vistas. Validado que todas las variables están disponibles via `:root`.
 
 ---
+
+## [09:58] Menú desplegable de perfil con opciones editar y cerrar sesión
+
+**Prompt:** El botón de perfil en la parte inferior del sidebar debería abrir un dropdown hacia arriba con 2 opciones: editar perfil (ir al formulario de profesor para editar el perfil actual) y cerrar sesión. Actualmente solo cierra la sesión al hacer click.
+
+**Resultado:**
+- Actualizado `AppLayout.vue`: removido `@click="cerrarSesion"` del botón principal de perfil para que solo abra el dropdown
+- Primera opción "Editar Perfil": router-link a `/profesores/{id}/editar` usando `auth.user?.id` dinámicamente
+- Segunda opción "Cerrar sesión": `<a>` con `@click="cerrarSesion"` para ejecutar el logout
+- Agregados hover styles en las opciones del dropdown (text-surface-0, bg-surface-800) para mejor UX
+- El sistema de animación `v-styleclass` ya estaba configurado para abrir/cerrar el dropdown
+
+**Decisión:** Aceptado. El dropdown funcionaba en el código pero no estaba conectado correctamente. La animación slidedown/slideup ya estaba lista, solo necesitaba separar la funcionalidad del botón (abrir dropdown) de la acción (cerrar sesión). El menú ahora abre hacia arriba con dos opciones claras.
+
+---

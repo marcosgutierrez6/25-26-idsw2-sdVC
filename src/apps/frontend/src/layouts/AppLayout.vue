@@ -71,16 +71,16 @@
       <div class="p-2 mt-auto border-surface-800 border-t">
         <ul class="list-none p-2 m-0 overflow-hidden hidden animate-duration-150">
           <li>
-            <a class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link">
+            <router-link :to="`/profesores/${auth.user?.id}/editar`" class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link hover:text-surface-0 hover:bg-surface-800">
               <i class="pi pi-user text-base! leading-none!" />
-              <span class="font-medium text-base leading-tight">Perfil</span>
-            </a>
+              <span class="font-medium text-base leading-tight">Editar Perfil</span>
+            </router-link>
           </li>
           <li>
-            <router-link to="/auth/login" class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link">
+            <a class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link hover:text-surface-0 hover:bg-surface-800" @click="cerrarSesion">
               <i class="pi pi-sign-out text-base! leading-none!" />
               <span class="font-medium text-base leading-tight">Cerrar sesión</span>
-            </router-link>
+            </a>
           </li>
         </ul>
         <a
@@ -91,8 +91,7 @@
             leaveToClass: 'hidden',
             leaveActiveClass: 'animate-slideup'
           }"
-          class="flex items-center cursor-pointer p-2 gap-2 text-surface-400 hover:text-surface-0"
-          @click="cerrarSesion"
+          class="flex items-center cursor-pointer p-2 gap-2 text-surface-400 hover:text-surface-0 transition-colors"
         >
           <img src="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" class="w-8 h-8 rounded-full" />
           <span class="font-medium text-base leading-tight">{{ auth.user?.nombre }} {{ auth.user?.apellidos }}</span>
