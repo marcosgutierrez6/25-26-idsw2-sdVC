@@ -2079,3 +2079,57 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 - ✅ Aceptado: Generación de exámenes sin filtro de temas por ahora (usa todas las preguntas habilitadas de la batería)
 
 ---
+
+## [09:28] Rediseño de asignación bulk + Adjuntar PDFs en resultados
+
+**Prompt:** Usuario pidió:
+1. Cambiar interfaz de asignación a sistema más bulk con checkboxes
+2. Agrupar exámenes por lote/generación (como carpetas)
+3. Que cada examen vaya a un alumno, no todos a todos
+4. Agregar capacidad de adjuntar PDF de examen escaneado en pestaña de resultados
+
+**Resultado:**
+
+*Frontend (ExamenesView.vue):*
+- Agrupación de exámenes por fecha de creación usando computed property `examenesPorLote`
+- Cada lote es expandible/colapsible mostrando los exámenes de ese día
+- Checkbox para seleccionar múltiples exámenes dentro del lote
+- Checkbox "Seleccionar todo" por lote para seleccionar en bulk
+- MultiSelect (no Select) para seleccionar múltiples alumnos
+- Botón "Asignar seleccionados" visible cuando hay selecciones
+- Modal bulk que muestra cantidad de exámenes y alumnos a asignar
+- Pestaña Resultados con:
+  - Tabla mostrando alumno, nota, PDF examen
+  - FileUpload para cargar PDF para cada alumno-examen
+  - Botón descargar si el PDF ya existe
+
+*Backend (schema.prisma):*
+- Agregado campo `pdfUrl: String?` a modelo AlumnoExamen
+- Creada migración `20260616072359_add_pdf_url`
+
+*Backend (examenes.service.ts):*
+- Nuevo método `asignarBulk(AsignarBulkExamenesDto)` con distribución round-robin:
+  - Si 5 exámenes y 3 alumnos: Ex1→Al1, Ex2→Al2, Ex3→Al3, Ex4→Al1, Ex5→Al2
+  - Cada examen se asigna a un alumno diferente, no a todos
+- Nuevo método `cargarPdf(examenId, alumnoId, file)` que:
+  - Valida que exista el archivo
+  - Genera nombre único: `examen_{id}_alumno_{id}_{timestamp}.pdf`
+  - Actualiza BD con pdfUrl
+
+*Backend (examenes.controller.ts):*
+- Nuevo endpoint `POST /examenes/asignar-bulk` con FileInterceptor
+- Nuevo endpoint `POST /examenes/:examenId/alumno/:alumnoId/pdf` para cargar PDF
+
+*Frontend (examenes.service):*
+- Nueva función `cargarPdf(event, alumnoId, examenId)` que envía FormData con PDF
+- Nueva función `descargarPdf(pdfUrl)` que abre el PDF en nueva ventana
+- Función `confirmarAsignacionBulk()` que usa endpoint `asignar-bulk`
+
+**Decisión:**
+- ✅ Aceptado: Agrupación por fecha de creación (toISOString.split('T')[0])
+- ✅ Aceptado: MultiSelect en lugar de Select para selección múltiple de alumnos
+- ✅ Aceptado: Distribución round-robin 1:1 (cada examen a un alumno, no todos a todos)
+- ✅ Aceptado: PDFs almacenados en BD como URL (en producción irían a S3 u similar)
+- ✅ Problema arreglado: Tipos de Express.Multer.File cambiados a `any` por falta de type definitions
+
+---
