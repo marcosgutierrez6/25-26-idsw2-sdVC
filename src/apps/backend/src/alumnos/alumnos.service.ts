@@ -42,12 +42,10 @@ export class AlumnosService {
   }
 
   async update(id: number, updateAlumnoDto: UpdateAlumnoDto) {
-    await this.findOne(id);
     return this.prisma.alumno.update({ where: { id }, data: updateAlumnoDto });
   }
 
   async remove(id: number) {
-    await this.findOne(id);
     return this.prisma.alumno.delete({ where: { id } });
   }
 }

@@ -2396,3 +2396,22 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión final:** Aceptado todo. La solución usa Puppeteer que es más profesional, fácil de mantener y se parece a un sistema de templates (como Laravel Blade). El PDF se ve como un examen real.
 
 ---
+
+## [13:50] Revisión de AlumnosService - Optimización SOLID
+
+**Prompt:** Revisión del código de `AlumnosService.update()` y `remove()` que tenían un `findOne()` previo innecesario.
+
+**Encontrado:** 
+- `update()` llamaba a `findOne()` antes de actualizar
+- `remove()` llamaba a `findOne()` antes de eliminar
+- Violación del principio DRY (Don't Repeat Yourself): dos queries para una operación que Prisma maneja nativamente
+- Prisma lanza `PrismaClientKnownRequestError` automáticamente si el registro no existe
+
+**Resultado:**
+- Removido `await this.findOne(id)` de `update()`
+- Removido `await this.findOne(id)` de `remove()`
+- Ahora Prisma maneja la validación existencia con menos overhead
+
+**Decisión:** Aceptado la optimización. Aplica el principio DRY (Single Responsibility): Prisma es responsable de validar existencia, no el servicio. Una query en lugar de dos mejora performance.
+
+---
