@@ -45,13 +45,33 @@ src/
 
 ### Diagrama de Arquitectura Completa
 
-![Arquitectura del Sistema](./modelosUML/arquitectura/arquitectura-sistema.svg)
+![Arquitectura del Sistema](./modelosUML/arquitectura/arquitectura-sistema.png)
 
-> **Nota:** El diagrama muestra las capas completas del sistema:
-> - **Frontend**: Vue 3, Pinia, Axios, Vue Router
-> - **Backend**: NestJS, Controllers, Services, Prisma
-> - **Database**: MySQL con relaciones N:M
-> - **Seguridad**: JWT, bcrypt, Passport
+**Componentes por capa:**
+
+**FRONTEND (Vue 3)**
+- Componentes: DashboardView, GradosView, AsignaturasView, AlumnosView, PreguntasView, ExamenesView
+- Estado: Pinia Store (auth, user)
+- HTTP: Axios + Interceptores JWT
+- Navegación: Vue Router con guards
+
+**BACKEND (NestJS)**
+- Controladores: Auth, Grados, Asignaturas, Alumnos, Preguntas, Exámenes, Configuración
+- Servicios: Lógica de negocio, validaciones, generación de exámenes
+- DTOs: Validación de entrada (class-validator)
+- Guards: JwtAuthGuard, RolesGuard (DOCENTE/ADMIN)
+- ORM: Prisma para consultas a MySQL
+
+**BASE DE DATOS (MySQL)**
+- 11 Modelos: Profesor, Alumno, Grado, Asignatura, Pregunta, Respuesta, Examen, BateriaDePreguntas, AlumnoExamen, ExamenPregunta, AlumnoAsignatura
+- Relaciones: N:M con tablas intermedias
+- Índices: Optimizados para FK y búsquedas
+
+**SEGURIDAD**
+- JWT Token (Bearer en headers)
+- bcrypt para hashing de contraseñas
+- RolesGuard para control de acceso (DOCENTE vs ADMIN)
+- CORS configurado
 
 ### Flujo de Datos Ejemplo: Generar Exámenes
 
