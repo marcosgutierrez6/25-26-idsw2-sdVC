@@ -1,37 +1,19 @@
-@startuml colaboracion-editarDocente
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+@startuml editarDocente-analisis
+skinparam linetype polyline
 
-actor "Administrador\ninstitucional" as a
-boundary "EditarDocenteView" as v
-control "ProfesoresController" as c
-entity "ProfesoresService" as s
-entity "Profesor" as e
+rectangle #CDEBA5 ":DOCENTE_ABIERTO" as DOCENTEABIERTO
+package editarDocente as "editarDocente()" {
+    rectangle #629EF9 EditarDocenteView
+    rectangle #b5bd68 DocentesController
+}
 
-a -> v : 1: solicita editar\ndocente existente
-v -> c : 2: findOne(id)
-c -> s : 3: findOne(id)
-s -> e : 3.1: consulta datos\ndel docente
-e --> s : datos del\ndocente
-s --> c : docente (sin\ncontraseña)
-c --> v : { docente }
-v --> a : 4: presenta formulario\ncon datos precargados
+rectangle #CDEBA5 ":DOCENTES_ABIERTO" as DOCENTESABIERTO
 
-a -> v : 5: modifica campos\ny pulsa\n"Guardar cambios"
-v -> c : 6: update(id,\nupdateProfesorDto)
-c -> s : 7: update(id, data)
-s -> e : 7.1: actualiza\natributos
-e --> s : docente\nactualizado
-s --> c : docente\nactualizado
-c --> v : { docente\nactualizado }
-v --> a : 8: muestra resultado\ny navega a\nDOCENTE_ABIERTO2
+DOCENTEABIERTO -r-> EditarDocenteView: editarDocente(Id)
 
-note right of c
-  Valida DTO,
-  verifica existencia
-  y cifra password
-  con bcrypt
-end note
+EditarDocenteView -d-> DocentesController: actualizarDocente(UpdateDocenteDto)
+
+EditarDocenteView ..> DOCENTEABIERTO: cancelar()
+EditarDocenteView ..r.> DOCENTESABIERTO: docenteActualizado()
 
 @enduml

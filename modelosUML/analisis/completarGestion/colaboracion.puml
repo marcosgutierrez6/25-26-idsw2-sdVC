@@ -1,33 +1,19 @@
-@startuml colaboracion-completarGestion
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+@startuml completarGestion-analisis
+skinparam linetype polyline
 
-actor "Docente /\nAdmin.\ninstitucional" as a
-boundary "DashboardView" as v
-entity "AuthStore" as st
+rectangle #CDEBA5 ":SISTEMA_DISPONIBLE" as SISTEMADISPONIBLE
+package completarGestion as "completarGestion()" {
+    rectangle #629EF9 DashboardView
+    rectangle #b5bd68 AuthStore
+}
 
-a -> v : 1: solicita\nSISTEMA_DISPONIBLE
-v -> st : 2: obtiene rol\ny opciones
-st --> v : { rol,\nopciones }
-v --> a : 3: presenta\nmenú según\nrol
-a -> v : 4: selecciona\nopción
-v --> a : 5: navega a\nfuncionalidad\nespecífica
+rectangle #CDEBA5 ":SISTEMA_DISPONIBLE" as SISTEMADISPONIBLE2
 
-note right of v
-  Menú Docente:
-  • Grados
-  • Asignaturas
-  • Alumnos
-  • Preguntas
-  • Generar exámenes
-  • Corregir exámenes
-  • Importar/Exportar
-  • Cerrar sesión
+SISTEMADISPONIBLE -r-> DashboardView: completarGestion(Rol)
 
-  Menú Admin:
-  • Docentes
-  • Cerrar sesión
-end note
+DashboardView -d-> AuthStore: obtenerOpciones(Rol)
+
+DashboardView ..> SISTEMADISPONIBLE: cancelar()
+DashboardView ..r.> SISTEMADISPONIBLE2: opcionSeleccionada()
 
 @enduml

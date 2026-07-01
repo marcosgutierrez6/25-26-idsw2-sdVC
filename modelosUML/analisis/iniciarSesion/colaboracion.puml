@@ -1,42 +1,19 @@
-@startuml colaboracion-iniciarSesion
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+@startuml iniciarSesion-analisis
+skinparam linetype polyline
 
-actor "UsuarioNo\nRegistrado" as a
-boundary "LoginView" as v
-control "AuthController" as c
-entity "AuthService" as s
-entity "Profesor" as e
-entity "AuthStore" as st
+rectangle #CDEBA5 ":SESION_CERRADA" as SESIONCERRADA
+package iniciarSesion as "iniciarSesion()" {
+    rectangle #629EF9 LoginView
+    rectangle #b5bd68 AuthController
+}
 
-a -> v : 1: solicita\nacceder
-v --> a : 2: presenta\nformulario
+rectangle #CDEBA5 ":SISTEMA_DISPONIBLE" as SISTEMADISPONIBLE
 
-a -> v : 3: introduce\nemail y\ncontraseña
-v -> c : 4: login(email,\npassword)
-c -> s : 5: login(email,\npassword)
-s -> e : 5.1: busca\nprofesor por\nemail
-e --> s : profesor o\nnull
-s -> e : 5.2: compara\npassword con\nbcrypt
-s --> c : { access_token,\nuser }
-c --> v : { access_token,\nuser }
-v -> st : 6: guarda token\ny usuario
-v --> a : 7: redirige a\nSISTEMA_DISPONIBLE
+SESIONCERRADA -r-> LoginView: iniciarSesion(Email, Password)
 
-note right of c
-  POST /auth/login
-  JWT payload:
-  sub, email, rol
-end note
+LoginView -d-> AuthController: verificarCredenciales(Email, Password)
 
-note right of v
-  En caso de error
-  (credenciales
-  inválidas):
-  muestra mensaje
-  y vuelve a
-  SolicitandoAcceso
-end note
+LoginView ..> SESIONCERRADA: cancelar()
+LoginView ..r.> SISTEMADISPONIBLE: credencialesValidas()
 
 @enduml

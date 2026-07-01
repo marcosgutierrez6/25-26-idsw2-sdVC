@@ -1,34 +1,19 @@
-@startuml colaboracion-verDocentes
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+@startuml verDocente-analisis
+skinparam linetype polyline
 
-actor "Administrador\ninstitucional" as a
-boundary "VerDocentesView" as v
-control "ProfesoresController" as c
-entity "ProfesoresService" as s
-entity "Profesor" as e
+rectangle #CDEBA5 ":SISTEMA_DISPONIBLE" as SISTEMADISPONIBLE
+package verDocente as "verDocente()" {
+    rectangle #629EF9 DocentesView
+    rectangle #b5bd68 DocentesController
+}
 
-a -> v : 1: solicita ver\ndocentes
-v -> c : 2: findAll()
-c -> s : 3: findAll()
-s -> e : 3.1: consulta\ndocentes
-e --> s : lista de\ndocentes
-s --> c : docentes\n(sin password)
-c --> v : { profesores }
-v --> a : 4: presenta tabla\ncon acciones
+rectangle #CDEBA5 ":DOCENTES_ABIERTO" as DOCENTESABIERTO
 
-a -> v : 5: aplica filtro\nde búsqueda
-v -> c : 6: findAll(filtro)
-c -> s : 7: findAll(filtro)
-s --> c : lista\nfiltrada
-c --> v : { profesores\nfiltrados }
-v --> a : 8: actualiza tabla
+SISTEMADISPONIBLE -r-> DocentesView: verDocente(Page, Limit)
 
-note right of c
-  GET /profesores
-  con omit:
-  password
-end note
+DocentesView -d-> DocentesController: listarDocentes(Filtros)
+
+DocentesView ..> SISTEMADISPONIBLE: cancelar()
+DocentesView ..r.> DOCENTESABIERTO: docentesCargados()
 
 @enduml

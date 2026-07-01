@@ -1,26 +1,19 @@
-@startuml colaboracion-cerrarSesion
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+@startuml cerrarSesion-analisis
+skinparam linetype polyline
 
-actor "Docente /\nAdmin.\ninstitucional" as a
-boundary "CerrarSesionView" as v
-entity "AuthStore" as st
+rectangle #CDEBA5 ":SISTEMA_DISPONIBLE" as SISTEMADISPONIBLE
+package cerrarSesion as "cerrarSesion()" {
+    rectangle #629EF9 CerrarSesionView
+    rectangle #b5bd68 AuthController
+}
 
-a -> v : 1: solicita cerrar\nsesión
-v --> a : 2: presenta\nconfirmación\ncon usuario
+rectangle #CDEBA5 ":SESION_CERRADA" as SESIONCERRADA
 
-a -> v : 3: confirma\ncierre
-v -> st : 4: logout()
-st --> v : ok
-v --> a : 5: redirige a\nSESION_CERRADA
+SISTEMADISPONIBLE -r-> CerrarSesionView: cerrarSesion(Usuario)
 
-note right of st
-  logout():
-  • limpia user
-  • limpia token
-  • removeItem
-  localStorage
-end note
+CerrarSesionView -d-> AuthController: confirmarCierre(Usuario)
+
+CerrarSesionView ..> SISTEMADISPONIBLE: cancelarCierre()
+CerrarSesionView ..r.> SESIONCERRADA: confirmarCierre()
 
 @enduml
