@@ -2455,3 +2455,24 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado todo. Backend y frontend compilan correctamente. Todos los métodos del back y front ahora usan los nombres en español exactos solicitados. Los servicios están encapsulados por entidad. La entidad Profesores queda completamente renombrada a Docentes (rutas, módulos, DTOs, menús). El store de autenticación queda más limpio sin register ni llamadas axios directas. Pendiente: aplicar el mismo patrón de servicios al resto de entidades (alumnos, grados, asignaturas, etc.) cuando se requiera.
 
 ---
+
+## [21:10] Diagramas de colaboración UML para casos de uso de docente
+
+**Prompt:** Crear/corregir diagramas de colaboración (comunicación) para los casos de uso de docente. Se solicitó formato específico: rectángulos de estado (verde #CDEBA5), paquete con el caso de uso, vista (azul #629EF9), controlador (naranja #b5bd68), flechas sólidas para flujo principal, punteadas para alternativas.
+
+**Resultado:**
+- Creados/actualizados 7 archivos `colaboracion.puml`:
+  - `modelosUML/analisis/iniciarSesion/colaboracion.puml`
+  - `modelosUML/analisis/cerrarSesion/colaboracion.puml`
+  - `modelosUML/analisis/verDocentes/colaboracion.puml`
+  - `modelosUML/analisis/crearDocente/colaboracion.puml`
+  - `modelosUML/analisis/editarDocente/colaboracion.puml`
+  - `modelosUML/analisis/eliminarDocente/colaboracion.puml`
+  - `modelosUML/analisis/completarGestion/colaboracion.puml`
+- Formato: estado inicial/final en rectángulos verdes, paquete azul claro con nombre del caso, vista azul rey, controlador naranja, flechas numeradas (1, 2, 1.1, 2.1, etc.)
+- Generados SVGs en `images/analisis/{caso}/colaboracion.svg` vía kroki.io
+- Diagramas ajustados a nombres actuales del código (`IniciarSesion`, `CerrarSesion`, `DocentesController`, `verDocente`, `crearDocente`, `editarDocente`, `eliminarDocente`, `completarGestion`)
+- `completarGestion` usa `AuthStore` como reemplazo de controlador (es navegación frontend-only)
+
+**Verificación:** Archivos .puml escritos correctamente. SVGs generados (todos ~5900-5980 bytes).
+**Decisión:** Aceptado. Formato consistente con el ejemplo proporcionado (`cerrarSesion`). Nombres de métodos actualizados a los del código refactorizado.
