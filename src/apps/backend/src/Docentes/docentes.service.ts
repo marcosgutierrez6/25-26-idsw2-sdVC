@@ -1,22 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../Prisma/prisma.service';
-import { CreateProfesorDto } from './dto/create-profesor.dto';
-import { UpdateProfesorDto } from './dto/update-profesor.dto';
+import { CreateDocenteDto } from './dto/create-docente.dto';
+import { UpdateDocenteDto } from './dto/update-docente.dto';
 import { PaginationDto } from '../Common/dto/pagination.dto';
 
 @Injectable()
-export class ProfesoresService {
+export class DocentesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createProfesorDto: CreateProfesorDto) {
-    const hashedPassword = await bcrypt.hash(createProfesorDto.password, 10);
+  async crearDocente(createDocenteDto: CreateDocenteDto) {
+    const hashedPassword = await bcrypt.hash(createDocenteDto.password, 10);
     return this.prisma.profesor.create({
-      data: { ...createProfesorDto, password: hashedPassword },
+      data: { ...createDocenteDto, password: hashedPassword },
     });
   }
 
-  async findAll(pagination?: PaginationDto) {
+  async verDocentes(pagination?: PaginationDto) {
     const page = pagination?.page ?? 1;
     const limit = pagination?.limit ?? 10;
     const skip = (page - 1) * limit;
@@ -34,19 +34,19 @@ export class ProfesoresService {
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  async findOne(id: number) {
+  async verDocente(id: number) {
     const profesor = await this.prisma.profesor.findUnique({
       where: { id },
       omit: { password: true },
       include: { asignaturas: true },
     });
-    if (!profesor) throw new NotFoundException('Profesor no encontrado');
+    if (!profesor) throw new NotFoundException('Docente no encontrado');
     return profesor;
   }
 
-  async update(id: number, updateProfesorDto: UpdateProfesorDto) {
-    await this.findOne(id);
-    const data: any = { ...updateProfesorDto };
+  async editarDocente(id: number, updateDocenteDto: UpdateDocenteDto) {
+    await this.verDocente(id);
+    const data: any = { ...updateDocenteDto };
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
@@ -57,8 +57,8 @@ export class ProfesoresService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async eliminarDocente(id: number) {
+    await this.verDocente(id);
     return this.prisma.profesor.delete({ where: { id } });
   }
 }

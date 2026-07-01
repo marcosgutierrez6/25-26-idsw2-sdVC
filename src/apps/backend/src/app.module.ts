@@ -4,7 +4,7 @@ import { PrismaModule } from './Prisma/prisma.module';
 import { AuthModule } from './Auth/auth.module';
 import { GradosModule } from './Grados/grados.module';
 import { AsignaturasModule } from './Asignaturas/asignaturas.module';
-import { ProfesoresModule } from './Profesores/profesores.module';
+import { DocentesModule } from './Docentes/docentes.module';
 import { AlumnosModule } from './Alumnos/alumnos.module';
 import { PreguntasModule } from './Preguntas/preguntas.module';
 import { RespuestasModule } from './Respuestas/respuestas.module';
@@ -23,7 +23,7 @@ import * as path from 'path';
     AuthModule,
     GradosModule,
     AsignaturasModule,
-    ProfesoresModule,
+    DocentesModule,
     AlumnosModule,
     PreguntasModule,
     RespuestasModule,

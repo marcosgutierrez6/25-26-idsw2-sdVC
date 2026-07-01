@@ -71,7 +71,7 @@
       <div class="p-2 mt-auto border-surface-800 border-t">
         <ul class="list-none p-2 m-0 overflow-hidden hidden animate-duration-150">
           <li>
-            <router-link :to="`/profesores/${auth.user?.id}/editar`" class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link hover:text-surface-0 hover:bg-surface-800">
+            <router-link :to="`/docentes/${auth.user?.id}/editar`" class="flex items-center cursor-pointer p-3 gap-2 rounded-lg text-surface-400 border border-transparent menu-link hover:text-surface-0 hover:bg-surface-800">
               <i class="pi pi-user text-base! leading-none!" />
               <span class="font-medium text-base leading-tight">Editar Perfil</span>
             </router-link>
@@ -126,7 +126,7 @@ function toggleSection(index: number) {
 }
 
 function cerrarSesion() {
-  auth.logout();
+  auth.CerrarSesion();
   router.push('/auth/login');
 }
 
@@ -147,7 +147,7 @@ const collapsibleSections: MenuSection[] = [
     title: 'Academia',
     items: [
       { path: '/alumnos', text: 'Alumnos', icon: 'pi pi-users' },
-      { path: '/profesores', text: 'Profesores', icon: 'pi pi-user', adminOnly: true },
+      { path: '/docentes', text: 'Docentes', icon: 'pi pi-user', adminOnly: true },
       { path: '/preguntas', text: 'Preguntas', icon: 'pi pi-question-circle' },
       { path: '/bateria', text: 'Batería', icon: 'pi pi-database' },
     ],

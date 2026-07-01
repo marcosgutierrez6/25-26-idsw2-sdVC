@@ -2415,3 +2415,43 @@ Este dataset permite probar la generación, asignación y corrección de exámen
 **Decisión:** Aceptado la optimización. Aplica el principio DRY (Single Responsibility): Prisma es responsable de validar existencia, no el servicio. Una query en lugar de dos mejora performance.
 
 ---
+
+## [20:50] Refactorización completa: métodos en español + servicios encapsulados + renombrar Profesores → Docentes
+
+**Prompt:** Revisar el proyecto y modificar tanto el back como el front para:
+1. Encapsular todas las llamadas axios en archivos de servicio separados por entidad (auth, docente, etc.)
+2. Renombrar todos los métodos del back y el front a nombres en español exactos: `IniciarSesion()`, `CerrarSesion()`, `verDocente()`, `crearDocente()`, `editarDocente()`, `eliminarDocente()`, `completarGestion()` (para navegación entre vistas)
+3. Renombrar la entidad Profesores a Docentes en rutas, módulos y servicios
+
+**Resultado:**
+
+*Backend (NestJS):*
+- **Auth**: `AuthController.login()` → `IniciarSesion()`, `AuthController.logout()` → `CerrarSesion()`. `AuthService.login()` → `IniciarSesion()`, `AuthService.logout()` → `CerrarSesion()`.
+- **Docentes** (nuevo módulo): Creada carpeta `Docentes/` con `docentes.controller.ts`, `docentes.service.ts`, `docentes.module.ts`, `dto/create-docente.dto.ts`, `dto/update-docente.dto.ts`.
+- Ruta API: `/profesores` → `/docentes`
+- Métodos del controlador: `index()` → `verDocentes()`, `show()` → `verDocente()`, `create()` → `crearDocente()`, `update()` → `editarDocente()`, `delete()` → `eliminarDocente()`
+- Métodos del service: `findAll()` → `verDocentes()`, `findOne()` → `verDocente()`, `create()` → `crearDocente()`, `update()` → `editarDocente()`, `remove()` → `eliminarDocente()`
+- DTOs renombrados: `CreateProfesorDto` → `CreateDocenteDto`, `UpdateProfesorDto` → `UpdateDocenteDto`
+- `app.module.ts` actualizado: `ProfesoresModule` → `DocentesModule`
+- Carpeta `Profesores/` eliminada
+
+*Frontend (Vue 3):*
+- Creado `src/services/` con:
+  - `auth.service.ts`: `IniciarSesion()`, `CerrarSesion()` — encapsulan las llamadas axios a `/auth/login` y `/auth/logout`
+  - `docente.service.ts`: `verDocente()` (con id opcional: sin id lista, con id obtiene uno), `crearDocente()`, `editarDocente()`, `eliminarDocente()` — encapsulan las llamadas a `/docentes`
+  - `gestion.service.ts`: `completarGestion(router, ruta)` — helper de navegación entre vistas
+  - `index.ts`: re-export de todos los servicios
+- `stores/auth.ts`: ahora usa `IniciarSesion`/`CerrarSesion` del servicio en lugar de `api` directa. Eliminado `register()`.
+- `ProfesoresView.vue`: reescrito para usar `verDocente()` para listar y `eliminarDocente()` para borrar. Botones y títulos actualizados a "Docentes".
+- `ProfesoresFormView.vue`: reescrito para usar `verDocente()` (carga), `crearDocente()` o `editarDocente()` según modo. Navegación a `/docentes`.
+- `AppLayout.vue`: sidebar actualizado a `/docentes` y "Docentes"
+- `MainLayout.vue`: sidebar actualizado a `/docentes` y "Docentes"
+- `router/index.ts`: rutas `/profesores/*` → `/docentes/*`
+
+**Verificación:**
+- Backend compila sin errores (0 errores)
+- Frontend typecheck: solo errores pre-existentes en archivos no modificados
+
+**Decisión:** Aceptado todo. Backend y frontend compilan correctamente. Todos los métodos del back y front ahora usan los nombres en español exactos solicitados. Los servicios están encapsulados por entidad. La entidad Profesores queda completamente renombrada a Docentes (rutas, módulos, DTOs, menús). El store de autenticación queda más limpio sin register ni llamadas axios directas. Pendiente: aplicar el mismo patrón de servicios al resto de entidades (alumnos, grados, asignaturas, etc.) cuando se requiera.
+
+---

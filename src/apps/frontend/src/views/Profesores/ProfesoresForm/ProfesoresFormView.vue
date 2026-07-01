@@ -2,7 +2,7 @@
   <div class="bg-surface-0 dark:bg-surface-950 p-6">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-        {{ profesor?.id ? 'Editar Profesor' : 'Nuevo Profesor' }}
+        {{ profesor?.id ? 'Editar Docente' : 'Nuevo Docente' }}
       </h1>
       <Button label="Volver" icon="pi pi-arrow-left" severity="secondary" @click="volver" />
     </div>
@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '../../../api/axios';
+import { verDocente, crearDocente, editarDocente } from '../../../services/docente.service';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 
@@ -58,7 +58,7 @@ const profesor = ref<any>(null);
 
 onMounted(async () => {
   if (profesorId.value) {
-    const { data } = await api.get(`/profesores/${profesorId.value}`);
+    const data = await verDocente(1, 10, profesorId.value);
     profesor.value = data;
     form.value = {
       nombre: data.nombre,
@@ -82,18 +82,18 @@ async function guardar() {
       if (form.value.password) {
         payload.password = form.value.password;
       }
-      await api.patch(`/profesores/${profesorId.value}`, payload);
+      await editarDocente(profesorId.value, payload);
     } else {
-      await api.post('/profesores', form.value);
+      await crearDocente(form.value);
     }
-    router.push('/profesores');
+    router.push('/docentes');
   } catch (error) {
-    console.error('Error al guardar profesor:', error);
+    console.error('Error al guardar docente:', error);
   }
 }
 
 function volver() {
-  router.push('/profesores');
+  router.push('/docentes');
 }
 </script>
 

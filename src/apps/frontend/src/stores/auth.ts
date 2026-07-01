@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import api from '../api/axios';
+import { IniciarSesion, CerrarSesion } from '../services/auth.service';
 
 interface User {
   id: number;
@@ -18,27 +18,20 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => user.value?.rol === 'ADMIN');
   const isDocente = computed(() => user.value?.rol === 'DOCENTE');
 
-  async function login(email: string, password: string) {
-    const { data } = await api.post('/auth/login', { email, password });
+  async function IniciarSesionStore(email: string, password: string) {
+    const data = await IniciarSesion(email, password);
     token.value = data.access_token;
     user.value = data.user;
     localStorage.setItem('access_token', data.access_token);
     return data;
   }
 
-  async function register(nombre: string, apellidos: string, dni: string, email: string, password: string) {
-    const { data } = await api.post('/auth/register', { nombre, apellidos, dni, email, password });
-    token.value = data.access_token;
-    user.value = data.user;
-    localStorage.setItem('access_token', data.access_token);
-    return data;
-  }
-
-  function logout() {
+  function CerrarSesionStore() {
     user.value = null;
     token.value = null;
     localStorage.removeItem('access_token');
+    CerrarSesion();
   }
 
-  return { user, token, isAuthenticated, isAdmin, isDocente, login, register, logout };
+  return { user, token, isAuthenticated, isAdmin, isDocente, IniciarSesion: IniciarSesionStore, CerrarSesion: CerrarSesionStore };
 });

@@ -1,8 +1,8 @@
 <template>
   <div class="p-6">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Profesores</h1>
-      <Button label="Nuevo Profesor" icon="pi pi-plus" @click="router.push('/profesores/nuevo')" />
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Docentes</h1>
+      <Button label="Nuevo Docente" icon="pi pi-plus" @click="router.push('/docentes/nuevo')" />
     </div>
 
     <DataTable :value="items" :loading="loading" :paginator="true" :rows="limit" :totalRecords="total" lazy @page="onPage">
@@ -14,14 +14,14 @@
       <Column field="rol" header="Rol" />
       <Column header="Acciones">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text" @click="router.push(`/profesores/${data.id}/editar`)" />
+          <Button icon="pi pi-pencil" class="p-button-text" @click="router.push(`/docentes/${data.id}/editar`)" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="confirmarEliminar(data)" />
         </template>
       </Column>
     </DataTable>
 
     <Dialog v-model:visible="deleteDialog" header="Confirmar eliminación" modal>
-      <p class="m-0">¿Estás seguro de que quieres eliminar al profesor <strong>{{ itemToDelete?.nombre }} {{ itemToDelete?.apellidos }}</strong>?</p>
+      <p class="m-0">¿Estás seguro de que quieres eliminar al docente <strong>{{ itemToDelete?.nombre }} {{ itemToDelete?.apellidos }}</strong>?</p>
       <div class="flex gap-2 justify-end mt-4">
         <Button label="Cancelar" severity="secondary" @click="deleteDialog = false" />
         <Button label="Eliminar" severity="danger" @click="eliminar" />
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '../../../api/axios';
+import { verDocente, eliminarDocente } from '../../../services/docente.service';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -55,7 +55,7 @@ onMounted(() => cargar());
 async function cargar() {
   loading.value = true;
   try {
-    const { data } = await api.get('/profesores', { params: { page: page.value, limit } });
+    const data = await verDocente(page.value, limit);
     items.value = data.data;
     total.value = data.total;
   } finally {
@@ -75,7 +75,7 @@ function confirmarEliminar(data: any) {
 
 async function eliminar() {
   if (!itemToDelete.value) return;
-  await api.delete(`/profesores/${itemToDelete.value.id}`);
+  await eliminarDocente(itemToDelete.value.id);
   deleteDialog.value = false;
   itemToDelete.value = null;
   cargar();

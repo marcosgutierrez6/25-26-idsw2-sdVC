@@ -43,14 +43,14 @@ const menuItems = computed<MenuItem[]>(() => [
   { label: 'Asignaturas', icon: 'pi pi-bookmark', command: () => router.push('/asignaturas') },
   { label: 'Alumnos', icon: 'pi pi-users', command: () => router.push('/alumnos') },
   ...(auth.isAdmin
-    ? [{ label: 'Profesores', icon: 'pi pi-user', command: () => router.push('/profesores') as any }]
+    ? [{ label: 'Docentes', icon: 'pi pi-user', command: () => router.push('/docentes') as any }]
     : []),
   { label: 'Preguntas', icon: 'pi pi-question-circle', command: () => router.push('/preguntas') },
   { label: 'Exámenes', icon: 'pi pi-file', command: () => router.push('/examenes') },
 ]);
 
 function cerrarSesion() {
-  auth.logout();
+  auth.CerrarSesion();
   router.push('/login');
 }
 </script>

@@ -10,7 +10,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(email: string, password: string) {
+  async IniciarSesion(email: string, password: string) {
     const user = await this.prisma.profesor.findUnique({ where: { email } });
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
@@ -32,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async logout(user: any) {
+  async CerrarSesion(user: any) {
     return { message: 'Sesión cerrada correctamente' };
   }
 }

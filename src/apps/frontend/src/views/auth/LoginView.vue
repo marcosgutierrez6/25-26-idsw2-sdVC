@@ -69,7 +69,7 @@ const checked2 = ref(true);
 async function handleLogin() {
   loading.value = true;
   try {
-    await auth.login(email.value, password.value);
+    await auth.IniciarSesion(email.value, password.value);
     router.push('/dashboard');
   } catch {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Credenciales inválidas', life: 3000 });

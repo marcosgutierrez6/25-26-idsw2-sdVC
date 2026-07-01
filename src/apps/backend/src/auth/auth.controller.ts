@@ -7,13 +7,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  login(@Body() body: { email: string; password: string }) {
-    return this.authService.login(body.email, body.password);
+  IniciarSesion(@Body() body: { email: string; password: string }) {
+    return this.authService.IniciarSesion(body.email, body.password);
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  logout(@Req() req: any) {
-    return this.authService.logout(req.user);
+  CerrarSesion(@Req() req: any) {
+    return this.authService.CerrarSesion(req.user);
   }
 }
